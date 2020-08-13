@@ -274,6 +274,14 @@ export function reTestApprove(data) {
   })
 }
 
+// 学生所有的课程信息
+export function getStudentCourses(id) {
+  return request({
+    url: `/course/student_course/student_course/${id}`,
+    method: 'GET'
+  })
+}
+
 // stu_stop_test/pageList
 // 分页查询
 export function stopTestPageList(data) {
@@ -596,4 +604,11 @@ export function examPaperGet(id) {
   })
 }
 
+// 试卷预览
 
+export function examPaperPreview(id) {
+  return request({
+    url: `/course/exam_paper/preview/${id}`,
+    method: 'get',
+  })
+}

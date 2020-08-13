@@ -67,7 +67,7 @@
       <el-form-item class="flex-coulmn" label="难度" required>
         <el-rate v-model="form.difficulty"></el-rate>
       </el-form-item>
-      <el-form-item class="flex-coulmn" style="margin-top: 10px" label="标准答案" v-show="form.type != arr[4]" required>
+      <el-form-item class="flex-coulmn" style="margin-top: 10px" label="标准答案" required>
         <answer
           :options="options"
           :answer.sync="form.answer"
@@ -222,7 +222,7 @@ export default {
     // 数据重置
     resetTing() {
       for (let key in this.form) {
-        if (key === 'answer' && this.form.type === this.arr[2]) {
+        if (key === 'answer' && this.form.type === this.arr[1]) {
           this.form.answer = []
         } else if (key === 'difficulty') {
           this.form[key] = null
@@ -337,7 +337,7 @@ export default {
       const valid = this.checkRules(formCopy)
       if (!isfillAnswer || !valid) return this.$message.warning('请填写完整!')
       // 填空赋值
-      if (formCopy.type === this.arr[3])  formCopy.fillAnswer = this.$refs.answer.fillAnswer
+      if (formCopy.type === this.arr[3]) formCopy.fillAnswer = this.$refs.answer.fillAnswer
       if (this.id) {
         api.examQuestionUpdate(formCopy).then((res) => {
           if (res.code === 200) this.$message.success('修改成功!')
@@ -347,12 +347,13 @@ export default {
           if (res.code === 200) this.$message.success('新增成功!')
         })
       }
-      this.$emit('update:dialogAdd', false)
       this.$emit('updateTable')
+      this.$emit('update:dialogAdd', false)
+      
     },
     handlerRadio() {
       this.isOptionsVisable = !(
-        this.form.type === '4' || this.form.type === '5'
+        this.form.type === this.arr[3] || this.form.type === this.arr[4]
       )
       this.resetTing()
     },

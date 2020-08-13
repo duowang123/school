@@ -72,16 +72,16 @@ export default {
       fillAnswer: [],
     }
   },
-  update() {
-    if (this.isAnswerEditor)
-      this.createEdit('answerEditor', '#answerEditor', 'value')
+  watch: {
+    isAnswerEditor(val) {
+      if (val) {
+        setTimeout(() => {
+          this.createEdit('answerEditor', '#answerEditor', 'value')
+        }, 500)
+      }
+    },
   },
   methods: {
-    gentID(length) {
-      return Number(
-        Math.random().toString().substr(3, length) + Date.now()
-      ).toString(36)
-    },
     createEdit(name, dom, value) {
       const E = require('wangeditor')
       this[name] = new E(dom)
@@ -96,7 +96,7 @@ export default {
     },
     handlerAdd() {
       this.fillAnswer.push({
-        id: this.gentID(6),
+        id: this.$_gentID(6),
         content: '',
         score: null,
       })

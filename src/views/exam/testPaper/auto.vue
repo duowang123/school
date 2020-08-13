@@ -55,7 +55,18 @@ export default {
   methods: {
     confirm() {
       api.examQuestionAuto(this.list).then((res) => {
-        this.examPaperContents[this.index].examQuests = res.data || []
+        const data = res.data || []
+        const examQuests = data.length
+          ? data.map((item) => {
+              return {
+                ...item,
+                examQuestId: item.id,
+                id: this.$_gentID(6),
+              }
+            })
+          : []
+
+        this.examPaperContents[this.index].examQuests = examQuests
         this.dialogVisible = false
       })
     },

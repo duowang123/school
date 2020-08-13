@@ -43,3 +43,9 @@ export function getSimpleText(html) {
     return text
   }
 }
+// 生成id
+export function gentID(length) {
+  return Number(
+    Math.random().toString().substr(3, length) + Date.now()
+  ).toString(36)
+}

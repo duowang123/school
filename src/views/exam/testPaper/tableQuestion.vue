@@ -119,7 +119,16 @@ export default {
       })
     },
     confirm() {
-      this.examPaperContents[this.index].examQuests = this.multipleSelection
+      const examQuests = this.multipleSelection.length
+        ? this.multipleSelection.map((item) => {
+            return {
+              ...item,
+              examQuestId: item.id,
+              id: this.$_gentID(6),
+            }
+          })
+        : []
+      this.examPaperContents[this.index].examQuests = examQuests
       this.visible = false
     },
     handleSelectionChange(val) {

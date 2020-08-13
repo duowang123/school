@@ -176,8 +176,8 @@ export default {
   },
 
   methods: {
-    async updateTable() {
-      await this.init()
+    updateTable() {
+      this.init()
     },
     handleEdit({ row }) {
       this.id = row.id
@@ -193,7 +193,7 @@ export default {
       this.id = ''
       this.dialogAdd = true
     },
-    async init() {
+    init() {
       this.tableData = []
       this.initPage()
       this.getTableData()

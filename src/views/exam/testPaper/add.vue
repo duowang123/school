@@ -243,8 +243,10 @@ export default {
         paperNo: '',
         paperType: '',
         specialtyId: '',
-        examPaperContents: [],
+        examPaperContents: []
       }
+      this.specialtyIdList = []
+      this.courseIdList = []
     },
     recoverData() {
       api.examPaperGet(this.id).then(async (res) => {
@@ -281,14 +283,9 @@ export default {
           })
         })
     },
-    gentID(length) {
-      return Number(
-        Math.random().toString().substr(3, length) + Date.now()
-      ).toString(36)
-    },
     addQuestionParams() {
       return {
-        id: this.gentID(6),
+        id: this.$_gentID(6),
         title: '',
         examQuests: [],
       }

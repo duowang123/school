@@ -89,7 +89,6 @@
     },
     data(vm) {
       return {
-        testTypeList: [],
         params: {
           organId: '',
           studentNoOrCertNo: '',
@@ -200,9 +199,10 @@
         direction: 'rtl',
         isShowBtn: true,
         dialogVisible: false,
-        openCenterList: [],
         levelOption: [],
-        semesterOptions: []
+        schoolYearOptions: [],
+        semesterOptions: [],
+        examPlanInfoList: []
       }
     },
     async created() {
@@ -223,8 +223,8 @@
     methods: {
       // 从字典中获取下拉框数据
       initSelectOptions() {
-        api.listByCode({ code: '0026' }).then(res => {
-          this.testTypeList = res.data.map(e => {
+        api.listByCode({ code: '0014' }).then(res => {
+          this.schoolYearOptions = res.data.map(e => {
             return {
               id: e.id,
               label: e.dictName,
@@ -250,10 +250,18 @@
             }
           })
         })
-        api.getOpenTestCenterList({ organId: this.params.organId }).then(res => {
-          this.openCenterList = res.data.map(t => {
+        // api.listByOrganId({ organId: this.params.organId }).then(res => {
+        //   this.examPlanInfoList = res.data.map(t => {
+        //     return {
+        //       label: t.projectName,
+        //       value: t.id
+        //     }
+        //   })
+        // })
+        api.examPlanInfoList({}).then(res => {
+          this.examPlanInfoList = res.data.map(t => {
             return {
-              label: t.name,
+              label: t.planName,
               value: t.id
             }
           })
@@ -272,7 +280,9 @@
         this.componentData = {
           isAdd: true,
           organId: this.params.organId,
-          openCenterList: this.openCenterList
+          semesterOptions: this.semesterOptions,
+          schoolYearOptions: this.schoolYearOptions,
+          examPlanInfoList: this.examPlanInfoList
         }
       },
       // 编辑
@@ -285,7 +295,9 @@
         this.componentData = {
           ...row,
           isAdd: false,
-          openCenterList: this.openCenterList
+          semesterOptions: this.semesterOptions,
+          schoolYearOptions: this.schoolYearOptions,
+          examPlanInfoList: this.examPlanInfoList
         }
       },
       // 查看
