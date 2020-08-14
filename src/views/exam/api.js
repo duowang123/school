@@ -608,7 +608,7 @@ export function examPaperGet(id) {
 
 export function examPaperPreview(id) {
   return request({
-    url: `/course/exam_paper/preview/${id}`,
+    url: `/course/exam_question/get/${id}`,
     method: 'get',
   })
 }

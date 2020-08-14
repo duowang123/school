@@ -103,6 +103,8 @@ export default {
       this.examOptionLoading = true
       try {
         const res = await api.examPaperPreview(id)
+        this.examOption = res.data
+        this.examOption.difficulty = parseInt(this.examOption.difficulty)
       } catch (err) {
         this.examOptionLoading = false
         console.log(err)

@@ -14,7 +14,7 @@
         </div>
       </el-col>
       <el-col :span="6" v-if="form.type !== arr[4] && form.type !== arr[3]">
-        <div class="grid-content text">正确答案: {{ form.answer }}</div>
+        <div class="grid-content text">正确答案: {{ showAnster(form.answer) }}</div>
       </el-col>
     </el-row>
     <el-row class="text" v-if="form.type === arr[3]">正确答案:</el-row>
@@ -36,6 +36,11 @@ export default {
       arr: ['1', '2', '3', '4', '5'],
     }
   },
+  methods: {
+    showAnster(answer) {
+      return answer.split(",").sort().join()
+    }
+  }
 }
 </script>
 <style lang="scss" scoped>
