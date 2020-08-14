@@ -37,8 +37,9 @@ export function flattenObj(arr, path = 'children') {
 export function getSimpleText(html) {
   const re1 = new RegExp('<.+?>', 'g')
   const text = html.replace(re1, '')
+  console.log('text', text)
   if (text.length > 10) {
-    return `${html.replace(re1, '').substring(0, 9)}...`
+    return `${text.substring(0, 9)}...`
   } else {
     return text
   }

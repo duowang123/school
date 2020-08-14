@@ -148,7 +148,7 @@
         <el-button type="primary" @click="submit('addFrom')">确 定</el-button>
       </div>
     </el-dialog>
-    <search :dialogVisible.sync="serachVisable" @closeDia="closeDia" />
+    <search :dialogVisible.sync="serachVisable" :organId="organId" @closeDia="closeDia" />
   </div>
 </template>
 <script>
@@ -177,7 +177,7 @@ export default {
       addUser: {},
       drawer: false,
       currentData: {},
-      organId: '1',
+      organId: '',
       params: {
         realNameOrcertNo: '',
       },
@@ -266,7 +266,7 @@ export default {
     },
     resetUser() {
       this.addUser = {
-        organId: '1',
+        organId: '',
         address: '',
         email: '',
         job: '',

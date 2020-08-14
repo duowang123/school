@@ -159,7 +159,7 @@
         <el-button type="primary" @click="submit">确 定</el-button>
       </div>
     </el-dialog>
-    <search :dialogVisible.sync="serachVisable" @closeDia="closeDia" />
+    <search :dialogVisible.sync="serachVisable" :organId="organId" @closeDia="closeDia" />
     <el-drawer
       :title="title"
       :visible.sync="dialogVerify"

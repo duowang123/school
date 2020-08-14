@@ -95,7 +95,6 @@ export default {
   },
   methods: {
     open() {
-      
       const examOption = this.examPaperContents[0].examQuests || []
       // 设置第一题
       if (examOption.length) this.getExamOption(examOption[0].examQuestId)

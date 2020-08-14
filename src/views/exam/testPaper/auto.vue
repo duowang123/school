@@ -60,7 +60,7 @@ export default {
           ? data.map((item) => {
               return {
                 ...item,
-                examQuestId: item.id,
+                examQuestId: item.examQuestId || item.id,
                 id: this.$_gentID(6),
               }
             })
