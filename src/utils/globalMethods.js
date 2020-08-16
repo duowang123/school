@@ -50,3 +50,13 @@ export function gentID(length) {
     Math.random().toString().substr(3, length) + Date.now()
   ).toString(36)
 }
+
+// 数组对象去重复
+export function ObjectDeDuplication(arr, key = 'id') {
+  let obj = {}//有助于增加遍历效率
+  arr = arr.reduce((cur, next) => {
+    obj[next[key]] ? "" : obj[next[key]] = true && cur.push(next)
+    return cur;
+  }, [])
+  return arr
+} 

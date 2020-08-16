@@ -79,7 +79,6 @@ export function testCenterDelete(data) {
   })
 }
 
-
 // 考点列表
 export function getExamRoomList(data) {
   return request({
@@ -102,6 +101,16 @@ export function examRoomDelete(data) {
 export function examRoomListByOrganId(data) {
   return request({
     url: '/course/exam_room/listByOrganId',
+    method: 'POST',
+    data
+  })
+}
+
+// /exam/pageCenterList
+// 学生考点分页查询
+export function examPageCenterList(data) {
+  return request({
+    url: '/course/exam/pageCenterList',
     method: 'POST',
     data
   })
@@ -171,6 +180,15 @@ export function deleteExamPlan(data) {
   return request({
     url: '/course/exam_plan/delete',
     method: 'post',
+    data
+  })
+}
+
+// 学生考试分页查询
+export function examPageList(data) {
+  return request({
+    url: '/course/exam/pageList',
+    method: 'POST',
     data
   })
 }
@@ -245,6 +263,31 @@ export function reTestPageList(data) {
     data
   })
 }
+
+export function reTestAdd(data) {
+  return request({
+    url: '/course/stu_re_test/save',
+    method: 'post',
+    data
+  })
+}
+
+export function reTestUpdate(data) {
+  return request({
+    url: '/course/stu_re_test/update',
+    method: 'post',
+    data
+  })
+}
+
+export function reTestDelete(data) {
+  return request({
+    url: '/course/stu_re_test/delete',
+    method: 'post',
+    data
+  })
+}
+
 // 试卷管理分页查询
 export function examPaperInfoList(data) {
   return request({
@@ -287,6 +330,30 @@ export function getStudentCourses(id) {
 export function stopTestPageList(data) {
   return request({
     url: '/course/stu_stop_test/pageList',
+    method: 'post',
+    data
+  })
+}
+
+export function stopTestAdd(data) {
+  return request({
+    url: '/course/stu_stop_test/save',
+    method: 'post',
+    data
+  })
+}
+
+export function stopTestUpdate(data) {
+  return request({
+    url: '/course/stu_stop_test/update',
+    method: 'post',
+    data
+  })
+}
+
+export function stopTestDelete(data) {
+  return request({
+    url: '/course/stu_stop_test/delete',
     method: 'post',
     data
   })

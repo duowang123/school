@@ -62,7 +62,7 @@
         <div id="answer" class="toolbar"></div>
       </el-form-item>
       <el-form-item class="flex-coulmn" label="分数" required>
-        <el-input-number v-model="form.score" :step="1" style="display:inline-flex"></el-input-number>
+        <el-input-number :min="0" v-model="form.score" :step="1" style="display:inline-flex"></el-input-number>
       </el-form-item>
       <el-form-item class="flex-coulmn" label="难度" required>
         <el-rate v-model="form.difficulty"></el-rate>

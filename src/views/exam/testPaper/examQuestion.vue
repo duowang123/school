@@ -3,8 +3,9 @@
     <div class="stem">
       <span class="left">{{index+1}}.</span>
       <span class="center">{{ $_getSimpleText(data.stem) }}</span>
-      <el-input-number v-model="data.score" class="option-right"></el-input-number>
+      <el-input-number :min="0" v-model="data.score" class="option-right"></el-input-number>
       <i class="right remove el-icon-delete" @click="$emit('delete-exam-question')"></i>
+      <i class="right el-icon-s-operation"></i>
     </div>
     <div v-if="(data.type === arr[0] || data.type === arr[2])">
       <el-radio-group v-model="answer">
@@ -21,7 +22,6 @@
             ></span>
           </span>
         </el-radio>
-        <div>3333</div>
       </el-radio-group>
     </div>
     <div v-if="arr[1] === data.type">

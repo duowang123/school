@@ -140,13 +140,17 @@
               <span class="remove" @click="deleteQuestion(index)">删除</span>
             </el-row>
             <el-row>
-              <exam-question
-                v-for="(e,i) in item.examQuests"
-                :index="i"
-                :data="e"
-                :key="i"
-                @delete-exam-question="deleteExamQuestion(item,i)"
-              />
+              <draggable v-model="item.examQuests">
+                <transition-group>
+                  <exam-question
+                    v-for="(e,i) in item.examQuests"
+                    :index="i"
+                    :data="e"
+                    :key="i"
+                    @delete-exam-question="deleteExamQuestion(item,i)"
+                  />
+                </transition-group>
+              </draggable>
             </el-row>
           </el-row>
           <el-row>
@@ -177,6 +181,7 @@ import tableQuestion from './tableQuestion'
 import examQuestion from './examQuestion'
 import Preview from './preview'
 import Auto from './auto'
+import draggable from 'vuedraggable'
 
 export default {
   components: {
@@ -184,6 +189,7 @@ export default {
     examQuestion,
     Preview,
     Auto,
+    draggable,
   },
   props: {
     organId: {
@@ -243,7 +249,7 @@ export default {
         paperNo: '',
         paperType: '',
         specialtyId: '',
-        examPaperContents: []
+        examPaperContents: [],
       }
       this.specialtyIdList = []
       this.courseIdList = []

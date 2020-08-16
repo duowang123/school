@@ -474,43 +474,55 @@ export const asyncRouterMap = [
       {
         // 考点
         path: 'test-center',
-        component: () => import('@/views/exam/testCenter'),
+        component: () => import('@/views/exam/center/testCenter'),
         meta: { requireAuth: true }
       },
       {
         // 考场
         path: 'room',
-        component: () => import('@/views/exam/room'),
+        component: () => import('@/views/exam/center/room'),
+        meta: { requireAuth: true }
+      },
+      {
+        // 学生考点安排
+        path: 'pageCenterList',
+        component: () => import('@/views/exam/center/pageCenterList'),
         meta: { requireAuth: true }
       },
       {
         // 考试计划
         path: 'plan',
-        component: () => import('@/views/exam/plan'),
+        component: () => import('@/views/exam/arrange/plan'),
+        meta: { requireAuth: true }
+      },
+      {
+        // 学生考试安排
+        path: 'pageList',
+        component: () => import('@/views/exam/arrange/pageList'),
         meta: { requireAuth: true }
       },
       {
         // 重考课程管理
         path: 're-test',
-        component: () => import('@/views/exam/reTest'),
+        component: () => import('@/views/exam/preArrange/reTest'),
         meta: { requireAuth: true }
       },
       {
         // 重考课程审批
         path: 're-test-approve',
-        component: () => import('@/views/exam/reTestApprove'),
+        component: () => import('@/views/exam/preArrange/reTestApprove'),
         meta: { requireAuth: true }
       },
       {
         // 停开课程补考管理
         path: 'stop-test',
-        component: () => import('@/views/exam/stopTest'),
+        component: () => import('@/views/exam/preArrange/stopTest'),
         meta: { requireAuth: true }
       },
       {
         // 停开课程补考审批
         path: 'stop-test-approve',
-        component: () => import('@/views/exam/stopTestApprove'),
+        component: () => import('@/views/exam/preArrange/stopTestApprove'),
         meta: { requireAuth: true }
       },
       {
@@ -522,37 +534,37 @@ export const asyncRouterMap = [
       {
         // 巡考员安排
         path: 'inspector',
-        component: () => import('@/views/exam/inspector'),
+        component: () => import('@/views/exam/inspect/inspector'),
         meta: { requireAuth: true }
       },
       {
         // 巡考安排
         path: 'inspection',
-        component: () => import('@/views/exam/inspection'),
+        component: () => import('@/views/exam/inspect/inspection'),
         meta: { requireAuth: true }
       },
       {
         // 考辅人员管理
         path: 'coach',
-        component: () => import('@/views/exam/coach'),
+        component: () => import('@/views/exam/process/coach'),
         meta: { requireAuth: true }
       },
       {
         // 考务小组管理
         path: 'group',
-        component: () => import('@/views/exam/group'),
+        component: () => import('@/views/exam/process/group'),
         meta: { requireAuth: true }
       },
       {
         // 监考人员分配
         path: 'invigilator',
-        component: () => import('@/views/exam/invigilator'),
+        component: () => import('@/views/exam/process/invigilator'),
         meta: { requireAuth: true }
       },
       {
         // 缺考作弊管理
         path: 'cheat',
-        component: () => import('@/views/exam/cheat'),
+        component: () => import('@/views/exam/process/cheat'),
         meta: { requireAuth: true }
       }
     ]

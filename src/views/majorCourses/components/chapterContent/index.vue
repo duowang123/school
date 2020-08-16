@@ -145,6 +145,8 @@
           }
         },
         updateChapterCont() {
+          console.log(this.curChapterCont)
+          debugger
           api.updateChapterCont(this.curChapterCont).then(res => {
             if (res.code === 200) {
               this.$message.success('更新成功')

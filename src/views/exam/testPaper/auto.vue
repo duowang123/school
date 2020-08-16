@@ -65,8 +65,8 @@ export default {
               }
             })
           : []
-
-        this.examPaperContents[this.index].examQuests = examQuests
+        const oldExamQuests = this.examPaperContents[this.index].examQuests || []
+        this.examPaperContents[this.index].examQuests = this.$_ObjectDeDuplication([...oldExamQuests, ...examQuests], 'examQuestId')
         this.dialogVisible = false
       })
     },
@@ -78,7 +78,7 @@ export default {
           this.typeList = res.data
           this.list = this.typeList.map((item) => {
             return {
-              limit: 1,
+              limit: 0,
               organId,
               type: item.dictValue,
             }

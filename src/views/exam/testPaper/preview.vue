@@ -13,6 +13,7 @@
         v-for="(e,i) in item.examQuests"
         :key="i"
         class="sort"
+        :class="[ id === e.id ? 'active': '' ]"
         @click="handlerOptions(index, i)"
       >{{ i+1 }}</span>
     </div>
@@ -55,6 +56,10 @@
       </div>
       <analysis :form="examOption" />
       <div v-html="examOption.analysis"></div>
+      <el-row style="text-align: center;" v-if="quests.length">
+        <span class="pro" @click="prev()">上一题</span>
+        <span class="pro" @click="next()">下一题</span>
+      </el-row>
     </div>
   </el-dialog>
 </template>
@@ -90,20 +95,67 @@ export default {
       arr: ['1', '2', '3', '4', '5'],
       answer: '',
       examOption: {},
+      examOptionId: [],
+      index: -1,
       examOptionLoading: false,
+      id: null,
+      quests: [],
     }
   },
   methods: {
-    open() {
-      const examOption = this.examPaperContents[0].examQuests || []
-      // 设置第一题
-      if (examOption.length) this.getExamOption(examOption[0].examQuestId)
+    next() {
+      const index = this.quests.findIndex((item) => this.id === item.id)
+      const examQuestId = this.quests[index + 1]
+        ? this.quests[index + 1].examQuestId
+        : null
+      const stemId = this.quests[index + 1] ? this.quests[index + 1].id : null
+      if (examQuestId && stemId) {
+        this.getExamOption(examQuestId, stemId)
+      } else {
+        this.$message.warning('没有下一题了!')
+      }
     },
-    async getExamOption(id) {
+    prev() {
+      const index = this.quests.findIndex((item) => this.id === item.id)
+      const examQuestId = this.quests[index - 1]
+        ? this.quests[index - 1].examQuestId
+        : null
+      const stemId = this.quests[index - 1] ? this.quests[index - 1].id : null
+      if (examQuestId && stemId) {
+        this.getExamOption(examQuestId, stemId)
+      } else {
+        this.$message.warning('没有上一题了!')
+      }
+    },
+    flattenArray(arr, quests = []) {
+      arr.forEach((item) => {
+        if (item.examQuests) quests.push(...item.examQuests)
+      })
+      return quests
+    },
+    init() {
+      this.id = null
+      this.quests = []
+      this.examOption = {}
+    },
+    open() {
+      this.init()
+      const arr = this.examPaperContents.filter((item) => item.examQuests) || []
+      if (arr.length) {
+        this.quests = this.flattenArray(arr)
+      }
+      if (arr.length) {
+        const examOption = arr[0].examQuests || []
+        if (examOption.length)
+          this.getExamOption(examOption[0].examQuestId, examOption[0].id)
+      }
+    },
+    async getExamOption(id, stemId) {
       this.examOptionLoading = true
       try {
         const res = await api.examPaperPreview(id)
         this.examOption = res.data
+        this.id = stemId
         this.examOption.difficulty = parseInt(this.examOption.difficulty)
       } catch (err) {
         this.examOptionLoading = false
@@ -114,7 +166,7 @@ export default {
     },
     handlerOptions(index, i) {
       const examQuests = this.examPaperContents[index].examQuests
-      this.getExamOption(examQuests[i].examQuestId)
+      this.getExamOption(examQuests[i].examQuestId, examQuests[i].id)
     },
   },
 }
@@ -160,7 +212,24 @@ export default {
 .preview-box {
   min-height: 300px;
 }
-// /deep/ .el-checkbox__input.is-disabled+span.el-checkbox__label {
-// color: #3F93DB
-// }
+.active {
+  color: #fff;
+  background: rgb(63, 147, 219);
+  border: 1px solid rgb(63, 147, 219);
+}
+.pro {
+  display: inline-flex;
+  color: #fff;
+  background-color: #3f93db;
+  border-color: #3f93db;
+  transition: 0.1s;
+  font-weight: 500;
+  padding: 12px 20px;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.pro + .pro {
+  margin-left: 10px;
+}
 </style>

@@ -23,7 +23,7 @@
       <el-row v-for="(item,index) of fillAnswer" :key="index" style="margin-top: 10px">
         <span>{{ index+1 }}</span>
         <el-input style="width: 74%;margin-left:2%" v-model="item.content"></el-input>
-        <el-input-number :step="1" style="display:inline-flex;margin-left: 2%" v-model="item.score"></el-input-number>
+        <el-input-number :min="0" :step="1" style="display:inline-flex;margin-left: 2%" v-model="item.score"></el-input-number>
         <i
           class="el-icon-delete"
           style="display:inline-flex;margin-left: 2%"

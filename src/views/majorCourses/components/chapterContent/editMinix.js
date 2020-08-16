@@ -15,9 +15,12 @@ export default {
       this.editor = new E(`${this.idName}-toolbar`, `${this.idName}-text`)
       this.editor.customConfig.pasteFilterStyle = false
       this.editor.customConfig.uploadImgServer = BASE_API + '/course/upload/pic' // 上传图片到服务器
-      this.editor.customConfig.uploadImgParams = {
+      this.editor.customConfig.uploadImgHeaders = {
         'token': getToken()
       }
+      // this.editor.customConfig.uploadImgParams = {
+      //   'token': getToken()
+      // }
       this.editor.customConfig.dragdrop = true
       this.editor.customConfig.uploadFileName = 'picFile'
       this.editor.customConfig.uploadImgHooks = {

@@ -28,7 +28,7 @@
           @selection-change="handleSelectionChange"
           :header-cell-style="{background:'#F3F4F7', color: '#333333'}"
         >
-          <el-table-column type="selection" width="55" :reserve-selection="true"></el-table-column>
+          <el-table-column type="selection" width="55" reserve-selection></el-table-column>
           <el-table-column prop="typeLabel" label="题型" width="80"></el-table-column>
           <el-table-column label="题干" show-overflow-tooltip>
             <template slot-scope="{ row }">{{ $_getSimpleText(row.stem) }}</template>
@@ -113,6 +113,7 @@ export default {
     clearSelect() {
       this.$refs.table.clearSelection()
     },
+    // 暂时无效
     setMultipleSelection(arr) {
       arr.forEach((row) => {
         this.$refs.table.toggleRowSelection(row, true)
@@ -128,7 +129,13 @@ export default {
             }
           })
         : []
-      this.examPaperContents[this.index].examQuests = examQuests
+      const oldExamQuests = this.examPaperContents[this.index].examQuests || []
+      this.examPaperContents[
+        this.index
+      ].examQuests = this.$_ObjectDeDuplication(
+        [...oldExamQuests, ...examQuests],
+        'examQuestId'
+      )
       this.visible = false
     },
     handleSelectionChange(val) {
@@ -145,10 +152,8 @@ export default {
       this.getTable()
       // 清空选中值
       this.$refs.table && this.clearSelect()
-      // 设置选中值
-      this.$refs.table &&
-        this.examPaperContents[this.index].examQuests.length &&
-        this.setMultipleSelection(this.examPaperContents[this.index].examQuests)
+      // 暂时注释
+      // this.setMultipleSelection(this.examPaperContents[this.index].examQuests)
     },
     getListByCode() {
       api.listByCode({ code: '0032' }).then((res) => {

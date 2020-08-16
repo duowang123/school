@@ -19,7 +19,7 @@
     </el-row>
     <el-row class="text" v-if="form.type === arr[3]">正确答案:</el-row>
     <el-row v-for="(item,index) in form.fillAnswer" :key="index">
-        <div class="grid-content answer-text">{{index+1}}. {{ item.content }}</div>
+      <div class="grid-content answer-text">{{index+1}}. {{ item.content }}</div>
     </el-row>
   </div>
 </template>
@@ -38,9 +38,9 @@ export default {
   },
   methods: {
     showAnster(answer) {
-      return answer.split(",").sort().join()
-    }
-  }
+      return answer && answer.includes(',') ? answer.split(',').sort().join() : answer
+    },
+  },
 }
 </script>
 <style lang="scss" scoped>

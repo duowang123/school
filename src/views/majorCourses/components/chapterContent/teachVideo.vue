@@ -127,9 +127,17 @@
       },
       selVideo(data) {
         this.selName = data.name
-        this.cont.fileId = data.fileId
-        this.cont.fileUrl = data.fileUrl
-        this.cont.fileName = data.name
+        if (!this.chapterCont[CHAPTER_CONT_TYPE.shipin].content) {
+          this.chapterCont[CHAPTER_CONT_TYPE.shipin].content = {
+            fileId: data.fileId,
+            fileUrl: data.fileUrl,
+            fileName: data.name
+          }
+        } else {
+          this.cont.fileId = data.fileId
+          this.cont.fileUrl = data.fileUrl
+          this.cont.fileName = data.name
+        }
       },
       handleSizeChange(val) {
         this.page.pageSize = val
