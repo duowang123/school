@@ -131,31 +131,35 @@
       </el-tab-pane>
       <el-tab-pane label="试卷内容" name="2">
         <el-form>
-          <el-row v-for="(item,index) in form.examPaperContents" :key="index" style="margin:15px 0">
-            <el-row>
-              <span class="title">标题{{index+1}}</span>
-              <el-input v-model="item.title"></el-input>
-              <span class="manual" @click="handlerManual(index)">+ 手动添加题目</span>
-              <span class="auto" @click="handlerAuto(index)">+ 自动添加题目</span>
-              <span class="remove" @click="deleteQuestion(index)">删除</span>
-            </el-row>
-            <el-row>
-              <draggable v-model="item.examQuests">
-                <transition-group>
-                  <exam-question
-                    v-for="(e,i) in item.examQuests"
-                    :index="i"
-                    :data="e"
-                    :key="i"
-                    @delete-exam-question="deleteExamQuestion(item,i)"
-                  />
-                </transition-group>
-              </draggable>
-            </el-row>
-          </el-row>
-          <el-row>
-            <el-button @click="addQuestion()">添加题型</el-button>
-          </el-row>
+          <el-tabs v-model="currTabs" type="card" editable @edit="handleTabsEdit">
+            <el-tab-pane
+              :key="index"
+              v-for="(item,index) in form.examPaperContents"
+              :label="item.title || `标题${index+1}`"
+              :name="`${index}`"
+            >
+              <el-row>
+                <!-- <span class="title">标题{{index+1}}</span> -->
+                <el-input v-model="item.title"></el-input>
+                <span class="manual" @click="handlerManual(index)">+ 手动添加题目</span>
+                <span class="auto" @click="handlerAuto(index)">+ 自动添加题目</span>
+                <!-- <span class="remove" @click="deleteQuestion(index)">删除</span> -->
+              </el-row>
+              <el-row>
+                <draggable v-model="item.examQuests">
+                  <transition-group>
+                    <exam-question
+                      v-for="(e,i) in item.examQuests"
+                      :index="i"
+                      :data="e"
+                      :key="i"
+                      @delete-exam-question="deleteExamQuestion(item,i)"
+                    />
+                  </transition-group>
+                </draggable>
+              </el-row>
+            </el-tab-pane>
+          </el-tabs>
         </el-form>
       </el-tab-pane>
     </el-tabs>
@@ -210,6 +214,7 @@ export default {
     return {
       previewVisible: false,
       activeName: '1',
+      currTabs: '',
       paperTypeList: [],
       levelList: [],
       specialtyIdList: [],
@@ -288,6 +293,13 @@ export default {
             message: '已取消删除',
           })
         })
+    },
+    handleTabsEdit(targetName, action) {
+      if (action === 'add') {
+        this.addQuestion()
+      } else {
+        this.deleteQuestion(targetName)
+      }
     },
     addQuestionParams() {
       return {
@@ -452,6 +464,7 @@ export default {
   margin: 0 38px;
   font-size: 16px;
   cursor: pointer;
+  font-weight: 700;
 }
 .auto {
   color: #67c23a;
@@ -459,16 +472,32 @@ export default {
   display: inline-block;
   margin-right: 38px;
   cursor: pointer;
+  font-weight: 700;
 }
 .remove {
   color: #cf0000;
   font-size: 16px;
   cursor: pointer;
+  font-weight: 700;
 }
 .title {
   font-size: 16px;
   margin-right: 38px;
   width: 50px;
   display: inline-block;
+}
+.add {
+  display: inline-block;
+  width: 96px;
+  height: 36px;
+  border: 1px solid #3f93db;
+  border-radius: 2px;
+  font-size: 14px;
+  font-family: PingFangSC, PingFangSC-Regular;
+  font-weight: 400;
+  text-align: center;
+  color: #3f93db;
+  cursor: pointer;
+  line-height: 36px;
 }
 </style>

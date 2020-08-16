@@ -14,7 +14,7 @@
           :key="key"
           :label="String.fromCharCode(index+65)"
         >
-          <span>
+          <span class="text">
             {{String.fromCharCode(index+65)}}.
             <span
               style="display: inline-flex;"
@@ -31,7 +31,7 @@
           v-for="(item,key, index) in data.examOption[0]"
           :key="index"
         >
-          <span>
+          <span class="text">
             {{String.fromCharCode(index+65)}}.
             <span
               style="display: inline-flex;"
@@ -87,14 +87,18 @@ export default {
 .stem {
   position: relative;
   display: flex;
-  margin: 10px 0;
+  margin: 10px 0 0;
   .left {
     order: -1;
     flex-basis: 20px;
+    font-size: 16px;
+    color: #333333;
   }
   .center {
     flex-grow: 1;
     text-align: left;
+    font-size: 16px;
+    color: #333333;
     /deep/ * {
       padding: 0;
       margin: 0;
@@ -119,5 +123,9 @@ export default {
 }
 .flex {
   display: flex;
+}
+.text {
+  font-size: 16px;
+  color: #333333;
 }
 </style>
