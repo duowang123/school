@@ -3,70 +3,99 @@
     <div>
       <el-form class="user-form" :inline="true">
         <el-form-item>
-          <el-button type="primary" @click="handleAdd">新增</el-button>
+          <el-button v-all type="primary" @click="handleAdd">新增</el-button>
         </el-form-item>
         <div>
           <el-form-item>
-            <el-input
-              v-model.trim="params.queryContent"
-              prefix-icon="el-icon-search"
+            <el-select
+              class="organ-select"
+              v-model="params.organId"
+              filterable
+              clearable
               @change="getTableData"
-              placeholder="名称/学年"
-            ></el-input>
+              placeholder="请选择教学点"
+            >
+              <el-option
+                v-for="item in organListAll"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              ></el-option>
+            </el-select>
           </el-form-item>
+          <!--          <el-form-item>-->
+          <!--            <el-input-->
+          <!--              v-model.trim="params.queryContent"-->
+          <!--              prefix-icon="el-icon-search"-->
+          <!--              @change="getTableData"-->
+          <!--              placeholder="名称/年级"-->
+          <!--            ></el-input>-->
+          <!--          </el-form-item>-->
         </div>
       </el-form>
     </div>
-    <div>
-      <el-table
-        v-loading="ctrl.loading"
-        size="small"
-        :data="list"
-        :header-cell-style="getRowClass"
-        stripe
-        style="width: 100%"
-      >
-        <el-table-column label width="24" align="center"></el-table-column>
-        <el-table-column type="index" label="序号" width="50"></el-table-column>
-        <el-table-column prop="name" label="名称"></el-table-column>
-        <el-table-column prop="schoolYear" label="年级"></el-table-column>
-        <el-table-column prop="semester" label="学期">
-          <template slot-scope="scope">
-            <span>{{ scope.row.semester ? (scope.row.semester === '1' ? '上学期': '下学期') : '暂无' }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="startTime" label="招生开始日期"></el-table-column>
-        <el-table-column prop="endTime" label="招生结束日期"></el-table-column>
-        <el-table-column prop="updateUserId" label="更新人"></el-table-column>
-        <el-table-column prop="updateDate" label="更新时间"></el-table-column>
-        <el-table-column fixed="right" align="center" label="操作" width="150">
-          <template slot-scope="scope">
-            <div class="item">
-              <el-button type="text" @click="handleEdit(scope)">编辑</el-button>
-              <el-button type="text" @click="handleAttr(scope)">属性</el-button>
-              <el-button type="text" @click="handleDelete(scope.row)">删除</el-button>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column label width="24" align="center"></el-table-column>
-      </el-table>
+    <div class="main-content-container">
+      <div>
+        <el-scrollbar class="table" :style="{height:tableHeight}" :noresize="true">
+          <el-table
+            v-loading="ctrl.loading"
+            size="small"
+            :data="list"
+            :header-cell-style="getRowClass"
+            stripe
+            style="width: 100%"
+          >
+            <el-table-column width="24" align="center"></el-table-column>
+            <el-table-column type="index" label="序号" width="50"></el-table-column>
+            <el-table-column prop="organName" label="学校"></el-table-column>
+            <!-- <el-table-column label="机构性质"> -->
+            <!-- <template slot-scope="scope"> -->
+            <!-- <span>{{ scope.row.property === '1' ? '学校' : '教学点' }}</span> -->
+            <!-- </template> -->
+            <!-- </el-table-column> -->
+<!--            <el-table-column prop="name" label="计划名称"></el-table-column>-->
+            <!-- <el-table-column label="合作单位名称" prop="organName"></el-table-column> -->
+            <el-table-column prop="schoolYear" label="年度"></el-table-column>
+            <!--        <el-table-column prop="semester" label="学期">-->
+            <!--          <template slot-scope="scope">-->
+            <!--            <span>{{ scope.row.semester ? (scope.row.semester === '1' ? '上学期': '下学期') : '暂无' }}</span>-->
+            <!--          </template>-->
+            <!--        </el-table-column>-->
+            <el-table-column prop="startTime" label="报名提交截止时间"></el-table-column>
+            <el-table-column prop="endTime" label="录取提交截止时间"></el-table-column>
+            <el-table-column prop="registerDate" label="学籍注册提交截止时间"></el-table-column>
+            <el-table-column prop="updateUserId" label="更新人"></el-table-column>
+            <el-table-column prop="updateDate" label="更新时间"></el-table-column>
+            <el-table-column fixed="right" align="center" label="操作" width="150">
+              <template slot-scope="scope">
+                <div class="item">
+                  <el-button type="text" v-all @click="handleEdit(scope)">编辑</el-button>
+                  <el-button type="text" @click="handleAttr(scope)">属性</el-button>
+                  <el-button type="text" v-all @click="handleDelete(scope.row)">删除</el-button>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column label width="24" align="center"></el-table-column>
+          </el-table>
+        </el-scrollbar>
+      </div>
+      <el-pagination
+        class="pagination"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :currentPage="page.currentPage"
+        :page-size="page.pageSize"
+        :page-sizes="[20, 50, 100, 200]"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="page.totalCount"
+      ></el-pagination>
     </div>
-    <el-pagination
-      background
-      style="float: right;margin-top: 20px; margin-bottom: 22px"
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-      :currentPage="page.currentPage"
-      :page-size="page.pageSize"
-      :page-sizes="[20, 50, 100, 200]"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="page.totalCount"
-    ></el-pagination>
     <el-drawer
       title="属性"
       :visible.sync="drawer"
       direction="rtl"
       size="288px"
+      :wrapperClosable="false"
       :before-close="() => drawer = false"
     >
       <div class="drawer-content">
@@ -98,6 +127,7 @@
       :visible.sync="addDrawer"
       direction="rtl"
       size="336px"
+      :wrapperClosable="false"
       :before-close="() => addDrawer = false"
     >
       <div class="drawer-content">
@@ -108,25 +138,72 @@
                 <div class="OEP-form-item">
                   <div class="container">
                     <p class="label">
-                      计划名称
+                      学校
                       <span class="required-icon">*</span>
                     </p>
-                    <el-form-item prop="name">
-                      <el-input
+                    <el-form-item prop="organId">
+                      <el-select
                         class="form-item-input"
+                        v-model="addData.organId"
                         size="medium"
-                        v-model="addData.name"
-                        placeholder="请输入计划名称"
-                      ></el-input>
+                        filterable
+                        placeholder="请选择"
+                      >
+                        <el-option
+                          v-for="item in teacherList"
+                          :key="item.id"
+                          :label="item.name"
+                          :value="item.id"
+                        ></el-option>
+                      </el-select>
                     </el-form-item>
                   </div>
                 </div>
               </div>
+              <!-- <div class="row"> -->
+              <!-- <div class="OEP-form-item"> -->
+              <!-- <div class="container"> -->
+              <!-- <p class="label"> -->
+              <!-- 机构性质 -->
+              <!-- <span class="required-icon">*</span> -->
+              <!-- </p> -->
+              <!-- <el-form-item prop="property"> -->
+              <!-- <el-select -->
+              <!-- class="form-item-input" -->
+              <!-- v-model="addData.property" -->
+              <!-- size="medium" -->
+              <!-- placeholder="请选择" -->
+              <!-- > -->
+              <!-- <el-option label="学校" value="1" size="medium"></el-option> -->
+              <!-- <el-option label="教学点" value="2" size="medium"></el-option> -->
+              <!-- </el-select> -->
+              <!-- </el-form-item> -->
+              <!-- </div> -->
+              <!-- </div> -->
+              <!-- </div> -->
+              <!-- <div class="row"> -->
+              <!-- <div class="OEP-form-item"> -->
+              <!-- <div class="container"> -->
+              <!-- <p class="label"> -->
+              <!-- 计划名称 -->
+              <!-- <span class="required-icon">*</span> -->
+              <!-- </p> -->
+              <!-- <el-form-item prop="name"> -->
+              <!-- <el-input -->
+              <!-- class="form-item-input" -->
+              <!-- size="medium" -->
+              <!-- v-model="addData.name" -->
+              <!-- placeholder="请输入计划名称" -->
+              <!-- ></el-input> -->
+              <!-- </el-form-item> -->
+              <!-- </div> -->
+              <!-- </div> -->
+              <!-- </div> -->
               <div class="row">
                 <div class="OEP-form-item">
                   <div class="container">
                     <p class="label">
-                      年级
+                      年度
                       <span class="required-icon">*</span>
                     </p>
                     <el-form-item prop="schoolYear">
@@ -137,11 +214,11 @@
                         placeholder="请选择"
                       >
                         <el-option
-                          v-for="item in schoolYearOptions"
-                          :key="item.dictValue"
-                          :label="item.dictName"
+                          :key="item.value"
+                          :label="item.label"
+                          :value="item.value"
                           size="medium"
-                          :value="item.dictValue"
+                          v-for="item in schoolYearOptions"
                         ></el-option>
                       </el-select>
                     </el-form-item>
@@ -152,10 +229,10 @@
                 <div class="OEP-form-item">
                   <div class="container">
                     <p class="label">
-                      招生开始时间
-                      <span class="required-icon">*</span>
+                      报名提交截止时间
+                      <!--                      <span class="required-icon">*</span>-->
                     </p>
-                    <el-form-item prop="startTime">
+                    <el-form-item>
                       <el-date-picker
                         class="form-item-input"
                         type="date"
@@ -172,16 +249,36 @@
                 <div class="OEP-form-item">
                   <div class="container">
                     <p class="label">
-                      招生结束时间
-                      <span class="required-icon">*</span>
+                      录取提交截止时间
+                      <!--                      <span class="required-icon">*</span>-->
                     </p>
-                    <el-form-item prop="endTime">
+                    <el-form-item>
                       <el-date-picker
                         class="form-item-input"
                         type="date"
                         size="medium"
                         value-format="yyyy-MM-dd"
                         v-model="addData.endTime"
+                        placeholder="选择日期"
+                      ></el-date-picker>
+                    </el-form-item>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="OEP-form-item">
+                  <div class="container">
+                    <p class="label">
+                      学籍注册提交截止时间
+                      <!--                      <span class="required-icon">*</span>-->
+                    </p>
+                    <el-form-item>
+                      <el-date-picker
+                        class="form-item-input"
+                        type="date"
+                        size="medium"
+                        value-format="yyyy-MM-dd"
+                        v-model="addData.registerDate"
                         placeholder="选择日期"
                       ></el-date-picker>
                     </el-form-item>
@@ -201,8 +298,12 @@
 </template>
 <script>
 import * as api from '../../api'
+import { mapGetters } from 'vuex'
+import heightMixin from '@/components/Table/heightMixin'
+import selectMixin from '@/views/mixins/select.js'
 export default {
   name: 'PlanMange',
+  mixins: [heightMixin, selectMixin],
   data() {
     return {
       addLoading: false,
@@ -211,9 +312,9 @@ export default {
       isAdd: false,
       currentData: {},
       addData: {},
-      schoolYearOptions: {},
       params: {
-        queryContent: ''
+        queryContent: '',
+        organId: ''
       },
       list: [],
       ctrl: {
@@ -226,6 +327,12 @@ export default {
         totalPage: 0
       },
       rules: {
+        organId: [
+          { required: true, message: '请选择机构名称', trigger: 'change' }
+        ],
+        property: [
+          { required: true, message: '请选择机构性质', trigger: 'change' }
+        ],
         name: [{ required: true, message: '请输入计划名称', trigger: 'blur' }],
         schoolYear: [
           { required: true, message: '请选择年级', trigger: 'blur' }
@@ -236,8 +343,12 @@ export default {
         endTime: [
           { required: true, message: '请选择招生结束时间', trigger: 'blur' }
         ]
-      }
+      },
+      organListAll: []
     }
+  },
+  computed: {
+    ...mapGetters(['schoolYearOptions'])
   },
   created() {
     this.init()
@@ -250,22 +361,26 @@ export default {
     },
     resetData() {
       this.addData = {
+        organId: '',
         endTime: '',
         id: '',
         name: '',
         schoolYear: '',
-        startTime: ''
+        startTime: '',
+        property: '',
+        registerDate: ''
       }
     },
     init() {
       this.getTableData()
       this.initOptions()
     },
-    initOptions() {
-      // 学年
-      api.listByCode({ code: '0014' }).then(res => {
-        this.schoolYearOptions = res.data
-      })
+    initOptions() {},
+    getOrganId(id) {
+      this.page.pageCurrent = 1
+      this.params.organId = id
+      // this.params.queryContent = ''
+      this.getTableData()
     },
     getTableData() {
       const params = {
@@ -273,7 +388,7 @@ export default {
         pageCurrent: this.page.pageCurrent,
         pageSize: this.page.pageSize
       }
-      api.admissionList(params).then(res => {
+      api.admissionList(params).then((res) => {
         this.list = res.data.rows
         this.page.totalCount = res.data.totalCount
         this.page.totalPage = res.data.totalPage
@@ -289,14 +404,11 @@ export default {
       this.resetData()
     },
     addDataSubmit() {
-      this.$refs.addForm.validate(valid => {
+      this.$refs.addForm.validate((valid) => {
         if (!valid) {
           return void '验证失败'
         }
-        if (this.addData.endTime < this.addData.startTime)
-          return this.$message.warning(
-            '招生计划开始日期不可以大于结束日期!'
-          )
+        if (this.addData.endTime < this.addData.startTime) { return this.$message.warning('招生计划开始日期必须大于结束日期!') }
         if (this.isAdd) {
           this.addSave()
         } else {
@@ -306,7 +418,10 @@ export default {
     },
     addSave() {
       this.addDrawer = false
-      api.addPlan(this.addData).then(res => {
+      const data = {
+        ...this.addData
+      }
+      api.addPlan(data).then((res) => {
         if (res.code === 200) {
           this.$message({
             message: '数据添加成功',
@@ -324,7 +439,7 @@ export default {
     },
     updateSave() {
       this.addDrawer = false
-      api.AddmissionUpdate(this.addData).then(res => {
+      api.AddmissionUpdate(this.addData).then((res) => {
         if (res.code === 200) {
           this.$message({
             message: '数据更新成功',
@@ -343,7 +458,7 @@ export default {
     // 修改跳页面操作
     handleEdit({ row }) {
       this.isAdd = false
-      this.addData = row
+      this.addData = this.$_cloneDeep(row)
       this.addDrawer = true
     },
     handleSizeChange(val) {
@@ -355,19 +470,25 @@ export default {
       this.init()
     },
     handleDelete({ id }) {
-      api.deletePlan({ id }).then(res => {
-        if (res.code === 200) {
-          this.$message({
-            message: '删除成功',
-            type: 'success'
-          })
-          this.init()
-        } else {
-          this.$message({
-            message: '删除失败',
-            type: 'error'
-          })
-        }
+      this.$confirm('此操作将永久删除, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        api.deletePlan({ id }).then((res) => {
+          if (res.code === 200) {
+            this.$message({
+              message: '删除成功',
+              type: 'success'
+            })
+            this.init()
+          } else {
+            this.$message({
+              message: '删除失败',
+              type: 'error'
+            })
+          }
+        })
       })
     }
   }
@@ -375,13 +496,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.OEP-form-item {
+  width: auto !important;
+}
 .student-plan-manage {
   .user-form {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    background-color: #f3f5f7;
     .organ-select {
-      margin-right: 24px;
+      /*margin-right: 24px;*/
       /deep/ .el-select {
         width: 256px;
       }

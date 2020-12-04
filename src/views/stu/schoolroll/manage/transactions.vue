@@ -67,6 +67,9 @@ export default {
             type: 'enums',
             enums: value => {
               // 审核状态，1待审批，2通过，3不通过
+              if (!value) {
+                return '--'
+              }
               if (value === '1') {
                 return '待审批'
               } else if (value === '2') {

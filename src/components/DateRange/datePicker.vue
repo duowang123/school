@@ -73,14 +73,19 @@ reset：重置functionn(int, langth) //int：当前日期往前推第int天，la
         default: false
       },
       newVal: {
-        type: String,
+        type: [String, Array],
         default: 'daterange'
+      },
+      keys: {
+        type: Array,
+        default: () => {
+          return ['', '']
+        }
       }
     },
     model: {
       prop: 'value',
       event: 'returnBack'
-
     },
     watch: {
       newVal(newVal) {
@@ -90,6 +95,9 @@ reset：重置functionn(int, langth) //int：当前日期往前推第int天，la
     mounted() {
       if (this.autofill) {
         this.reset(this.default[0], this.default[1]);
+      }
+      if (this.newVal) {
+        this.value = this.newVal
       }
     },
     methods: {
@@ -111,7 +119,7 @@ reset：重置functionn(int, langth) //int：当前日期往前推第int天，la
         return [`${endYear}-${endMonth + 1}-${endDay}`, `${nowYear}-${nowMonth + 1}-${nowDay}`]
       },
       returnBackFn() {
-        this.$emit('returnBack', this.value);
+        this.$emit('returnBack', this.value, this.keys);
       },
       clear() {
         this.value = [];

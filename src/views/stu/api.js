@@ -52,7 +52,7 @@ export function AddmissionUpdate(data) {
   })
 }
 
-// 更新总院招生计划
+// 更新各做单位招生计划状态
 export function updatePlan(data) {
   return request({
     url: '/course/qual/update',
@@ -61,10 +61,18 @@ export function updatePlan(data) {
   })
 }
 
-// 更新总院招生计划
 export function deletePlan(data) {
   return request({
     url: '/course/admission/delete',
+    method: 'POST',
+    data
+  })
+}
+
+// 合作单位招生资源删除
+export function deleteQualPlan(data) {
+  return request({
+    url: '/course/qual/delete',
     method: 'POST',
     data
   })

@@ -9,17 +9,37 @@
       />
     </el-aside>
     <el-container>
-      <el-main>
-        <div class="title"><span style="margin-right: 25px">章节内容</span> <el-button @click="updateChapterCont" type="text">保存</el-button> </div>
-        <el-tabs v-model="activeName" @tab-click="handleClick">
-          <el-tab-pane v-for="(label, key) of tabs" :label="label" :key="key" :name="label">
-            <ChapterContent
-                ref="chapterContent"
-                :componentName="key"
-                :active-key="activeChapterContKey"
-                :chapter-cont="curChapterCont"/>
-          </el-tab-pane>
-        </el-tabs>
+      <el-main v-show="courseMenuId">
+        <div class="title">
+          <span style="margin-right: 25px">章节内容</span>
+          <el-button @click="updateChapterCont" type="text">保存</el-button>
+        </div>
+        <div class="zk-tabs">
+          <div class="tab-label">
+            <template v-for="(tab, index) in tabs">
+              <div :class="{'tab-cont': true, 'active': activeIndex === index}" :key="tab.navId" @click="handleClick(index)">
+                <span class="name">{{tab.content}}</span>
+                <i class='iconfont icon-edit' @click="editTabName(tab)"></i>
+                <i class='iconfont icon-close-nor' @click="delTab(index)"></i>
+              </div>
+            </template>
+          </div>
+          <div class="operator" >
+            <el-dropdown @command="addTabs" trigger="click">
+              <span class="el-dropdown-link el-tabs__new-tab"><i class="el-icon-plus"></i></span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item command="courseMaterial">文档页</el-dropdown-item>
+                <el-dropdown-item command="teachVideo">视频页</el-dropdown-item>
+                <el-dropdown-item command="courseTopicDiscusses">讨论页</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </div>
+        </div>
+        <div>
+          <ChapterContent
+            ref="chapterContent"
+            :chapter-cont="curChapterCont"/>
+        </div>
       </el-main>
     </el-container>
   </el-container>
@@ -28,12 +48,11 @@
 <script>
   import Directory from './directory'
   import ChapterContent from './chapterContent'
-  import { CHAPTER_CONT_TYPE, chapterKeyMap } from './constant'
+  import { chapterKeyMap } from '../preview/learnContent/constant'
   import * as api from './api'
-  import { cloneDeep } from 'loadsh'
-    export default {
+
+  export default {
       name: 'LearnContent',
-      inject: ['organId', 'courseData'],
       components: {
         Directory,
         ChapterContent
@@ -44,22 +63,26 @@
       computed: {
         courseId() {
           return this.data.course.id || ''
+        },
+        comment() {
+          return {
+            courseMenuId: this.courseMenuId,
+            courseId: this.courseId
+          }
+        },
+        activeNavId() {
+          return this.tabs[this.activeIndex] ? this.tabs[this.activeIndex].navId : ''
+        },
+        curChapterCont() {
+          return this.tabsCont.get(this.activeNavId) || {}
         }
       },
       data() {
         return {
-          activeName: '',
-          activeChapterContKey: '',
-          curChapterId: '',
-          curChapterCont: {},
+          activeIndex: -1,
+          courseMenuId: '',
           tabs: [],
-          checkData: {
-            [CHAPTER_CONT_TYPE.daoxue]: '导学',
-            [CHAPTER_CONT_TYPE.shipin]: '教学视频',
-            [CHAPTER_CONT_TYPE.cailiao]: '学习材料',
-            [CHAPTER_CONT_TYPE.ziyuan]: '拓展资源',
-            [CHAPTER_CONT_TYPE.taolun]: '主题讨论'
-          },
+          tabsCont: new Map(),
           menuTree: []
         }
       },
@@ -76,78 +99,70 @@
         }
       },
       methods: {
+        generateUUID() {
+          return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            const r = Math.random() * 16 | 0
+            const v = c === 'x' ? r : (r & 0x3 | 0x8)
+            return v.toString(16)
+          })
+        },
         getCourseMenuTree() {
           api.getCourseMenuTree(this.data.course.id).then(res => {
             this.menuTree = res.data
           })
         },
-        getBindData(key) {
-          return { chapterCont: this.curChapterCont }
-        },
-        addChapterTabs() {
-          const type = ['导学', '教学视频', '学习材料', '拓展资源', '主题讨论']
-          const data = Object.entries(this.checkData).reduce((pre, [key, val]) => {
-            pre[key] = val
-            return pre
-          }, {})
-          this.activeName = type[0]
-          this.tabs = data
-          this.activeChapterContKey = chapterKeyMap[this.activeName].key
-          const chapterCont = {
-            courseMenuId: this.curChapterCont.courseMenuId,
-            courseId: this.courseId
-          }
-          type.forEach(name => {
-            const { key, cont } = chapterKeyMap[name]
-            chapterCont[key] = { ...cloneDeep(cont) }
+        addTabs(command) {
+          const uuid = this.generateUUID()
+          const cont = this.$_cloneDeep(chapterKeyMap[command])
+          cont.navId = uuid
+          this.tabs.push({
+            navId: uuid,
+            courseType: cont.courseType,
+            content: cont.label
           })
-          this.curChapterCont = chapterCont
-          this.initData()
+          this.tabsCont.set(uuid, cont)
         },
         changeChapterCont(data) {
-          if (this.curChapterId === data.id) {
+          if (this.courseMenuId === data.id) {
             return void ''
           }
-          this.curChapterId = data.id
+          this.courseMenuId = data.id
           api.getChapterCont({ courseId: this.courseId, courseMenuId: data.id }).then(res => {
-            this.curChapterCont = res.data
-            const typeKeys = Object.keys(res.data)
-            if (typeKeys.length <= 2) {
-              this.tabs = {}
-              this.addChapterTabs()
-              return void '还没有内容'
-            }
-            this.tabs = Object.entries(this.checkData).reduce((pre, [key, val]) => {
-              if (typeKeys.includes(key)) {
-                pre[key] = val
-              }
-              return pre
-            }, {})
-            this.getActiveName()
-            this.initData()
-          })
-        },
-        initData() {
-          this.$nextTick(() => {
-            this.$refs.chapterContent.forEach(el => {
-              el && el.initData()
+            const { navigations } = res.data
+            this.tabs = navigations || []
+            navigations[0] && this.getTabCont(navigations[0], () => {
+              this.activeIndex = 0
             })
           })
         },
-        getActiveName() {
-          switch (true) {
-            case this.curChapterCont[CHAPTER_CONT_TYPE.daoxue]: this.activeName = this.checkData[CHAPTER_CONT_TYPE.daoxue]; break;
-            case this.curChapterCont[CHAPTER_CONT_TYPE.shipin]: this.activeName = this.checkData[CHAPTER_CONT_TYPE.shipin]; break;
-            case this.curChapterCont[CHAPTER_CONT_TYPE.cailiao]: this.activeName = this.checkData[CHAPTER_CONT_TYPE.cailiao]; break;
-            case this.curChapterCont[CHAPTER_CONT_TYPE.ziyuan]: this.activeName = this.checkData[CHAPTER_CONT_TYPE.ziyuan]; break;
-            case this.curChapterCont[CHAPTER_CONT_TYPE.taolun]: this.activeName = this.checkData[CHAPTER_CONT_TYPE.taolun]; break;
-            default: this.activeName = '导学'
+        getTabCont(tab, callback) {
+          const { courseType, navId } = tab
+          const typeMap = {
+            '1': { apiName: 'getDoc', key: 'courseMaterial' },
+            '2': { apiName: 'getVideo', key: 'teachVideo' },
+            '3': { apiName: 'getDiscusses', key: 'courseTopicDiscusses' }
           }
+          const params = {
+            courseId: this.courseId,
+            courseMenuId: this.courseMenuId,
+            navId
+          }
+          api[typeMap[courseType].apiName](params).then(res => {
+            console.log(res);
+            if (res.code === 200) {
+              res.data.navId = navId
+              const cont = this.$_cloneDeep(chapterKeyMap[typeMap[courseType].key])
+              this.tabsCont.set(navId, Object.assign(cont, res.data))
+              callback && callback()
+            }
+          })
         },
         updateChapterCont() {
-          console.log(this.curChapterCont)
-          debugger
-          api.updateChapterCont(this.curChapterCont).then(res => {
+          const params = {
+            ...this.comment,
+            ...this.formatCourseJson()
+          }
+          api.updateChapterCont(params).then(res => {
             if (res.code === 200) {
               this.$message.success('更新成功')
             } else {
@@ -155,13 +170,42 @@
             }
           })
         },
-        handleClick() {
-          this.activeChapterContKey = chapterKeyMap[this.activeName].key
-        },
-        getData() {
-          return {
-            treeData: this.menuTree
+        formatCourseJson(cont) {
+          const ret = {
+            navigations: this.tabs
           }
+          this.tabsCont.forEach(e => {
+            ret[e.key] = ret[e.key] || []
+            ret[e.key].push(e)
+          })
+          return ret
+        },
+        handleClick(index) {
+          const tab = this.tabs[index]
+          if (this.tabsCont.get(tab.navId)) {
+            this.activeIndex = index
+            return void '已获取数据'
+          } else {
+            this.getTabCont(tab, () => {
+              this.activeIndex = index
+            })
+          }
+        },
+        editTabName(tab) {
+          this.$prompt('请输入名称', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            inputValue: tab.content,
+            inputValidator: (e) => {
+              return !!e
+            },
+            inputErrorMessage: '请输入名称'
+          }).then(({ value }) => {
+            tab.content = value
+          })
+        },
+        delTab(index) {
+          this.tabs = this.tabs.filter((e, i) => i !== index)
         }
       }
     }
@@ -189,6 +233,27 @@
       .is-active {
         color:rgba(63,147,219,1);
         background-color: #fff;
+      }
+    }
+  }
+  .zk-tabs {
+    height: 40px;
+    line-height: 40px;
+    display: flex;
+    justify-content: space-between;
+    .tab-label {
+      display: flex;
+      flex-direction: row;
+      .tab-cont {
+        height: 40px;
+        padding: 0 20px;
+        &.active {
+          color: #3F93DB;
+        }
+        &:hover {
+          color: #3F93DB;
+          cursor: pointer;
+        }
       }
     }
   }

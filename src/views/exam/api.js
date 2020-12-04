@@ -79,6 +79,41 @@ export function testCenterDelete(data) {
   })
 }
 
+// 考点新增
+export function testCenterAdd(data) {
+  return request({
+    url: '/course/test_center/save',
+    method: 'POST',
+    data
+  })
+}
+// 考点修改
+export function testCenterUpdate(data) {
+  return request({
+    url: '/course/test_center/update',
+    method: 'POST',
+    data
+  })
+}
+
+// 考点启用
+export function testCenterOpen(data) {
+  return request({
+    url: '/course/test_center/open',
+    method: 'POST',
+    data
+  })
+}
+
+// 考点禁用
+export function testCenterClose(data) {
+  return request({
+    url: '/course/test_center/close',
+    method: 'POST',
+    data
+  })
+}
+
 // 考点列表
 export function getExamRoomList(data) {
   return request({
@@ -153,7 +188,7 @@ export function updateExamRoom(data) {
 // 考试计划
 export function getExamPlanList(data) {
   return request({
-    url: '/course/exam_plan/pageList',
+    url: '/course/exam_plan/list',
     method: 'post',
     data
   })
@@ -184,6 +219,77 @@ export function deleteExamPlan(data) {
   })
 }
 
+
+// 考试计划 -》专业分配考场管理
+// Stu Exam Profession Controller
+export function getExamProfessionPageList(data) {
+  return request({
+    url: '/course/exam_profession/pageList',
+    method: 'post',
+    data
+  })
+}
+
+//
+export function addExamProfession(data) {
+  return request({
+    url: '/course/exam_profession/save',
+    method: 'post',
+    data
+  })
+}
+
+export function updateExamProfession(data) {
+  return request({
+    url: '/course/exam_profession/update',
+    method: 'post',
+    data
+  })
+}
+
+export function deleteExamProfession(data) {
+  return request({
+    url: '/course/exam_profession/delete',
+    method: 'post',
+    data
+  })
+}
+
+// 考试科目管理
+// Stu Exam Course Controller
+export function getExamCousePageList(data) {
+  return request({
+    url: '/course/exam_couse/pageList',
+    method: 'post',
+    data
+  })
+}
+
+//
+export function addExamCouse(data) {
+  return request({
+    url: '/course/exam_couse/save',
+    method: 'post',
+    data
+  })
+}
+
+export function updateExamCouse(data) {
+  return request({
+    url: '/course/exam_couse/update',
+    method: 'post',
+    data
+  })
+}
+
+export function deleteExamCouse(data) {
+  return request({
+    url: '/course/exam_couse/delete',
+    method: 'post',
+    data
+  })
+}
+
 // 学生考试分页查询
 export function examPageList(data) {
   return request({
@@ -193,9 +299,26 @@ export function examPageList(data) {
   })
 }
 
-export function examPaperListByOrganId(id) {
+// 学生考试科目安排
+export function examPageCourseList(data) {
   return request({
-    url: '/course/exam_paper/list/' + id,
+    url: '/course/exam/pageCourseList',
+    method: 'POST',
+    data
+  })
+}
+
+// 查询某个学生的刷卡记录
+export function faceInfoByStudentId(studentId) {
+  return request({
+    url: `/course/face/info/${studentId}`,
+    method: `GET`
+  })
+}
+
+export function examPaperListByCourseId(id) {
+  return request({
+    url: '/course/exam_paper/course/' + id,
     method: 'GET'
   })
 }
@@ -236,10 +359,11 @@ export function deleteStudentTestScore(data) {
   })
 }
 
-// exam_plan/listByOrganId 根据机构查询考试计划
+// exam_plan/listByOrganId 计划项目  已经调整为计划科目了
 export function listByOrganId(data) {
   return request({
-    url: '/course/exam_plan/listByOrganId',
+    // url: '/course/exam_plan/listByOrganId',
+    url: '/course/exam_couse/listByOrganId',
     method: 'post',
     data
   })
@@ -248,11 +372,30 @@ export function listByOrganId(data) {
 // /exam_plan_info/list
 export function examPlanInfoList(data) {
   return request({
-    url: '/course/exam_plan_info/list',
+    url: '/course/exam_plan/list',
     method: 'post',
     data
   })
 }
+
+// /exam_plan_info/delete
+// export function deleteExamPlanInfo(data) {
+//   return request({
+//     url: '/course/exam_plan_info/delete',
+//     method: 'post',
+//     data
+//   })
+// }
+//
+// // /exam_plan_info/save
+// export function saveExamPlanInfo(data) {
+//   return request({
+//     url: '/course/exam_plan_info/save',
+//     method: 'post',
+//     data
+//   })
+// }
+
 
 // stu_re_test/pageList
 // 分页查询
@@ -322,6 +465,14 @@ export function getStudentCourses(id) {
   return request({
     url: `/course/student_course/student_course/${id}`,
     method: 'GET'
+  })
+}
+
+export function getStudentCoursesList(data) {
+  return request({
+    url: `/course/student_course/course_list`,
+    method: 'post',
+    data
   })
 }
 
@@ -462,6 +613,31 @@ export function deleteExamInspection(data) {
 export function coachPageList(data) {
   return request({
     url: '/course/exam_coach/pageList',
+    method: 'post',
+    data
+  })
+}
+
+// 人脸识别分页查询
+export function facePageList(data) {
+  return request({
+    url: '/course/face/pageList',
+    method: 'post',
+    data
+  })
+}
+// 人脸识别分页查询
+export function getFacePic(id) {
+  return request({
+    url: '/course/face/getPic/' + id,
+    method: 'get'
+  })
+}
+
+// 人脸识别分页查询
+export function deleteFace(data) {
+  return request({
+    url: '/course/face/delete/',
     method: 'post',
     data
   })
@@ -667,7 +843,7 @@ export function examPaperEnable(data) {
 export function examPaperGet(id) {
   return request({
     url: `/course/exam_paper/get/${id}`,
-    method: 'get',
+    method: 'get'
   })
 }
 
@@ -676,6 +852,55 @@ export function examPaperGet(id) {
 export function examPaperPreview(id) {
   return request({
     url: `/course/exam_question/get/${id}`,
-    method: 'get',
+    method: 'get'
+  })
+}
+
+
+// 学生录取信息导出
+export function exportExcelStuScore(data) {
+  return request({
+    url: `/course/stu_test_score/export`,
+    method: 'post',
+    data
+  })
+}
+
+
+// 获取需要阅卷的试卷
+export function stuTestScoreGetReview(data) {
+  return request({
+    url: `/course/stu_test_score/get_review`,
+    method: 'post',
+    data
+  })
+}
+
+// 阅卷
+export function stuTestScoretReview(data) {
+  return request({
+    url: `/course/stu_test_score/review`,
+    method: 'post',
+    data
+  })
+}
+
+// /exam/update
+// 修改学生考试信息
+export function examCourseUpdate(data) {
+  return request({
+    url: `/course/exam/update`,
+    method: 'post',
+    data
+  })
+}
+
+// stu_credit/real_score
+// 获取学生课程的成绩
+export function getCourseRealScore(data) {
+  return request({
+    url: `/course/stu_credit/real_score`,
+    method: 'post',
+    data
   })
 }

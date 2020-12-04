@@ -108,3 +108,10 @@ export function viewMajorStandard(data) {
   })
 }
 
+export function professionalStandardImport(data) {
+  return request({
+    url: `/course/professional_standard/api/import`,
+    method: 'POST',
+    data
+  })
+}

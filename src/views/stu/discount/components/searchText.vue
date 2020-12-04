@@ -45,7 +45,7 @@ export default {
     }
   },
   watch: {
-    dialogVisible (val) {
+    dialogVisible(val) {
       this.openStatus = val
     }
   },

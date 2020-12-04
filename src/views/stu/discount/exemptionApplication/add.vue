@@ -3,7 +3,7 @@
     <el-form :rules="rules" :model="ruleForm" ref="addForm" label-width="0">
       <div class="form-item">
         <div class="container">
-          <el-form-item label="学号/身份证" prop="studentId" class="full-width">
+          <el-form-item class="full-width" label="学号/证件号码" prop="studentId">
             <el-input
               v-model="ruleForm.studentId"
               suffix-icon="el-icon-search"

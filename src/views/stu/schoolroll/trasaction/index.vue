@@ -4,28 +4,51 @@
       <el-form class="user-form" :inline="true">
         <el-form-item>
           <el-button type="primary" @click="handlerAdd">新增</el-button>
+          <el-button type="primary" @click="handlerExport()">导出</el-button>
         </el-form-item>
         <div class="organ-box">
-          <el-select class="organ-select" filterable v-model="params.organId" placeholder="请选择合作单位">
+          <el-select
+            class="organ-select"
+            v-model="params.organId"
+            filterable
+            v-if="showSchool"
+            clearable
+            placeholder="请选择学校"
+            @change="getTableData()"
+          >
             <el-option
-              v-for="item in organList"
+              v-for="item in schoolOrgansListAll"
               :key="item.id"
               :label="item.name"
               :value="item.id"
-              @click.native="getOrganId(item)"
+            ></el-option>
+          </el-select>
+          <el-select
+            class="organ-select"
+            v-model="params.schoolOrganId"
+            filterable
+            clearable
+            @change="getTableData()"
+            v-if="showTeacher"
+            placeholder="请选择教学点"
+          >
+            <el-option
+              v-for="item in organListAll"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
             ></el-option>
           </el-select>
           <el-input
             v-model.trim="params.realNameOrcertNo"
-            placeholder="姓名/身份证号"
+            placeholder="姓名/证件号码/学号"
             @keyup.enter.native="init"
           ></el-input>
         </div>
       </el-form>
     </div>
-    <div>
+    <div class="main-content-container">
       <courses-table
-        class="table"
         @btnTxt="btnTxt"
         :tableConfig="tableConfig"
         :tableData="tableData"
@@ -47,6 +70,7 @@
       :visible.sync="dialogVisible"
       :size="width"
       :direction="direction"
+      :wrapperClosable="false"
       class="drawer-content drawer-content-custom"
     >
       <div class="drawer-container-box">
@@ -72,7 +96,9 @@ import coursesTable from '@/components/Table/coursesTable'
 import pagination from '@/components/Table/pagination'
 import add from './add'
 import scantext from './scantext'
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters } from 'vuex'
+import download from '@/views/mixins/download'
+import selectMixin from '@/views/mixins/select.js'
 
 export default {
   name: 'StudentTransaction',
@@ -80,13 +106,15 @@ export default {
     coursesTable,
     pagination,
     add,
-    scantext,
+    scantext
   },
+  mixins: [download, selectMixin],
   data(vm) {
     return {
       params: {
         organId: '',
         realNameOrcertNo: '',
+        schoolOrganId: ''
       },
       isEdit: false,
       changeTypeList: [],
@@ -95,26 +123,26 @@ export default {
         pageCurrent: 1,
         pageSize: 20,
         totalCount: 0,
-        totalPage: 0,
+        totalPage: 0
       },
       tableData: [],
       tableConfig: {
         loading: false,
-        headerCellStyle: { background: '#F3F4F7', color: '#333333' },
+        // headerCellStyle: { background: '#F3F4F7', color: '#333333' },
         serialNumber: {
           label: '序号',
           type: 'index',
-          width: '50',
+          width: '50'
         },
         columnConfig: [
           {
             label: '学号',
             prop: 'studentNo',
-            width: '120',
+            width: '120'
           },
           {
             label: '姓名',
-            prop: 'realName',
+            prop: 'realName'
           },
           {
             label: '性别',
@@ -126,7 +154,20 @@ export default {
           },
           {
             label: '注册学校',
-            prop: 'organName'
+            prop: 'organName',
+            width: '170'
+          },
+          {
+            label: '层次',
+            prop: 'levelName'
+          },
+          {
+            label: '专业',
+            prop: 'major'
+          },
+          {
+            label: '教学点',
+            prop: 'schoolOrganName'
           },
           {
             label: '异动次数',
@@ -141,7 +182,7 @@ export default {
                 (item) => item.dictValue === value
               )
               return arr.length ? arr[0].dictName : value
-            },
+            }
           },
           {
             label: '异动原因',
@@ -150,42 +191,45 @@ export default {
             width: '170px',
             enums: (value) => {
               if (!value) return value
-              const valueArr = value.split(",")
-              const arr = vm.changeReasonList.filter(item => valueArr.includes(item.dictValue))
+              const valueArr = value.split(',')
+              const arr = vm.changeReasonList.filter((item) =>
+                valueArr.includes(item.dictValue)
+              )
               let str = ''
               if (arr.length) {
-                arr.forEach(element => {
-                   str = str + element.dictName + ','
-                });
+                arr.forEach((element) => {
+                  str = str + element.dictName + ','
+                })
               }
-              return str.substring(0,str.length - 1)
-            },
+              return str.substring(0, str.length - 1)
+            }
           },
           {
             label: '扫描件',
             prop: '',
             slot: {
               type: 'btnTxt',
-              txt: '查看',
-            },
+              txt: '查看'
+            }
           },
           {
             label: '申请时间',
             prop: 'applicationDate',
-            width: '170px',
+            width: '160px'
           },
           {
             label: '申请人',
-            prop: 'applicationUserName',
-            width: '120px',
+            prop: 'applicationUserName'
           },
           {
             label: '审核结果',
             prop: 'approveStatus',
-            width: '120px',
             type: 'enums',
             enums: (value) => {
               // 审核状态，1待审批，2通过，3不通过
+              if (!value) {
+                return '--'
+              }
               if (value === '1') {
                 return '待审批'
               } else if (value === '2') {
@@ -193,19 +237,19 @@ export default {
               } else {
                 return '不通过'
               }
-            },
+            }
           },
           {
             label: '审核人',
             prop: 'approveUserName',
-            width: '120',
+            width: '120'
           },
           {
             label: '审核时间',
             prop: 'approveDate',
-            width: '160px',
-          },
-        ],
+            width: '160px'
+          }
+        ]
       },
 
       title: '',
@@ -216,6 +260,8 @@ export default {
       isShowBtn: true,
       dialogVisible: false,
       searchdialogVisible: false,
+      organListAll: [],
+      schoolOrgansListAll: []
     }
   },
   computed: {
@@ -223,20 +269,41 @@ export default {
       return {
         total: this.page.totalCount,
         pageSize: this.page.pageSize,
-        pageSizes: [20, 50, 100, 200],
+        pageSizes: [20, 50, 100, 200]
       }
     },
-    ...mapGetters(['organList']),
+    ...mapGetters(['organList', 'teacherList', 'schoolOrgansList']),
+    isAll() {
+      return this.$store.getters.userOrganId + '' === '1'
+    },
+    isSchool() {
+      return (
+        this.$store.getters.property && this.$store.getters.property === '1'
+      )
+    },
+    isTeacher() {
+      return (
+        this.$store.getters.property && this.$store.getters.property === '2'
+      )
+    }
   },
   async created() {
-    this.$set(this.params, 'organId', this.organList[0].id)
+    const all = {
+      id: '',
+      name: '全部',
+      oldName: '全部'
+    }
+    this.organListAll = [all, ...this.teacherList]
+    this.schoolOrgansListAll = [all, ...this.schoolOrgansList]
+    this.params.organId = this.organListAll[0].id
+    this.params.schoolOrganId = this.schoolOrgansListAll[0].id
     const result1 = (await api.getSysDictList({ code: '0021' })) || {}
     const result2 = (await api.getSysDictList({ code: '0022' })) || {}
     this.changeTypeList = result1.data || []
     this.changeReasonList = result2.data || []
   },
   mounted() {
-    setTimeout(async () => {
+    setTimeout(async() => {
       this.getTableData()
     }, 500)
   },
@@ -261,12 +328,26 @@ export default {
       this.dialogVisible = true
       this.componentName = 'add'
     },
+    handlerExport() {
+      const params = {
+        pageCurrent: this.page.pageCurrent,
+        pageSize: this.page.pageSize,
+        ...this.params
+      }
+      this.download(
+        params,
+        '/course/student_change/export',
+        'POST',
+        '学籍异动',
+        'xls'
+      )
+    },
     getTableData(query) {
       const params = {
         ...this.params,
         pageCurrent: this.page.pageCurrent,
         pageSize: this.page.pageSize,
-        ...query,
+        ...query
       }
       api.studentChangeList(params).then((res) => {
         this.tableData = res.data.rows
@@ -288,7 +369,7 @@ export default {
       this.title = '编辑'
       this.isEdit = true
       this.isShowBtn = true
-      this.componentData = row
+      this.componentData = this.$_cloneDeep(row)
       this.componentName = 'add'
       this.dialogVisible = true
     },
@@ -313,25 +394,25 @@ export default {
       this.$confirm('是否继续删除?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning',
+        type: 'warning'
       }).then(() => {
         api.deleteStudentChange({ id }).then((res) => {
           if (res.code === 200) {
             this.$message({
               message: '删除成功',
-              type: 'success',
+              type: 'success'
             })
             this.init()
           } else {
             this.$message({
               message: '删除失败',
-              type: 'error',
+              type: 'error'
             })
           }
         })
       })
-    },
-  },
+    }
+  }
 }
 </script>
 
@@ -341,6 +422,7 @@ export default {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    background-color: #f3f5f7;
     /deep/ .el-form .el-input,
     .el-form .el-select,
     .el-form .el-textarea {

@@ -7,6 +7,16 @@
     class="demo-ruleForm"
     label-position="top"
   >
+    <el-form-item label="学校" prop="organId">
+      <el-select placeholder="请选择" v-model="ruleForm.organId">
+        <el-option
+          :key="item.id"
+          :label="item.name"
+          :value="item.id"
+          v-for="item in schoolOrgansList"
+        ></el-option>
+      </el-select>
+    </el-form-item>
     <el-form-item label="姓名" prop="realName">
       <el-input v-model="ruleForm.realName"></el-input>
     </el-form-item>
@@ -33,15 +43,18 @@
 
 <script>
   import { addExamInspector, updateExamInspector } from '../../api'
+  import selectMixin from '../../../mixins/select.js'
 
   export default {
     name: 'Add',
     props: {
       data: Object
     },
+    mixins: [selectMixin],
     created() {
       if (!this.data.isAdd) {
         this.ruleForm.id = this.data.id || ''
+        this.ruleForm.organId = this.data.organId || ''
         this.ruleForm.status = parseInt(this.data.status) || 0
         this.ruleForm.realName = this.data.realName || ''
         this.ruleForm.sex = this.data.sex || ''
@@ -54,6 +67,7 @@
       return {
         ruleForm: {
           id: '',
+          organId: '',
           status: '',
           sex: '',
           realName: '',
@@ -61,6 +75,7 @@
           job: ''
         },
         rules: {
+          organId: [{ required: true, message: '请选择学校', trigger: 'blur' }],
           realName: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
           job: [{ required: true, message: '请输入职称/职务', trigger: 'blur' }],
           phone: [{ required: true, message: '请输入联系电话', trigger: 'blur' }],
@@ -75,7 +90,6 @@
           if (valid) {
             const params = {
               ...this.ruleForm,
-              organId: this.data.organId
             }
             const responseCallback = res => {
               if (res.code === 200) {

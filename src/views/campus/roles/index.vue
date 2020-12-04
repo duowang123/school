@@ -21,7 +21,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: #f8f9fb;
+  background-color: #f3f5f7;
   z-index: 100;
 }
 </style>

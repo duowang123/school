@@ -45,6 +45,15 @@ export function specialtyOptions(data) {
   })
 }
 
+// 教学计划可选课程列表
+export function courseListByTeachPlan(data) {
+  return request({
+    url: '/course/course_info/list/teach_plan',
+    method: 'POST',
+    data
+  })
+}
+
 // 新增专业
 export function addSpecialty(data) {
   return request({
@@ -87,8 +96,16 @@ export function addSchool(data) {
     data
   })
 }
+// 修改学院列表
+export function updateSchool(data) {
+  return request({
+    url: '/course/college/update',
+    method: 'POST',
+    data
+  })
+}
 
-// 新增学院列表
+// 删除学院列表
 export function deleteSchool(data) {
   return request({
     url: '/course/college/delete',
@@ -212,10 +229,11 @@ export function getCourseListByTeachingPlan(id) {
 }
 
 // 获取学期信息
-export function getSchoolDetail() {
+export function getSchoolDetail(data) {
   return request({
     url: '/course/teaching_plan/semester_info',
-    method: 'get'
+    method: 'post',
+    data
   })
 }
 
@@ -223,6 +241,24 @@ export function getSchoolDetail() {
 export function updateSchoolDetail(data) {
   return request({
     url: '/course/teaching_plan/semester_update',
+    method: 'post',
+    data
+  })
+}
+
+// 修改学期信息
+export function addSchoolDetail(data) {
+  return request({
+    url: '/course/teaching_plan/semester_save',
+    method: 'post',
+    data
+  })
+}
+
+// 删除学期信息
+export function delSchoolDetail(data) {
+  return request({
+    url: '/course/teaching_plan/semester_delete',
     method: 'post',
     data
   })
@@ -271,3 +307,19 @@ export function studentDailyPerf(data) {
     data
   })
 }
+
+export function getSpecialtyByOrganId(data) {
+  return request({
+    url: '/course/specialty/listByOrganIdAndLevel',
+    method: 'POST',
+    data
+  })
+}
+
+export function getYearAndSemester(data) {
+  return request({
+    url: '/course/teaching_plan/api/semester_drop',
+    method: 'get'
+  })
+}
+

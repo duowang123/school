@@ -17,7 +17,7 @@ export default {
   name: 'PreviewDirectory',
   props: {
     treeData: {
-      type: Array,
+      type: [Array, Object],
       default: () => []
     }
   },

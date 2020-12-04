@@ -1,9 +1,10 @@
 <template>
-  <el-breadcrumb class="app-breadcrumb" separator=">">
+  <el-breadcrumb class="app-breadcrumb" separator-class="el-icon-arrow-right">
     <transition-group name="breadcrumb">
       <el-breadcrumb-item v-for="(item,index) in levelList" v-if="item.menuName" :key="item.menuUrl">
         <span v-if="item.redirect === false || index === levelList.length-1" class="no-redirect">{{ item.title || item.menuName }}</span>
-        <router-link v-else :to="resolvePath(item)">{{ item.title || item.menuName }}</router-link>
+        <span v-else class="header"> {{ item.title || item.menuName }}</span>
+<!--        <router-link v-else :to="resolvePath(item)">{{ item.title || item.menuName }}</router-link>-->
       </el-breadcrumb-item>
     </transition-group>
   </el-breadcrumb>
@@ -45,7 +46,8 @@ export default {
         }
         return `/iframe?source=${encodeURIComponent(route.menuUrl)}`
       }
-      return route.menuUrl
+      return location.hash
+      // return route.menuUrl
     },
     isExternalLink(routePath) {
       return validateURL(routePath)
@@ -58,15 +60,21 @@ export default {
   .app-breadcrumb.el-breadcrumb {
     display: inline-block;
     font-size: 16px;
-    height: 56px;
-    line-height: 56px;
-    padding-left: 24px;
+    height: 46px;
+    /*line-height: 46px;*/
+    margin-left: 24px;
+    padding-top: 16px;
     width: 100%;
-    background-color: #f8f9fb;
+    background-color: #f3f5f7;
     color: #999999;
     z-index: 99;
+    margin-top: 10px;
     .el-breadcrumb__separator {
       color: #000000;
+    }
+    .header {
+      color: #212121;
+      font-weight: 700;
     }
     .no-redirect {
       color: #333333;

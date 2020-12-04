@@ -5,16 +5,14 @@
       <el-col :span="6">
         <div class="grid-content text">分数: {{ form.score }}</div>
       </el-col>
-      <el-col :span="2">
-        <div class="grid-content text">难度:</div>
-      </el-col>
-      <el-col :span="10">
-        <div class="grid-content text">
-          <el-rate v-model="form.difficulty" disabled class="custom-score"></el-rate>
-        </div>
-      </el-col>
       <el-col :span="6" v-if="form.type !== arr[4] && form.type !== arr[3]">
         <div class="grid-content text">正确答案: {{ showAnster(form.answer) }}</div>
+      </el-col>
+    </el-row>
+    <el-row :gutter="20" v-if="form.type === arr[4]">
+      <el-col class="grid-content anster">
+        <span>正确答案:</span>
+        <span v-html="form.answer"></span>
       </el-col>
     </el-row>
     <el-row class="text" v-if="form.type === arr[3]">正确答案:</el-row>
@@ -38,7 +36,9 @@ export default {
   },
   methods: {
     showAnster(answer) {
-      return answer && answer.includes(',') ? answer.split(',').sort().join() : answer
+      return answer && answer.includes(',')
+        ? answer.split(',').sort().join()
+        : answer
     },
   },
 }
@@ -79,5 +79,19 @@ export default {
 }
 .custom-score /deep/ .el-rate__icon {
   font-size: 30px;
+}
+.anster {
+  font-size: 16px;
+  font-family: PingFangSC, PingFangSC-Regular;
+  font-weight: 400;
+  text-align: left;
+  color: #3f93db;
+  * {
+    font-size: 16px;
+    font-family: PingFangSC, PingFangSC-Regular;
+    font-weight: 400;
+    text-align: left;
+    color: #3f93db;
+  }
 }
 </style>

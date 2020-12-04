@@ -7,7 +7,7 @@ export default {
     }
   },
   created() {
-    this.organId = this.$_getValue(this.organList, '0.id', '')
+    // this.organId = this.$_getValue(this.organList, '0.id', '')
     this.init()
   },
   computed: {

@@ -132,7 +132,7 @@
       },
       //编辑弹窗
       handleEdit(row) {
-       this.formData = row
+       this.formData = this.$_cloneDeep(row)
        this.ctrl.dialogTitle = row.navTitle + ' —— 编辑'
        this.ctrl.dialogVisible = true
       },

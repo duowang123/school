@@ -69,8 +69,7 @@ export function getOrgan(data) {
     data
   })
 }
-
-// 获取总院下面的机构列表
+// 获取总院下面的机构名称，不包含总院,包含学校和教学点
 export function getOrganChild(data) {
   return request({
     url: '/system/sys_organ/getOrganChild',
@@ -357,5 +356,62 @@ export function getSysDictList(data) {
     url: '/system/sys_dict/listByCode',
     method: 'POST',
     data
+  })
+}
+
+export function getSyOrganChild(data) {
+  return request({
+    url: '/system/sys_organ/getOrganChild',
+    method: 'POST',
+    data
+  })
+}
+
+export function getAuthList(data) {
+  return request({
+    url: '/system/sys_organ/authList',
+    method: 'POST',
+    data
+  })
+}
+
+export function getAuth(data) {
+  return request({
+    url: '/system/sys_organ/auth',
+    method: 'POST',
+    data
+  })
+}
+
+
+export function getTeachAuthList(data) {
+  return request({
+    url: '/system/sys_organ/teachAuthList',
+    method: 'POST',
+    data
+  })
+}
+
+export function getTeacherOrgans(data) {
+  return request({
+    url: '/system/sys_organ/getTeacherOrgans',
+    method: 'POST',
+    data
+  })
+}
+
+export function getSchoolOrgans(data) {
+  return request({
+    url: '/system/sys_organ/getSchoolOrgans',
+    method: 'POST',
+    data
+  })
+}
+
+// 直接替换 字段 0014 0024 的数据
+export function getYearAndSemester() {
+  return request({
+    url: '/course/teaching_plan/api/semester_drop',
+    method: 'get'
   })
 }

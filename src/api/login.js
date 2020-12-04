@@ -25,6 +25,15 @@ export function firstLogin(data) {
   })
 }
 
+// 修改密码
+export function updatePass(data) {
+  return request({
+    url: '/system/pc/sys/user/update/passwordForLogin',
+    method: 'post',
+    data
+  })
+}
+
 export function getInfo(token) {
   return request({
     url: '/user/info',

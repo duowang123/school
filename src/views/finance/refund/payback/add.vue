@@ -3,12 +3,12 @@
     <el-form :rules="rules" :model="ruleForm" ref="addForm" label-width="0">
       <div class="form-item">
         <div class="container">
-          <el-form-item label="学号/身份证" prop="studentId">
+          <el-form-item label="学号/证件号码" prop="studentId">
             <el-input
               v-model="ruleForm.studentId"
               suffix-icon="el-icon-search"
               @keyup.enter.native="onSearch"
-              placeholder="学号/身份证"
+              placeholder="学号/证件号码"
             ></el-input>
             <el-row v-show="rows.realName" :gutter="24" v-loading="loading">
               <el-col :span="10">
@@ -27,9 +27,9 @@
             <el-select class="selectWidth" v-model="ruleForm.payYear" placeholder="请选择">
               <el-option
                 v-for="item in schoolYearOptions"
-                :key="item.dictValue"
-                :label="item.dictName"
-                :value="item.dictValue">
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
               </el-option>
             </el-select>
           </el-form-item>
@@ -55,6 +55,7 @@
 <script>
   import Upload from '@/components/ImgUpload'
   import * as api from '../api'
+  import {mapGetters} from "vuex";
   export default {
     name: 'Attr',
     components: {
@@ -70,6 +71,10 @@
       this.getCodeList()
     },
     computed: {
+      ...mapGetters(['yearAndSemester']),
+      schoolYearOptions() {
+        return this.yearAndSemester.schoolYears
+      },
       returnTypeOptions() {
         return this.data.returnTypeOptions
       }
@@ -91,13 +96,11 @@
         }
       },
       async getCodeList() {
-        const result1 = (await api.listByCode({ code: '0014' })) || {}
-        this.schoolYearOptions = result1.data || []
       },
       confirm(callBack) {
         this.$refs.addForm.validate(async valid => {
           if (valid) {
-            if(!this.rows.id) return this.$message.warning('请先搜索学号/身份证!')
+            if(!this.rows.id) return this.$message.warning('请先搜索学号/证件号码!')
             const params = {
               ...this.ruleForm,
               organId: this.data.organId
@@ -121,7 +124,6 @@
     data() {
       return {
         loading: false,
-        schoolYearOptions: [],
         ruleForm: {
           remark: '',
           studentId: '', // 学生id
@@ -132,11 +134,13 @@
         rows: {},
         rules: {
           studentId: [{ required: true, message: '请输入学生学号查询', trigger: 'blur' }],
-          returnMoney: [{ required: true, message: '请输入退费金额', trigger: 'blur' }, {
-            pattern: '^[1-9][0-9]*(\\.[0-9]+)?$',
-            message: '只能是数字',
-            trigger: 'blur'
-          }],
+          returnMoney: [{ required: true, message: '请输入退费金额', trigger: 'blur' },
+          //  {
+          //   pattern: /^[0-9]+\.[0-9]+$/,
+          //   message: '请输入正确金额',
+          //   trigger: 'blur'
+          // }
+          ],
           payYear: [
             { required: true, message: '请选择缴费年度', trigger: 'change' }
           ],

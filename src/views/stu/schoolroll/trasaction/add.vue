@@ -3,31 +3,14 @@
     <el-form :rules="rules" :model="ruleForm" ref="addForm" label-width="0">
       <div class="form-item">
         <div class="container">
-          <el-form-item label="学号/身份证" prop="studentId" class="full-width">
+          <el-form-item class="full-width" label="学号/证件号码" prop="studentId">
             <el-input
               v-model="ruleForm.studentId"
               suffix-icon="el-icon-search"
               @keyup.enter.native="onSearch(ruleForm.studentId)"
               placeholder="请输入"
             ></el-input>
-            <div class="stu-info-box" v-loading="loading">
-              <div>
-                <div class="title">学号</div>
-                <div class="cont">{{ rows.studentNo || '' }}</div>
-              </div>
-              <div>
-                <div class="title">性别</div>
-                <div class="cont">{{ rows.sex ? (rows.sex === '1' ? '男' : '女') : '' }}</div>
-              </div>
-              <div>
-                <div class="title">姓名</div>
-                <div class="cont">{{ rows.realName || '' }}</div>
-              </div>
-              <div>
-                <div class="title">证件号码</div>
-                <div class="cont">{{ rows.certNo || '' }}</div>
-              </div>
-            </div>
+            <stu-card :detail="rows" v-loading="loading"></stu-card>
           </el-form-item>
           <div class="select-box">
             <el-form-item prop="changeType" label="异动类型" class="select-width-240">
@@ -41,7 +24,13 @@
               </el-select>
             </el-form-item>
             <el-form-item prop="changeReason" class="select-width-240" label="异动原因">
-              <el-select v-model="ruleForm.changeReason" multiple collapse-tags clearable placeholder="请选择">
+              <el-select
+                v-model="ruleForm.changeReason"
+                multiple
+                collapse-tags
+                clearable
+                placeholder="请选择"
+              >
                 <el-option
                   v-for="(item, index) in noTestReasonList"
                   :key="index"
@@ -51,7 +40,7 @@
               </el-select>
             </el-form-item>
           </div>
-          <el-form-item label="扫描件">
+          <el-form-item label="扫描件" prop="pictureUrl1">
             <upload class="upload-icon" ref="upload" :url="ruleForm.pictureUrl1" />
           </el-form-item>
         </div>
@@ -66,21 +55,21 @@ import * as api from '../api'
 export default {
   name: 'Attr',
   components: {
-    Upload
+    Upload,
   },
   props: {
     data: {
       type: Object,
-      default: () => ({})
+      default: () => ({}),
     },
     dialogVisible: {
       type: Boolean,
-      default: false
+      default: false,
     },
     isEdit: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   created() {
     this.init()
@@ -89,7 +78,7 @@ export default {
   watch: {
     dialogVisible(val) {
       val && this.init()
-    }
+    },
   },
   methods: {
     init() {
@@ -104,7 +93,10 @@ export default {
             this.rows = {}
           }
         } else if (key === 'changeReason') {
-          this.ruleForm[key] = !Array.isArray(this.data[key]) && this.data[key] ? [...this.data[key]] : []
+          this.ruleForm[key] =
+            !Array.isArray(this.data[key]) && this.data[key]
+              ? this.data[key].split(',')
+              : []
         } else {
           this.ruleForm[key] = this.data[key] || ''
         }
@@ -118,7 +110,7 @@ export default {
       this.loading = true
       try {
         const res = await api.getQueryStudent({
-          studentNoOrCertNo: this.ruleForm.studentId || studentId
+          studentNoOrCertNo: this.ruleForm.studentId || studentId,
         })
         this.rows = res.data || {}
         if (this.rows.organId) {
@@ -136,25 +128,39 @@ export default {
       this.noTestTypeList = result1.data || []
       this.noTestReasonList = result2.data || []
     },
-    confirm(callBack) {
-      this.$refs.addForm.validate(async valid => {
-        const uploadRes = await this.$refs.upload.upload()
-        if (uploadRes.code !== 200) {
-          this.$message('图片上传失败！')
-          return false
-        }
+    async confirm(callBack) {
+      const uploadRes = await this.$refs.upload.upload()
+      if (uploadRes.code !== 200) {
+        this.$message('图片上传失败！')
+        return false
+      }
+      this.ruleForm.pictureUrl1 = uploadRes.data
+      this.$refs.addForm.validate(async (valid) => {
         if (valid) {
           Object.assign(this.ruleForm, {
             pictureUrl1: uploadRes.data,
-            studentId: this.rows.id
+            studentId: this.rows.id,
           })
+          const resCallBack = (res) => {
+            if (res.code === 200) {
+              this.$message.success(
+                (this.isEdit ? '数据更新' : '数据添加') + '成功!'
+              )
+              callBack(valid)
+            } else {
+              this.$message.error(
+                (this.isEdit ? '数据更新' : '数据添加') + '失败!'
+              )
+            }
+          }
           this.isEdit
-            ? api.studentCchangeUpdate({ ...this.ruleForm, id: this.data.id })
-            : api.studentCchangeSave(this.ruleForm)
-          callBack(valid)
+            ? api
+                .studentCchangeUpdate({ ...this.ruleForm, id: this.data.id })
+                .then(resCallBack)
+            : api.studentCchangeSave(this.ruleForm).then(resCallBack)
         }
       })
-    }
+    },
   },
   data() {
     return {
@@ -163,21 +169,26 @@ export default {
         studentId: '', // 学生id
         changeReason: [], // 原因
         changeType: '', // 类型
-        pictureUrl1: ''
+        pictureUrl1: '',
+        organName: '',
+        property: '',
       },
       noTestTypeList: [],
       noTestReasonList: [],
       rows: {},
       rules: {
         changeReason: [
-          { required: true, message: '请选择异动原因', trigger: 'change' }
+          { required: true, message: '请选择异动原因', trigger: 'change' },
         ],
         changeType: [
-          { required: true, message: '请选择异动类型', trigger: 'change' }
-        ]
-      }
+          { required: true, message: '请选择异动类型', trigger: 'change' },
+        ],
+        pictureUrl1: [
+          { required: true, message: '请上传扫描件', trigger: 'change' },
+        ],
+      },
     }
-  }
+  },
 }
 </script>
 
@@ -207,10 +218,10 @@ export default {
 .stu-info-box {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: left;
   background-color: #f5f7fa;
-  height: 88px;
   padding: 16px;
+  flex-direction: column;
   margin-bottom: 24px;
   margin-top: 16px;
   .title {
@@ -219,8 +230,10 @@ export default {
     font-weight: 400;
     color: #666666;
     margin-bottom: 8px;
+    display: inline-flex;
   }
   .cont {
+    display: inline-flex;
     font-size: 14px;
     font-family: PingFangSC, PingFangSC-Medium;
     font-weight: 500;

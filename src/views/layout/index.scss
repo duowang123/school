@@ -76,13 +76,14 @@ $menuHover:#FFFFFF;
       border: none;
       height: 100%;
       width: 100% !important;
+      background-color: #fff!important;
     }
     .is-active > .el-submenu__title{
       //color: #3F93DB!important;
-      color: #FFFFFF !important;
-      background-color: #3F93DB !important;
+      color: #3F93DB !important;
+      background-color: #FFFFFF !important;
       &:hover {
-        background-color: #FFFFFF !important;
+        background-color: #c8e1f7 !important;
         color: #3F93DB !important;
       }
     }
@@ -126,15 +127,15 @@ $menuHover:#FFFFFF;
   }
   .sidebar-container .nest-menu .el-submenu>.el-submenu__title,
   .sidebar-container .el-submenu .el-menu-item {
-    color: #FFFFFF !important;
+    color: #666 !important;
     min-width: 180px !important;
-    background-color: $subMenuBg !important;
+    background-color: #fff !important;
     &:hover {
-      background-color: $menuHover !important;
+      background-color: #fff !important;
       color: #3F93DB !important;
     }
     &.is-active {
-      background-color: $menuHover !important;
+      background-color: #fff !important;
       color: #3F93DB !important;
     }
   }
@@ -142,10 +143,10 @@ $menuHover:#FFFFFF;
     min-width: 180px !important;
   }
   .el-submenu__title {
-    color: #FFFFFF !important;
-    background-color: $subMenuBg !important;
+    color: #666 !important;
+    background-color: #fff !important;
     &:hover {
-      background-color: $menuHover !important;
+      background-color: #fff !important;
       color: #3F93DB !important;
     }
   }

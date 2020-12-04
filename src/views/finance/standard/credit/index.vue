@@ -1,39 +1,59 @@
 <template>
   <div class="student-plan-right pad20">
     <div>
-      <el-form class="user-form" :inline="true" >
+      <el-form class="user-form" :inline="true">
         <el-form-item>
-          <el-button type="primary" @click="addTransaction">新增</el-button>
+          <el-button v-all type="primary" @click="addTransaction">新增</el-button>
         </el-form-item>
         <div class="organ-box">
-          <el-select class="organ-select" v-model="organId" @change="organChange" filterable placeholder="请选择合作单位">
+          <el-select
+            class="organ-select"
+            v-model="organId"
+            filterable
+            @change="init"
+            placeholder="请选择学校"
+          >
             <el-option
-                v-for="item in organList"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id">
-            </el-option>
+              v-for="item in schoolOrgansListAll"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            ></el-option>
           </el-select>
-          <el-select class="organ-select" v-model="params.enterLevel" @change="levelChange" clearable filterable placeholder="请选择层次">
+          <el-select
+            class="organ-select"
+            v-model="params.enterLevel"
+            @change="levelChange"
+            clearable
+            filterable
+            placeholder="请选择层次"
+          >
             <el-option
               v-for="item in levelOption"
               :key="item.value"
               :label="item.label"
-              :value="item.value">
-            </el-option>
+              :value="item.value"
+            ></el-option>
           </el-select>
-          <el-select class="organ-select" v-model="params.professional" @change="organChange" clearable filterable placeholder="请选择专业名称">
+          <el-select
+            class="organ-select"
+            v-model="params.professional"
+            @change="organChange"
+            clearable
+            filterable
+            placeholder="请选择专业名称"
+          >
             <el-option
               v-for="item in specialtyOptions"
               :key="item.value"
               :label="item.label"
-              :value="item.value">
-            </el-option>
+              :value="item.value"
+            ></el-option>
           </el-select>
         </div>
       </el-form>
     </div>
-    <div>
+    <div class="main-content-container">
       <courses-table
         class="table"
         @btnTxt="btnTxt"
@@ -42,9 +62,9 @@
       >
         <template slot-scope="{ scope }">
           <div class="item">
-            <el-button type="text" @click="handleEdit(scope)">编辑</el-button>
+            <el-button type="text" v-all @click="handleEdit(scope)">编辑</el-button>
             <el-button type="text" @click="handleAttr(scope)">属性</el-button>
-            <el-button type="text" @click="handleDelete(scope)">删除</el-button>
+            <el-button type="text" v-all @click="handleDelete(scope)">删除</el-button>
           </div>
         </template>
       </courses-table>
@@ -55,8 +75,14 @@
         :pagination-config="paginationConfig"
       />
     </div>
-    <el-drawer :title="title" :visible.sync="dialogVisible" :size="width" :direction="direction">
-      <component :is="componentName" :ref="componentName" :data="componentData"/>
+    <el-drawer
+      :wrapperClosable="false"
+      :title="title"
+      :visible.sync="dialogVisible"
+      :size="width"
+      :direction="direction"
+    >
+      <component :is="componentName" :ref="componentName" :data="componentData" />
       <div v-show="isShowBtn" class="demo-drawer__footer">
         <el-button type="primary" @click="confirm">确 定</el-button>
         <el-button @click="dialogVisible = false">取 消</el-button>
@@ -72,10 +98,11 @@ import Attr from '@/components/Table/attr'
 import organMixin from '@/views/mixins/organMixin'
 import * as api from '../api'
 import Add from './add'
+import selectMixin from '@/views/mixins/select.js'
 
 export default {
   name: 'StandardCredit',
-  mixins: [organMixin],
+  mixins: [organMixin, selectMixin],
   components: {
     ImgList,
     coursesTable,
@@ -90,9 +117,10 @@ export default {
         enterLevel: null,
         professional: null
       },
+      organId: '',
       page: {
         pageCurrent: 1,
-        pageSize: 10,
+        pageSize: 20,
         totalCount: 0,
         totalPage: 0
       },
@@ -107,41 +135,37 @@ export default {
         },
         columnConfig: [
           {
-            label: '学年',
-            prop: 'schoolYear',
-            width: '120'
+            label: '学校',
+            prop: 'organName'
           },
           {
-            label: '合作单位',
-            prop: 'organName',
-            width: '150'
+            label: '学年',
+            prop: 'schoolYear'
+          },
+          {
+            label: '学期',
+            prop: 'semesterLabel'
           },
           {
             label: '层次',
-            prop: 'enterLevel',
-            type: 'enums',
-            enums: value => {
-              return vm.levelOption.filter(
-                item => item.value === value
-              )[0].label
-            }
+            prop: 'enterLevelLabel'
           },
           {
             label: '专业',
-            prop: 'professionalName'
+            prop: 'professionalName',
+            width: '250'
           },
           {
             label: '学分',
             prop: 'credit'
           },
           {
-            label: '学分费用（每学分）',
+            label: '费用/学分',
             prop: 'eachMoney',
             width: '150'
           }
         ]
       },
-      schoolYearOptions: [],
       levelOption: [],
       specialtyOptions: [],
       dialogVisible: false,
@@ -160,6 +184,7 @@ export default {
     }
   },
   created() {
+    this.organId = this.schoolOrgansListAll[0].id
     this.initSelectOptions()
   },
   computed: {
@@ -184,11 +209,11 @@ export default {
         this.getTableData()
         return
       }
-      api.listByOrganIdAndLevel(params).then(res => {
+      api.listByOrganIdAndLevel(params).then((res) => {
         if (!res.data) {
           this.specialtyOptions = []
         } else {
-          this.specialtyOptions = res.data.map(e => {
+          this.specialtyOptions = res.data.map((e) => {
             return {
               label: e.name,
               value: e.id
@@ -212,7 +237,6 @@ export default {
       this.componentData = {
         isAdd: true,
         organId: this.organId,
-        schoolYearOptions: this.schoolYearOptions,
         levelOption: this.levelOption
       }
     },
@@ -233,7 +257,7 @@ export default {
         pageCurrent: this.page.pageCurrent,
         pageSize: this.page.pageSize
       }
-      api.getCreditStandardList(params).then(res => {
+      api.getCreditStandardList(params).then((res) => {
         this.tableData = this.formatData(res.data.rows)
         this.page.totalCount = res.data.totalCount
         this.page.totalPage = res.data.totalPage
@@ -245,17 +269,8 @@ export default {
     },
     // 从字典中获取下拉框数据
     initSelectOptions() {
-      api.listByCode({code: '0006'}).then(res => {
-        this.levelOption = res.data.map(e => {
-          return {
-            id: e.id,
-            label: e.dictName,
-            value: e.dictValue
-          }
-        })
-      })
-      api.listByCode({code: '0014'}).then(res => {
-        this.schoolYearOptions = res.data.map(e => {
+      api.listByCode({ code: '0006' }).then((res) => {
+        this.levelOption = res.data.map((e) => {
           return {
             id: e.id,
             label: e.dictName,
@@ -277,7 +292,7 @@ export default {
       this.init()
     },
     // 编辑
-    handleEdit({row}) {
+    handleEdit({ row }) {
       this.title = '编辑学分收费标准'
       this.dialogVisible = true
       this.componentName = 'Add'
@@ -286,7 +301,6 @@ export default {
       this.componentData = {
         ...row,
         isAdd: false,
-        schoolYearOptions: this.schoolYearOptions,
         levelOption: this.levelOption
       }
     },
@@ -320,7 +334,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        api.deleteCreditStandard({ id: row.id }).then(res => {
+        api.deleteCreditStandard({ id: row.id }).then((res) => {
           if (res.code === 200) {
             this.$message({
               message: '删除成功',
@@ -334,7 +348,7 @@ export default {
             })
           }
         })
-      });
+      })
     }
   }
 }
@@ -366,7 +380,7 @@ export default {
       }
     }
   }
-  .demo-drawer__footer{
+  .demo-drawer__footer {
     text-align: center;
     position: absolute;
     bottom: 0;

@@ -185,6 +185,7 @@
               <div class="container">
                 <p class="label">辅导老师人数</p>
                 <el-input
+                    :min="0"
                     class="form-item-input"
                     :disabled="disabled"
                     v-model="managerInfo.teacherNum"
@@ -196,6 +197,7 @@
               <div class="container">
                 <p class="label">管理员人数</p>
                 <el-input
+                    :min="0"
                     class="form-item-input"
                     v-model="managerInfo.managerNum"
                     :disabled="disabled"
@@ -207,6 +209,8 @@
               <div class="container">
                 <p class="label">其他人员人数</p>
                 <el-input
+                    :min="0"
+                    :max="1000"
                     class="form-item-input"
                     v-model="managerInfo.otherNum"
                     :disabled="disabled"

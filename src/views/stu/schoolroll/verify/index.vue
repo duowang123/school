@@ -12,7 +12,7 @@
           >
             <el-option v-for="item in organList" :key="item.id" :label="item.name" :value="item.id"></el-option>
           </el-select>
-          <el-input v-model.trim="params.realname" placeholder="姓名/身份证号"></el-input>
+          <el-input placeholder="姓名/证件号码" v-model.trim="params.realname"></el-input>
         </div>
       </el-form>
     </div>
@@ -72,13 +72,9 @@
 </template>
 <script>
 import * as api from '@/api/organ'
-import ImgList from '@/components/ImgList'
 
 export default {
-  name: 'studentTransaction',
-  components: {
-    ImgList
-  },
+  name: 'StudentTransaction',
   data() {
     return {
       params: {

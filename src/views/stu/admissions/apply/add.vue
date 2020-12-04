@@ -10,8 +10,20 @@
                 <div>
                   <div class="main-content">
                     <div>
-                      <div class="flex-1">证件类型</div>
-                      <div class="flex-2">身份证</div>
+                      <div class="flex-1">
+                        证件类型
+                        <span class="required-icon">*</span>
+                      </div>
+                      <el-form-item prop="certType">
+                        <el-select class="flex-2" v-model="basicForm.certType" placeholder="请选择">
+                          <el-option
+                            v-for="item in identificationList"
+                            :key="item.id"
+                            :label="item.dictName"
+                            :value="item.dictValue"
+                          ></el-option>
+                        </el-select>
+                      </el-form-item>
                     </div>
                     <div>
                       <div class="flex-1">
@@ -19,7 +31,7 @@
                         <span class="required-icon">*</span>
                       </div>
                       <el-form-item prop="certNo">
-                        <el-input class="flex-2" v-model="basicForm.certNo" placeholder="请输入身份证号码"></el-input>
+                        <el-input class="flex-2" placeholder="请输入证件号码" v-model="basicForm.certNo"></el-input>
                       </el-form-item>
                     </div>
 
@@ -122,14 +134,10 @@
                       </el-form-item>
                     </div>
 
-                    <div >
+                    <div>
                       <div class="flex-1">电子邮箱</div>
                       <el-form-item>
-                        <el-input
-                          class="flex-2"
-                          v-model="basicForm.email"
-                          placeholder="请输入内容"
-                        ></el-input>
+                        <el-input class="flex-2" v-model="basicForm.email" placeholder="请输入内容"></el-input>
                       </el-form-item>
                     </div>
 
@@ -169,7 +177,7 @@
                     <div>
                       <div class="flex-1">
                         毕业学校
-                        <span class="required-icon">*</span>
+                        <!--                        <span class="required-icon">*</span>-->
                       </div>
                       <el-form-item>
                         <el-input class="flex-2" v-model="basicForm.university" placeholder="请输入内容"></el-input>
@@ -179,7 +187,7 @@
                     <div>
                       <div class="flex-1">
                         毕业时间
-                        <span class="required-icon">*</span>
+                        <!--                        <span class="required-icon">*</span>-->
                       </div>
                       <el-form-item>
                         <el-date-picker
@@ -202,13 +210,94 @@
                     <div>
                       <div class="flex-1">
                         毕业证号码
-                        <span class="required-icon">*</span>
+                        <!--                        <span class="required-icon">*</span>-->
                       </div>
                       <el-form-item>
                         <el-input class="flex-2" v-model="basicForm.recordNo" placeholder="请输入内容"></el-input>
                       </el-form-item>
                     </div>
+                    <div class="homePlace">
+                      <div class="flex-1">
+                        专科身份证号
+                      </div>
+                      <el-form-item>
+                        <el-input
+                          class="flex-2 lagerWidth"
+                          v-model="basicForm.juniorCertNo"
+                          placeholder="请输入内容"
+                        ></el-input>
+                      </el-form-item>
+                    </div>
+                    <div>
+                      <div class="flex-1">
+                        专科姓名
+                        <!--                        <span class="required-icon">*</span>-->
+                      </div>
+                      <el-form-item>
+                        <el-input
+                          class="flex-2"
+                          v-model="basicForm.juniorCertName"
+                          placeholder="请输入内容"
+                        ></el-input>
+                      </el-form-item>
+                    </div>
                   </div>
+                </div>
+                <div class="homePlace">
+                  <div class="flex-1">认证报告或学历备案编号</div>
+                  <el-form-item>
+                    <el-input
+                      class="flex-2 lagerWidth"
+                      v-model="basicForm.report"
+                      placeholder="请输入内容"
+                    ></el-input>
+                  </el-form-item>
+                </div>
+              </div>
+              <div class="main-content" style="justify-content: flex-start;">
+                <div>
+                  <div class="flex-1">是否前置学历审核</div>
+                  <el-form-item>
+                    <el-select
+                      class="flex-2"
+                      v-model="basicForm.educationApprove"
+                      placeholder="请选择"
+                    >
+                      <el-option label="是" value="1"></el-option>
+                      <el-option label="否" value="2"></el-option>
+                    </el-select>
+                  </el-form-item>
+                </div>
+                <div style="margin-left: 35px" v-if="basicForm.educationApprove === '1'">
+                  <div class="flex-1">审核附件</div>
+                  <el-form-item>
+                    <el-upload
+                      class="upload-demo"
+                      style="display: inline;margin-right:10px;"
+                      :on-change="onFileChange"
+                      :auto-upload="false"
+                      :show-file-list="false"
+                      :limit="1"
+                      action="https://jsonplaceholder.typicode.com/posts/"
+                    >
+                      <el-button slot="trigger" size="small" type="primary">上传</el-button>
+                    </el-upload>
+                    <a
+                      class="file-text"
+                      style="text-decoration: underline;"
+                      @click="downLoads(basicForm.approveFile)"
+                      :title="basicForm.approveFile"
+                    >{{basicForm.approveFile}}</a>
+                  </el-form-item>
+                </div>
+                <div style="margin-left: 35px" v-if="basicForm.educationApprove === '1'">
+                  <div class="flex-1">审核结论</div>
+                  <el-form-item>
+                    <el-select class="flex-2" v-model="basicForm.educationStatus" placeholder="请选择">
+                      <el-option label="通过" value="1"></el-option>
+                      <el-option label="不通过" value="2"></el-option>
+                    </el-select>
+                  </el-form-item>
                 </div>
               </div>
 
@@ -313,10 +402,10 @@
               <el-form-item prop="schoolYear">
                 <el-select class="flex-2" v-model="signUpForm.schoolYear" placeholder="请选择">
                   <el-option
-                    v-for="item in schoolYearList"
-                    :key="item.id"
-                    :label="item.dictName"
-                    :value="item.dictValue"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                    v-for="item in schoolYearOptions"
                   ></el-option>
                 </el-select>
               </el-form-item>
@@ -329,17 +418,32 @@
               <el-form-item prop="semester">
                 <el-select class="flex-2" v-model="signUpForm.semester" placeholder="请选择">
                   <el-option
-                    v-for="item in semesterList"
-                    :key="item.id"
-                    :label="item.dictName"
-                    :value="item.dictValue"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                    v-for="item in semesterOptions"
                   ></el-option>
                 </el-select>
               </el-form-item>
             </div>
             <div>
-              <div class="flex-1">报考合作单位</div>
-              <div class="flex-2">{{ name }}</div>
+              <div class="flex-1">报考学校  <span class="required-icon">*</span></div>
+              <el-form-item prop="organId">
+                <el-select
+                  class="flex-2"
+                  v-model="signUpForm.organId"
+                  filterable
+                  :disabled="!isAdd && isSchool"
+                  placeholder="请选择"
+                >
+                  <el-option
+                    v-for="item in schoolOrgansList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
             </div>
             <div>
               <div class="flex-1">
@@ -397,7 +501,7 @@
               </el-form-item>
             </div>
             <div>
-              <div class="flex-1">报考转专业</div>
+              <div class="flex-1">转专业</div>
               <el-form-item>
                 <el-select class="flex-2" v-model="signUpForm.enterTransfer" placeholder="请选择">
                   <el-option label="是" value="1"></el-option>
@@ -424,9 +528,9 @@
               <div class="flex-1">学习形式</div>
               <el-form-item>
                 <el-select class="flex-2" v-model="signUpForm.studyType" placeholder="请选择">
-                  <el-option label="学校形式" value="1"></el-option>
-                  <el-option label="网络学校" value="2"></el-option>
-                  <el-option label="线下学校" value="3"></el-option>
+                  <el-option label="函授" value="1"></el-option>
+                  <el-option label="业余" value="2"></el-option>
+                  <el-option label="脱产" value="3"></el-option>
                 </el-select>
               </el-form-item>
             </div>
@@ -442,30 +546,44 @@
               </el-form-item>
             </div>
             <div style="margin-left: 35px">
-              <!-- <div class="flex-1">注册状态</div> -->
-              <!-- <el-form-item> -->
-                <!-- <el-select class="flex-2" v-model="signUpForm.registerType" placeholder="请选择"> -->
-                  <!-- <el-option -->
-                    <!-- v-for="item in registerTypeList" -->
-                    <!-- :key="item.id" -->
-                    <!-- :label="item.dictName" -->
-                    <!-- :value="item.dictValue" -->
-                  <!-- ></el-option> -->
-                <!-- </el-select> -->
-              <!-- </el-form-item> -->
+              <div class="flex-1">教学点</div>
+              <el-form-item>
+                <el-select
+                  class="flex-2"
+                  v-model="signUpForm.schoolOrganId"
+                  :disabled="!isAdd && isTeacher"
+                  filterable
+                  placeholder="请选择"
+                >
+                  <el-option
+                    v-for="item in teacherList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
             </div>
           </div>
-          <!-- <div class="main-content"> -->
-          <!-- <div> -->
-          <!-- <div class="flex-1"> -->
-          <!-- 学号 -->
-          <!-- <span class="required-icon">*</span> -->
-          <!-- </div> -->
-          <!-- <el-form-item> -->
-          <!-- <el-input class="flex-2" v-model="signUpForm.studentNo" placeholder="请输入" /> -->
-          <!-- </el-form-item> -->
-          <!-- </div> -->
-          <!-- </div> -->
+          <div class="main-content" style="justify-content: start">
+            <div>
+              <div class="flex-1">
+                学号
+                <span class="required-icon">*</span>
+              </div>
+              <el-form-item>
+                <el-input class="flex-2" placeholder="请输入" v-model="signUpForm.studentNo" />
+              </el-form-item>
+            </div>
+            <div style="margin-left: 35px">
+              <div class="flex-1">
+                学制
+              </div>
+              <div class="flex-2">
+                {{signUpForm.schoolSystem}}
+              </div>
+            </div>
+          </div>
         </el-form>
       </el-tab-pane>
       <el-tab-pane label="图片信息" name="3">
@@ -477,7 +595,7 @@
                   上传毕业照
                   <el-tooltip placement="top" effect="light">
                     <div slot="content">
-                      <img width="500px" src="/src/assets/images/use-example.jpg" alt="">
+                      <img width="500px" src="/src/assets/images/use-example.jpg" alt />
                     </div>
                     <i class="iconfont icon-help-nor"></i>
                   </el-tooltip>
@@ -535,33 +653,66 @@ import { isvalidMobile, validateIdCard } from '@/utils/validate'
 import * as api from '../api'
 import { mapGetters } from 'vuex'
 import Upload from '@/components/ImgUpload'
+import { getToken } from '@/utils/auth'
 
 export default {
   components: { VDistpicker, Upload },
   props: {
-    organId: {
-      type: String,
-      required: true,
-    },
     isAdd: {
       type: Boolean,
-      default: true,
+      default: true
     },
     data: {
-      type: Object,
-    },
+      type: Object
+    }
   },
   computed: {
-    ...mapGetters(['organList']),
+    ...mapGetters([
+      'organList',
+      'teacherList',
+      'schoolOrgansList',
+      'identificationList',
+      'yearAndSemester'
+    ]),
+    schoolYearOptions() {
+      return this.yearAndSemester.schoolYears
+    },
+    semesterOptions() {
+      return this.yearAndSemester.semesterMap[this.signUpForm.schoolYear] || []
+    },
+    isSchool() {
+      return (
+        this.$store.getters.property && this.$store.getters.property === '1'
+      )
+    },
+    isTeacher() {
+      return (
+        this.$store.getters.property && this.$store.getters.property === '2'
+      )
+    },
+    hostUrl() {
+      return `${process.env.BASE_API}/course/upload_file/doc${
+        this.basicForm.approveFile
+      }?${getToken()}`
+    }
   },
   data() {
+    const _this = this
     const nullCheck = [{ required: true, message: '请输入', trigger: 'blur' }]
     const testIdCard = (rule, val, callback) => {
-      const validRes = validateIdCard(val)
-      if (validRes.status === 1) {
-        callback()
+      if (_this.basicForm.certType !== '1') {
+        if (val) {
+          callback()
+        } else {
+          callback(new Error('请输入'))
+        }
       } else {
-        callback(new Error(validRes.msg))
+        const validRes = validateIdCard(val)
+        if (validRes.status === 1) {
+          callback()
+        } else {
+          callback(new Error(validRes.msg))
+        }
       }
     }
 
@@ -579,11 +730,16 @@ export default {
         name: nullCheck,
         certNo: [{ validator: testIdCard, trigger: 'blur' }],
         realName: nullCheck,
+        certType: [{ required: true, message: '请选择', trigger: 'blur' }],
         birthday: [{ required: true, message: '请选择', trigger: 'blur' }],
         address: nullCheck,
-        mobile: [{ validator: testMobile, trigger: 'blur' }],
+        mobile: [{ validator: testMobile, trigger: 'blur' }]
       },
       signUpRules: {
+        organId: [{ required: true, message: '请选择', trigger: 'change' }],
+        schoolOrganId: [
+          { required: true, message: '请选择', trigger: 'change' }
+        ],
         enterLevel: [{ required: true, message: '请选择', trigger: 'change' }],
         testNo: [
           { required: true, message: '请输入考生号', trigger: 'blur' },
@@ -592,9 +748,10 @@ export default {
         semester: [{ required: true, message: '请选择', trigger: 'change' }],
         schoolYear: [{ required: true, message: '请选择', trigger: 'change' }],
         enterMajor: [{ required: true, message: '请选择', trigger: 'change' }],
-        // studentNo: [{ required: true, message: '请输入学号', trigger: 'blur' }],
+        studentNo: [{ required: true, message: '请输入学号', trigger: 'blur' }]
       },
       basicForm: {
+        certType: '',
         certNo: '', // 证件号码
         mobile: '', // 手机
         backMobile: '', // 备用手机号
@@ -624,13 +781,20 @@ export default {
         job: '',
         occupation: '',
         workCompany: '',
+        juniorCertNo: '',
+        juniorCertName: '',
+        report: '',
+        educationApprove: '',
+        approveFile: '',
+        educationStatus: ''
       },
       // 报考信息
       signUpForm: {
+        organId: '',
+        schoolOrganId: '',
         // studentNo: '', // 学号
         schoolYear: '', // 学年
         semester: '', // 学期
-        organId: '', // 学习中心
         enterLevel: '', // 报考层级
         enterMajor: '', //  录取专业
         testNo: '', // 考生号
@@ -638,9 +802,9 @@ export default {
         testType: '', // 考试方式
         studyType: '', // 学习形式
         faceReason: '', // 面试理由
-        enterTransfer: '', // 报考转专业
+        enterTransfer: '', // 转专业
         approveStatus: '', // 学院审核
-        registerType: '', // 注册状态
+        registerType: '' // 注册状态
       },
       phontoForm: {
         pictureUrl1: '',
@@ -649,42 +813,32 @@ export default {
         pictureUrl4: '',
         pictureUrl5: '',
         pictureUrl6: '',
-        pictureUrl7: '',
+        pictureUrl7: ''
       },
       politicalLandscapeList: [
         {
           value: '团员',
-          label: '团员',
+          label: '团员'
         },
         {
           value: '党员',
-          label: '党员',
-        },
+          label: '党员'
+        }
       ],
       recordOption: [
-        { label: '专科', value: '1' },
-        { label: '本科', value: '2' },
-        { label: '研究生', value: '3' },
-      ],
-      semesterOption: [
-        { label: '上学期', value: '1' },
-        { label: '下学期', value: '2' },
+        { label: '自考', value: '1' },
+        { label: '成考', value: '2' },
+        { label: '普通教育', value: '3' }
       ],
       activeName: '1',
-      semesterList: [],
-      schoolYearList: [],
       enterLevelList: [],
       enterMajorList: [],
       registerTypeList: [],
       testTypeList: [],
-      name: '',
+      name: ''
     }
   },
   async created() {
-    this.semesterList =
-      ((await api.listByCode({ code: '0024' })) || {}).data || []
-    this.schoolYearList =
-      ((await api.listByCode({ code: '0014' })) || {}).data || []
     this.enterLevelList =
       ((await api.listByCode({ code: '0015' })) || {}).data || []
     this.registerTypeList =
@@ -693,17 +847,17 @@ export default {
       ((await api.listByCode({ code: '0009' })) || {}).data || []
   },
   methods: {
+    async downLoads(url) {
+      window.location.href = this.$_getUrl(url)
+    },
     handlerData() {
-      this.name = this.organList.filter(
-        (item) => item.id === this.organId
-      )[0].name
-      for (let key in this.basicForm) {
+      for (const key in this.basicForm) {
         this.basicForm[key] = this.data[key] || ''
       }
-      for (let key in this.signUpForm) {
+      for (const key in this.signUpForm) {
         this.signUpForm[key] = this.data[key] || ''
       }
-      for (let key in this.phontoForm) {
+      for (const key in this.phontoForm) {
         this.phontoForm[key] = this.data[key] || ''
       }
       if (this.signUpForm.enterLevel) this.handlerEnterMajor()
@@ -713,17 +867,17 @@ export default {
         this.basicForm.jobStatus = '1'
         this.basicForm.yesTeacher = '1'
         this.basicForm.yesIntelnet = '1'
+        this.basicForm.certType = this.identificationList[0].dictValue
       }
     },
     async visibleChange(value, item) {
-      if (!this.signUpForm.enterLevel)
-        return this.$message.warning('请先选择报考层级!')
+      if (!this.signUpForm.enterLevel) { return this.$message.warning('请先选择报考层级!') }
     },
     async handlerEnterMajor(item, clear = false) {
       if (clear) this.signUpForm.enterMajor = ''
       const params = {
-        organId: this.organId,
-        level: this.signUpForm.enterLevel,
+        organId: this.signUpForm.organId,
+        level: this.signUpForm.enterLevel
       }
       this.enterMajorList =
         ((await api.listByOrganIdAndLevel(params)) || {}).data || []
@@ -779,19 +933,19 @@ export default {
       this.$refs.basicForm.validate((valid) => {
         if (valid) return (basicForm = true)
       })
+      if (this.basicForm.educationApprove === '2') {
+        this.basicForm.educationStatus = ''
+        this.basicForm.approveFile = ''
+      }
       this.$refs.signUpForm.validate((valid) => {
         if (valid) return (signUpForm = true)
       })
-      if (!basicForm || !signUpForm)
-        return this.$message.warning('请填写完整信息!')
+      if (!basicForm || !signUpForm) { return this.$message.warning('请填写完整信息!') }
       if (basicForm && signUpForm) {
         const params = Object.assign(
           {},
           this.basicForm,
           this.signUpForm,
-          {
-            organId: this.organId,
-          },
           this.phontoForm
         )
         if (!Object.keys(this.data).length) {
@@ -813,7 +967,17 @@ export default {
       }
     },
     handleClick() {},
-  },
+    onFileChange(data) {
+      const isLt2M = data.size / 1024 / 1024 > 4
+      if (isLt2M) return this.$message.warning('上传大小不能超过4M!')
+      const file = data.raw
+      const param = new FormData()
+      param.append('docFile', file, file.name)
+      api.uploadDoc(param).then((res) => {
+        this.basicForm.approveFile = res.data
+      })
+    }
+  }
 }
 </script>
 
@@ -872,5 +1036,12 @@ export default {
 }
 /deep/ .el-scrollbar__wrap {
   overflow-x: hidden;
+}
+.file-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  float: right;
+  width: 100px;
 }
 </style>

@@ -3,7 +3,7 @@
     <el-form :rules="rules" :model="ruleForm" ref="addForm" label-width="0">
       <div class="form-item">
         <div class="container">
-          <el-form-item label="学号/身份证" prop="studentId" class="full-width">
+          <el-form-item class="full-width" label="学号/证件号码" prop="studentId">
             <el-input
               v-model="ruleForm.studentId"
               suffix-icon="el-icon-search"
@@ -37,17 +37,17 @@
               <el-input v-model="ruleForm.money" placeholder="费用"></el-input>
             </el-form-item>
           </div>
-          <el-form-item label="扫描件">
+          <el-form-item label="扫描件" prop="pictureUrl">
             <upload class="upload-icon" ref="upload" :url="ruleForm.pictureUrl1" />
           </el-form-item>
           <div class="select-box">
             <el-form-item prop="schoolYear" label="学年" class="select-width-240">
               <el-select v-model="ruleForm.schoolYear" placeholder="请选择">
                 <el-option
-                  v-for="(item, index) in noTestTypeList"
+                  :label="item.label"
                   :key="index"
-                  :label="item.dictName"
-                  :value="item.dictValue"
+                  :value="item.value"
+                  v-for="(item, index) in schoolYearOptions"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -74,6 +74,7 @@
 <script>
 import Upload from '@/components/ImgUpload'
 import * as api from '../api'
+import { mapGetters } from 'vuex'
 export default {
   name: 'Attr',
   components: {
@@ -87,6 +88,9 @@ export default {
   },
   created() {
     this.getCodeList()
+  },
+  computed: {
+    ...mapGetters(['schoolYearOptions'])
   },
   methods: {
     async onSearch() {
@@ -105,10 +109,8 @@ export default {
       }
     },
     async getCodeList() {
-      const result1 = (await api.getSysDictList({ code: '0014' })) || {}
       const result2 = (await api.getSysDictList({ code: '0030' })) || {}
       this.courseTypeList = result2.data || []
-      this.noTestTypeList = result1.data || []
     },
     confirm(callBack) {
       this.$refs.addForm.validate(async valid => {
@@ -119,18 +121,28 @@ export default {
           return false
         }
         if (valid) {
-          if(!this.rows.id) return this.$message.warning('请先搜索学号/身份证!')
+          if(!this.rows.id) return this.$message.warning('请先搜索学号/证件号码!')
           Object.assign(this.ruleForm, {
             pictureUrl1: uploadRes.data,
             studentId: this.rows.id
           })
-          api.studentCreditSaleSave(this.ruleForm)
-          callBack(valid)
+          api.studentCreditSaleSave(this.ruleForm).then(res => {
+            if (res.code === 200) {
+              callBack(true)
+            }
+          })
         }
       })
     }
   },
   data() {
+    const pictureValid = (rule, val, callback) => {
+      if (this.$refs.upload.file) {
+        callback()
+      } else {
+        callback(new Error('请选择扫描件'))
+      }
+    }
     return {
       loading: false,
       ruleForm: {
@@ -142,7 +154,6 @@ export default {
         schoolYear: '',
         money: ''
       },
-      noTestTypeList: [],
       courseTypeList: [],
       rows: {},
       rules: {
@@ -150,6 +161,9 @@ export default {
         money: [{ required: true, message: '请输入学费', trigger: 'blur' }],
         schoolYear: [
           { required: true, message: '请选择学年', trigger: 'change' }
+        ],
+        pictureUrl: [
+          { validator: pictureValid, trigger: 'blur' }
         ],
         saleReason: [
           { required: true, message: '请选择减免原因', trigger: 'change' }

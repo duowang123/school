@@ -1,17 +1,37 @@
-<template>
+admit<template>
   <div>
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="基本信息" name="1">
         <el-form :model="basicForm" :rules="basicRules" ref="basicForm" :inline="true">
-          <el-scrollbar style="height:450px;" >
+          <el-scrollbar style="height:450px;">
             <div style="width: 900px">
               <div style="margin-bottom: 32px">
-                <div class="main-title">个人信息</div>
+                <div class="main-title">
+                  个人信息
+                  <el-button
+                    style="margin-left: 10px"
+                    size="mini"
+                    type="primary"
+                    @click="cardIdClick"
+                  >身份证识别</el-button>
+                </div>
                 <div>
                   <div class="main-content">
                     <div>
-                      <div class="flex-1">证件类型</div>
-                      <div class="flex-2">身份证</div>
+                      <div class="flex-1">
+                        证件类型
+                        <span class="required-icon">*</span>
+                      </div>
+                      <el-form-item prop="certType">
+                        <el-select class="flex-2" v-model="basicForm.certType" placeholder="请选择">
+                          <el-option
+                            v-for="item in identificationList"
+                            :key="item.id"
+                            :label="item.dictName"
+                            :value="item.dictValue"
+                          ></el-option>
+                        </el-select>
+                      </el-form-item>
                     </div>
                     <div>
                       <div class="flex-1">
@@ -19,7 +39,12 @@
                         <span class="required-icon">*</span>
                       </div>
                       <el-form-item prop="certNo">
-                        <el-input class="flex-2" v-model="basicForm.certNo" placeholder="请输入身份证号码"></el-input>
+                        <el-input
+                          class="flex-2"
+                          v-model="basicForm.certNo"
+                          :disabled="!isAdd || readCard"
+                          placeholder="请输入证件号码"
+                        ></el-input>
                       </el-form-item>
                     </div>
 
@@ -29,18 +54,30 @@
                         <span class="required-icon">*</span>
                       </div>
                       <el-form-item prop="realName">
-                        <el-input class="flex-2" v-model="basicForm.realName" placeholder="请输入内容"></el-input>
+                        <el-input
+                          :disabled="readCard"
+                          class="flex-2"
+                          placeholder="请输入内容"
+                          v-model="basicForm.realName"
+                        ></el-input>
                       </el-form-item>
                     </div>
                     <div>
                       <div class="flex-1">性别</div>
-                      <el-radio-group class="flex-2" v-model="basicForm.sex">
+                      <el-radio-group :disabled="readCard" class="flex-2" v-model="basicForm.sex">
                         <el-radio label="1">男</el-radio>
                         <el-radio label="2">女</el-radio>
                       </el-radio-group>
                     </div>
                   </div>
                   <div class="main-content">
+                    <div>
+                      <div class="flex-1">婚姻状况</div>
+                      <el-radio-group class="flex-2" v-model="basicForm.marryStatus">
+                        <el-radio label="1">已婚</el-radio>
+                        <el-radio label="2">未婚</el-radio>
+                      </el-radio-group>
+                    </div>
                     <div>
                       <div class="flex-1">
                         出生日期
@@ -51,6 +88,7 @@
                           class="flex-2"
                           v-model="basicForm.birthday"
                           type="date"
+                          :disabled="readCard"
                           value-format="yyyy-MM-dd"
                           placeholder="选择日期"
                         ></el-date-picker>
@@ -70,7 +108,8 @@
                         <el-input class="flex-2" v-model="basicForm.nation" placeholder="请输入内容"></el-input>
                       </el-form-item>
                     </div>
-
+                  </div>
+                  <div class="main-content">
                     <div>
                       <div class="flex-1">政治面貌</div>
                       <el-form-item>
@@ -81,25 +120,16 @@
                         ></el-input>
                       </el-form-item>
                     </div>
-                  </div>
-                  <div class="main-content">
-                    <div>
-                      <div class="flex-1">婚姻状况</div>
-                      <el-radio-group class="flex-2" v-model="basicForm.marryStatus">
-                        <el-radio label="1">已婚</el-radio>
-                        <el-radio label="2">未婚</el-radio>
-                      </el-radio-group>
-                    </div>
-
                     <div class="homePlace">
                       <div class="flex-1">
                         户籍地址
                         <span class="required-icon">*</span>
                       </div>
-                      <el-form-item prop="address">
+                      <el-form-item>
                         <el-input
                           class="flex-2 lagerWidth"
                           v-model="basicForm.address"
+                          :disabled="readCard"
                           placeholder="请输入内容"
                         ></el-input>
                       </el-form-item>
@@ -122,14 +152,10 @@
                       </el-form-item>
                     </div>
 
-                    <div >
+                    <div>
                       <div class="flex-1">电子邮箱</div>
                       <el-form-item>
-                        <el-input
-                          class="flex-2"
-                          v-model="basicForm.email"
-                          placeholder="请输入内容"
-                        ></el-input>
+                        <el-input class="flex-2" v-model="basicForm.email" placeholder="请输入内容"></el-input>
                       </el-form-item>
                     </div>
 
@@ -167,20 +193,14 @@
                     </div>
 
                     <div>
-                      <div class="flex-1">
-                        毕业学校
-                        <span class="required-icon">*</span>
-                      </div>
+                      <div class="flex-1">毕业学校</div>
                       <el-form-item>
                         <el-input class="flex-2" v-model="basicForm.university" placeholder="请输入内容"></el-input>
                       </el-form-item>
                     </div>
 
                     <div>
-                      <div class="flex-1">
-                        毕业时间
-                        <span class="required-icon">*</span>
-                      </div>
+                      <div class="flex-1">毕业时间</div>
                       <el-form-item>
                         <el-date-picker
                           class="flex-2"
@@ -200,10 +220,7 @@
                   </div>
                   <div class="main-content">
                     <div>
-                      <div class="flex-1">
-                        毕业证号码
-                        <span class="required-icon">*</span>
-                      </div>
+                      <div class="flex-1">毕业证号码</div>
                       <el-form-item>
                         <el-input class="flex-2" v-model="basicForm.recordNo" placeholder="请输入内容"></el-input>
                       </el-form-item>
@@ -313,10 +330,10 @@
               <el-form-item prop="schoolYear">
                 <el-select class="flex-2" v-model="signUpForm.schoolYear" placeholder="请选择">
                   <el-option
-                    v-for="item in schoolYearList"
+                    :label="item.label"
                     :key="item.id"
-                    :label="item.dictName"
-                    :value="item.dictValue"
+                    :value="item.value"
+                    v-for="item in schoolYearOptions"
                   ></el-option>
                 </el-select>
               </el-form-item>
@@ -329,7 +346,23 @@
               <el-form-item prop="semester">
                 <el-select class="flex-2" v-model="signUpForm.semester" placeholder="请选择">
                   <el-option
-                    v-for="item in semesterList"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                    v-for="item in semesterOptions"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </div>
+            <div>
+              <div class="flex-1">
+                报考科目
+                <span class="required-icon">*</span>
+              </div>
+              <el-form-item prop="department">
+                <el-select class="flex-2" v-model="signUpForm.department" placeholder="请选择">
+                  <el-option
+                    v-for="item in departmentOption"
                     :key="item.id"
                     :label="item.dictName"
                     :value="item.dictValue"
@@ -343,33 +376,40 @@
                 <span class="required-icon">*</span>
               </div>
               <el-form-item prop="enterLevel">
-                <el-select class="flex-2" v-model="signUpForm.enterLevel" placeholder="请选择">
+                <el-select @change="handlerEnterMajor(true)" class="flex-2" placeholder="请选择" v-model="signUpForm.enterLevel">
                   <el-option
-                      v-for="item in enterLevelList"
-                      :key="item.id"
-                      @click.native="handlerEnterMajor(item, true)"
-                      :label="item.dictName"
-                      :value="item.dictValue"
+                    v-for="item in enterLevelList"
+                    :key="item.id"
+                    :label="item.dictName"
+                    :value="item.dictValue"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </div>
+          </div>
+          <div class="main-content">
+            <div>
+              <div class="flex-1">报考一志愿学校 <span class="required-icon">*</span></div>
+              <el-form-item prop="organId">
+                <el-select @change="handlerEnterMajor(true)" class="flex-2" filterable placeholder="请选择" v-model="signUpForm.organId">
+                  <el-option
+                    v-for="item in schoolOrgansList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"
                   ></el-option>
                 </el-select>
               </el-form-item>
             </div>
             <div>
-              <div class="flex-1">报考一志愿学校</div>
-              <div class="flex-2">{{ name }}</div>
-            </div>
-          </div>
-          <div class="main-content">
-            <div>
               <div class="flex-1">
-                报考专业报考专业
+                报考专业
                 <span class="required-icon">*</span>
               </div>
               <el-form-item prop="enterMajor">
                 <el-select
                   class="flex-2"
                   v-model="signUpForm.enterMajor"
-                  @visible-change="visibleChange($event)"
                   placeholder="请选择"
                 >
                   <el-option
@@ -387,7 +427,12 @@
                 <span class="required-icon">*</span>
               </div>
               <el-form-item prop="testNo">
-                <el-input class="flex-2" v-model="signUpForm.testNo" placeholder="请输入" />
+                <el-input
+                  class="flex-2"
+                  v-model="signUpForm.testNo"
+                  :disabled="!isAdd"
+                  placeholder="请输入"
+                />
               </el-form-item>
             </div>
             <div>
@@ -396,8 +441,10 @@
                 <el-input class="flex-2" v-model="signUpForm.password" placeholder="请输入" />
               </el-form-item>
             </div>
+          </div>
+          <div class="main-content">
             <div>
-              <div class="flex-1">报考转专业</div>
+              <div class="flex-1">转专业</div>
               <el-form-item>
                 <el-select class="flex-2" v-model="signUpForm.enterTransfer" placeholder="请选择">
                   <el-option label="是" value="1"></el-option>
@@ -405,8 +452,6 @@
                 </el-select>
               </el-form-item>
             </div>
-          </div>
-          <div class="main-content">
             <div>
               <div class="flex-1">考试方式</div>
               <el-form-item>
@@ -420,23 +465,25 @@
                 </el-select>
               </el-form-item>
             </div>
-            <div style="margin-left: 35px">
+            <div>
               <div class="flex-1">学习形式</div>
               <el-form-item>
                 <el-select class="flex-2" v-model="signUpForm.studyType" placeholder="请选择">
-                  <el-option label="学校形式" value="1"></el-option>
-                  <el-option label="网络学校" value="2"></el-option>
-                  <el-option label="线下学校" value="3"></el-option>
+                  <el-option label="函授" value="1"></el-option>
+                  <el-option label="业余" value="2"></el-option>
+                  <el-option label="脱产" value="3"></el-option>
                 </el-select>
               </el-form-item>
             </div>
-            <div style="margin-left: 35px">
+            <div>
               <div class="flex-1">面试理由</div>
               <el-form-item>
                 <el-input class="flex-2" v-model="signUpForm.faceReason" placeholder="请输入" />
               </el-form-item>
             </div>
-            <div style="margin-left: 35px">
+          </div>
+          <div class="main-content" style="justify-content: flex-start;">
+            <div>
               <div class="flex-1">学院审核</div>
               <el-form-item>
                 <el-select class="flex-2" v-model="signUpForm.approveStatus" placeholder="请选择">
@@ -447,43 +494,71 @@
                 </el-select>
               </el-form-item>
             </div>
-          </div>
-          <div class="main-content">
-            <div>
-              <div class="flex-1">
-                报考二志愿学校
-              </div>
-              <el-form-item >
+            <div style="margin-left: 35px">
+              <div class="flex-1">报考二志愿学校</div>
+              <el-form-item>
                 <el-select
-                    class="flex-2"
-                    v-model="signUpForm.organId2"
-                    placeholder="请选择"
-                    @change="handlerEnterMajor2"
+                  class="flex-2"
+                  v-model="signUpForm.organId2"
+                  placeholder="请选择"
+                  @change="handlerEnterMajor2(true)"
                 >
                   <el-option
-                      v-for="item in organChildList"
-                      :key="item.id"
-                      :label="item.name"
-                      :value="item.id"
+                    v-for="item in schoolOrgansList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"
                   ></el-option>
                 </el-select>
               </el-form-item>
             </div>
-            <div>
-              <div class="flex-1">
-                报考二志愿专业
-              </div>
-              <el-form-item >
+            <div style="margin-left: 35px">
+              <div class="flex-1">二志愿层级</div>
+              <el-form-item>
                 <el-select
                   class="flex-2"
-                  v-model="signUpForm.enterMajor2"
+                  placeholder="请选择"
+                  v-model="signUpForm.enterLevel2"
+                  @change="handlerEnterMajor2(true)"
+                >
+                  <el-option
+                    :key="item.id"
+                    :label="item.dictName"
+                    :value="item.dictValue"
+                    v-for="item in enterLevelList"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </div>
+            <div style="margin-left: 35px">
+              <div class="flex-1">报考二志愿专业</div>
+              <el-form-item>
+                <el-select class="flex-2" v-model="signUpForm.enterMajor2" placeholder="请选择">
+                  <el-option
+                    v-for="item in enterMajor2List"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </div>
+          </div>
+          <div class="main-content">
+            <div>
+              <div class="flex-1">教学点</div>
+              <el-form-item>
+                <el-select
+                  class="flex-2"
+                  v-model="signUpForm.schoolOrganId"
+                  filterable
                   placeholder="请选择"
                 >
                   <el-option
-                      v-for="item in enterMajor2List"
-                      :key="item.id"
-                      :label="item.name"
-                      :value="item.id"
+                    v-for="item in teacherList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"
                   ></el-option>
                 </el-select>
               </el-form-item>
@@ -500,29 +575,50 @@ import VDistpicker from 'v-distpicker'
 import { isvalidMobile, validateIdCard } from '@/utils/validate'
 import * as api from '../api'
 import { mapGetters } from 'vuex'
+import Device from '@/utils/zkid/index'
 
 export default {
   components: { VDistpicker },
   props: {
-    organId: {
-      type: String,
-      required: true,
+    isAdd: {
+      type: Boolean
     },
     data: {
-      type: Object,
-    },
+      type: Object
+    }
   },
   computed: {
-    ...mapGetters(['organList'])
+    ...mapGetters([
+      'organList',
+      'schoolOrgansList',
+      'teacherList',
+      'identificationList',
+      'yearAndSemester'
+    ]),
+    schoolYearOptions() {
+      return this.yearAndSemester.schoolYears
+    },
+    semesterOptions() {
+      return this.yearAndSemester.semesterMap[this.signUpForm.schoolYear] || []
+    }
   },
   data() {
-    const nullCheck = [{ required: true, message: '请输入', trigger: 'blur' }]
+    const _this = this
+    const nullCheck = [{ required: true, message: '请输入', trigger: 'change' }]
     const testIdCard = (rule, val, callback) => {
-      const validRes = validateIdCard(val)
-      if (validRes.status === 1) {
-        callback()
+      if (_this.basicForm.certType !== '1') {
+        if (val) {
+          callback()
+        } else {
+          callback(new Error('请输入'))
+        }
       } else {
-        callback(new Error(validRes.msg))
+        const validRes = validateIdCard(val)
+        if (validRes.status === 1) {
+          callback()
+        } else {
+          callback(new Error(validRes.msg))
+        }
       }
     }
 
@@ -538,23 +634,28 @@ export default {
     return {
       basicRules: {
         name: nullCheck,
-        certNo: [{ validator: testIdCard, trigger: 'blur' }],
+        certNo: [{ validator: testIdCard, trigger: 'change' }],
         realName: nullCheck,
-        birthday: [{ required: true, message: '请选择', trigger: 'blur' }],
+        certType: [{ required: true, message: '请选择', trigger: 'change' }],
+        birthday: [{ required: true, message: '请选择', trigger: 'change' }],
         address: nullCheck,
-        mobile: [{ validator: testMobile, trigger: 'blur' }]
+        mobile: [{ validator: testMobile, trigger: 'change' }],
       },
       signUpRules: {
+        department: [{ required: true, message: '请选择', trigger: 'change' }],
+        organId: [{ required: true, message: '请选择', trigger: 'change' }],
         enterLevel: [{ required: true, message: '请选择', trigger: 'change' }],
         testNo: [
-          { required: true, message: '请输入考生号', trigger: 'blur' },
-          { max: 16, message: '必须小于16位', trigger: 'blur' }
+          { required: true, message: '请输入考生号', trigger: 'change' },
+          { max: 16, message: '必须小于16位', trigger: 'change' }
         ],
         semester: [{ required: true, message: '请选择', trigger: 'change' }],
         schoolYear: [{ required: true, message: '请选择', trigger: 'change' }],
         enterMajor: [{ required: true, message: '请选择', trigger: 'change' }]
       },
+      readCard: false, // 读取状态
       basicForm: {
+        certType: '',
         certNo: '', // 证件号码
         mobile: '', // 手机
         backMobile: '', // 备用手机号
@@ -583,7 +684,7 @@ export default {
         title: '',
         job: '',
         occupation: '',
-        workCompany: '',
+        workCompany: ''
       },
       // 报考信息
       signUpForm: {
@@ -592,6 +693,7 @@ export default {
         organId: '', // 学习中心
         enterLevel: '', // 报考层级
         organId2: '', // 报考二志愿学校
+        enterLevel2: '', // 报考二志层级
         enterMajor: '', //  报考专业
         enterMajor2: '', //  报考专业2
         testNo: '', // 考生号
@@ -599,13 +701,15 @@ export default {
         testType: '', // 考试方式
         studyType: '', // 学习形式
         faceReason: '', // 面试理由
-        enterTransfer: '', // 报考转专业
+        enterTransfer: '', // 转专业
         approveStatus: '', // 学院审核
+        department: '',
+        schoolOrganId: ''
       },
       politicalLandscapeList: [
         {
           value: '团员',
-          label: '团员',
+          label: '团员'
         },
         {
           value: '党员',
@@ -623,63 +727,55 @@ export default {
       ],
       activeName: '1',
       semesterList: [],
-      schoolYearList: [],
       enterLevelList: [],
       enterMajorList: [],
       enterMajor2List: [],
-      organChildList: [],
       testTypeList: [],
+      departmentOption: [],
       name: ''
     }
   },
   async created() {
-    this.semesterList =
-      ((await api.listByCode({ code: '0024' })) || {}).data || []
-    this.schoolYearList =
-      ((await api.listByCode({ code: '0014' })) || {}).data || []
+    this.readCard = false
     this.enterLevelList =
       ((await api.listByCode({ code: '0015' })) || {}).data || []
     this.testTypeList =
       ((await api.listByCode({ code: '0009' })) || {}).data || []
+    this.departmentOption =
+      ((await api.listByCode({ code: '0038' })) || {}).data || []
   },
   methods: {
     handlerData() {
-      this.name = this.organList.filter(
-        (item) => item.id === this.organId
-      )[0].name
-      for (let key in this.basicForm) {
+      this.readCard = false
+      this.activeName = '1'
+      for (const key in this.basicForm) {
         this.basicForm[key] = this.data[key] || ''
       }
-      for (let key in this.signUpForm) {
+      for (const key in this.signUpForm) {
+        if (key === 'schoolOrganId') {
+          console.log(this.data[key]);
+        }
         this.signUpForm[key] = this.data[key] || ''
       }
-      if (this.signUpForm.enterLevel) {
-        this.handlerEnterMajor()
-        this.signUpForm.organId2 && this.handlerEnterMajor2(false)
-      }
-      this.getOrganChild()
+      this.handlerEnterMajor()
+      this.handlerEnterMajor2(false)
       if (!Object.keys(this.data).length) {
         this.basicForm.sex = '1'
         this.basicForm.marryStatus = '1'
         this.basicForm.jobStatus = '1'
         this.basicForm.yesTeacher = '1'
         this.basicForm.yesIntelnet = '1'
+        this.basicForm.certType = this.identificationList[0].dictValue
       }
     },
-    async visibleChange(value, item) {
-      if (!this.signUpForm.enterLevel)
-        return this.$message.warning('请先选择招生层次!')
-    },
-    getOrganChild() {
-      api.getOrganChild({ name: '' }).then(res => {
-        this.organChildList = res.data.list
-      })
-    },
-    async handlerEnterMajor(item, clear = false) {
+    async handlerEnterMajor(clear = false) {
       if (clear) this.signUpForm.enterMajor = ''
+      if (!this.signUpForm.organId || !this.signUpForm.enterLevel) {
+        return false
+      }
       const params = {
-        organId: this.organId,
-        level: this.signUpForm.enterLevel,
+        organId: this.signUpForm.organId,
+        level: this.signUpForm.enterLevel
       }
       this.enterMajorList =
         ((await api.listByOrganIdAndLevel(params)) || {}).data || []
@@ -687,17 +783,14 @@ export default {
     // 获取第二志愿专业列表
     handlerEnterMajor2(reset = true) {
       reset && (this.signUpForm.enterMajor2 = '')
+      if (!this.signUpForm.organId2 || !this.signUpForm.enterLevel2) {
+        return false
+      }
       const params = {
         organId: this.signUpForm.organId2,
-        level: this.signUpForm.enterLevel
+        level: this.signUpForm.enterLevel2
       }
-      if (!this.signUpForm.enterLevel) {
-        this.$nextTick(() => {
-          this.signUpForm.organId2 = ''
-        })
-        return this.$message.warning('请先选择招生层次!')
-      }
-      api.listByOrganIdAndLevel(params).then(res => {
+      api.listByOrganIdAndLevel(params).then((res) => {
         this.enterMajor2List = res.data
       })
     },
@@ -710,12 +803,9 @@ export default {
       this.$refs.signUpForm.validate((valid) => {
         if (valid) return (signUpForm = true)
       })
-      if (!basicForm || !signUpForm)
-        return this.$message.warning('请填写完整信息!')
+      if (!basicForm || !signUpForm) { return this.$message.warning('请填写完整信息!') }
       if (basicForm && signUpForm) {
-        const params = Object.assign({}, this.basicForm, this.signUpForm, {
-          organId: this.organId,
-        })
+        const params = Object.assign({}, this.basicForm, this.signUpForm)
         if (!Object.keys(this.data).length) {
           api.studentSave(params).then((res) => {
             if (res.code === 200) {
@@ -735,7 +825,26 @@ export default {
       }
     },
     handleClick() {},
-  },
+    cardIdClick() {
+      Device.prototype.callBackFn = (res) => {
+        const { Certificate = {}} = res
+        this.basicForm.certNo = Certificate.IDNumber
+        this.basicForm.realName = Certificate.Name
+        this.basicForm.sex = Certificate.Sex === '男' ? '1' : '2'
+        this.basicForm.nation = Certificate.Nation
+        this.basicForm.address = Certificate.Address
+        this.basicForm.birthday =
+          Certificate.Birthday.slice(0, 4) +
+          '-' +
+          Certificate.Birthday.slice(4, 6) +
+          '-' +
+          Certificate.Birthday.slice(6)
+        this.readCard = true
+      }
+      const device = new Device()
+      device.startFun()
+    }
+  }
 }
 </script>
 

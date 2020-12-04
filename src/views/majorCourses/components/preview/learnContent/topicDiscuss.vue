@@ -8,7 +8,6 @@ PreviewTopicDiscuss
 </template>
 
 <script>
-  import { CHAPTER_CONT_TYPE } from './constant'
   import DiscussCont from '@/components/TopicDiscuss/discussCont'
 
   export default {
@@ -33,7 +32,7 @@ PreviewTopicDiscuss
     },
     computed: {
       cont() {
-        return this.$_getValue(this.chapterCont, `${CHAPTER_CONT_TYPE.taolun}`) || {}
+        return this.chapterCont
       }
     }
   }

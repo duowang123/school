@@ -17,7 +17,6 @@
 </template>
 
 <script>
-  import { CHAPTER_CONT_TYPE } from './constant'
   export default {
     name: 'TopicDiscuss',
     props: {
@@ -26,9 +25,17 @@
       }
     },
     watch: {
+      'chapterCont.navId': {
+        immediate: true,
+        handler() {
+          this.$nextTick(() => {
+            this.initData()
+          })
+        }
+      },
       formData: {
         handler(val) {
-          this.chapterCont[CHAPTER_CONT_TYPE.taolun] = val
+          Object.assign(this.chapterCont, val)
         },
         deep: true
       }
@@ -43,7 +50,7 @@
     },
     methods: {
       initData() {
-        this.formData = this.chapterCont[CHAPTER_CONT_TYPE.taolun] || {
+        this.formData = this.chapterCont || {
           topicName: '',
           topicIntroduce: ''
         }

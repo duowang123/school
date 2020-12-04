@@ -1,3 +1,8 @@
+import { cloneDeep as l_cloneDeep } from 'loadsh'
+import { Message } from 'element-ui'
+import { BASE_API, COLORS } from '@/constant/global'
+import { getToken } from '@/utils/auth'
+
 /**
  * 获取对象属性
  * @param obj (Object) 目标对象
@@ -37,7 +42,6 @@ export function flattenObj(arr, path = 'children') {
 export function getSimpleText(html) {
   const re1 = new RegExp('<.+?>', 'g')
   const text = html.replace(re1, '')
-  console.log('text', text)
   if (text.length > 10) {
     return `${text.substring(0, 9)}...`
   } else {
@@ -59,4 +63,52 @@ export function ObjectDeDuplication(arr, key = 'id') {
     return cur;
   }, [])
   return arr
-} 
+}
+
+export function cloneDeep(obj) {
+  return l_cloneDeep(obj)
+}
+
+export function isMoney(val) {
+  return /^[0-9]+\.[0-9]{2}$/.test(val)
+}
+
+export function picTypeCheck(file, size = 2) {
+  const isPic = /.(gif|jpg|jpeg|png|gif|jpg|png)$/.test(file.type);
+  const isLt2M = file.size / 1024 / 1024 < size;
+
+  if (!isPic) {
+    Message.error('上传头像图片只能是 JPG 格式!');
+  }
+  if (!isLt2M) {
+    Message.error('上传头像图片大小不能超过 2MB!');
+  }
+  return isPic && isLt2M;
+}
+
+export function docTypeCheck(file, size = 10) {
+  const wordList = ['doc', 'docx']
+  const isWord = !!wordList.filter(type => file.name.includes(type)).length;
+  if (!isWord) {
+    Message.error('只能上传Word文档!');
+  }
+  const isLt10M = file.size / 1024 / 1024 < 10;
+  return isWord && isLt10M;
+}
+
+export function getUrl(url) {
+  return `${BASE_API}/course${url}?token=${getToken()}`
+}
+
+export function getColor(type) {
+  return COLORS[type]
+}
+
+/**
+ * 剔除机构中的全部选项
+ * @param organList
+ * @returns {*[]}
+ */
+export function organFilter(organList) {
+  return organList.filter(e => e.label !== '全部')
+}

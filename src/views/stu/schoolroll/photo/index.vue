@@ -7,11 +7,35 @@
         </el-form-item>
         <div>
           <el-form-item class="select-width-240">
-            <el-select class="organ-select" filterable v-model="params.organId" placeholder="请选择合作单位">
+            <el-select
+              class="organ-select"
+              v-model="params.organId"
+              filterable
+              v-if="showSchool"
+              clearable
+              @change="organChange"
+              placeholder="请选择学校"
+            >
               <el-option
-                v-for="item in organList"
+                v-for="item in schoolOrgansListAll"
                 :key="item.id"
-                @click.native="getOrganId(item)"
+                :label="item.name"
+                :value="item.id"
+              ></el-option>
+            </el-select>
+            <el-select
+              class="organ-select"
+              v-model="params.schoolOrganId"
+              filterable
+              v-if="showTeacher"
+              lsSchool
+              clearable
+              @change="organChange"
+              placeholder="请选择教学点"
+            >
+              <el-option
+                v-for="item in organListAll"
+                :key="item.id"
                 :label="item.name"
                 :value="item.id"
               ></el-option>
@@ -20,11 +44,11 @@
           <el-form-item class="select-width-240">
             <el-select class="organ-select" v-model="params.schoolYear" clearable placeholder="学年">
               <el-option
-                v-for="item in yearList"
-                :key="item.dicValue"
-                :label="item.dictName"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
                 @click.native="getTableData"
-                :value="item.dictValue"
+                v-for="item in schoolYearOptions"
               ></el-option>
             </el-select>
           </el-form-item>
@@ -32,7 +56,7 @@
             <el-input
               v-model.trim="params.realNameOrcertNo"
               @keyup.enter.native="init"
-              placeholder="姓名/身份证/学号"
+              placeholder="姓名/证件号码/学号"
             ></el-input>
           </el-form-item>
           <!-- <el-form-item> -->
@@ -43,31 +67,35 @@
         </div>
       </el-form>
     </div>
-    <div class="img-box-container" v-loading="loading">
-      <template v-if="photoData.length">
-        <div class="img-box" v-for="(item, i) in photoData" :key="i">
-          <div class="item-img-box">
-            <img class="item-img" :src="showImg(item.pictureUrl1)" alt />
-          </div>
-          <div class="item-txt">
-            <span>姓名：</span>
-            <span>{{item.realName}}</span>
-          </div>
-          <div class="item-txt">
-            <span>身份证：</span>
-            <span>{{item.certNo}}</span>
-          </div>
-          <div class="item-download" @click="downloadImg(item)">下载</div>
+    <div class="main-content-container">
+      <el-scrollbar class="table" :style="{height:tableHeight}" :noresize="true">
+        <div class="img-box-container" :loading="loading">
+          <template v-if="photoData.length">
+            <div class="img-box" v-for="(item, i) in photoData" :key="i">
+              <div class="item-img-box">
+                <img class="item-img" :src="showImg(item.pictureUrl1)" alt />
+              </div>
+              <div class="item-txt">
+                <span>姓名：</span>
+                <span>{{item.realName}}</span>
+              </div>
+              <div class="item-txt">
+                <span>证件号码：</span>
+                <span>{{item.certNo}}</span>
+              </div>
+              <div class="item-download" @click="downloadImg(item)">下载</div>
+            </div>
+          </template>
+          <div v-else class="no-data">暂无数据</div>
         </div>
-      </template>
-      <div v-else class="no-data">暂无数据</div>
+      </el-scrollbar>
+      <pagination
+        @handleSizeChange="handleSizeChange"
+        @handleCurrentChange="handleCurrentChange"
+        :currentPage="page.pageCurrent"
+        :pagination-config="paginationConfig"
+      />
     </div>
-    <pagination
-      @handleSizeChange="handleSizeChange"
-      @handleCurrentChange="handleCurrentChange"
-      :currentPage="page.pageCurrent"
-      :pagination-config="paginationConfig"
-    />
   </div>
 </template>
 <script>
@@ -75,49 +103,49 @@ import * as api from '@/api/organ'
 import { getToken } from '@/utils/auth'
 import { BASE_API } from '@/constant/global'
 import pagination from '@/components/Table/pagination'
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters } from 'vuex'
 import mixin from '../../../mixins/download'
+import heightMixin from '@/components/Table/heightMixin'
+import selectMixin from '../../../mixins/select.js'
+
 export default {
   components: {
-    pagination
+    pagination,
   },
-  mixins: [mixin],
+  mixins: [mixin, heightMixin, selectMixin],
   name: 'Photo',
   data() {
     return {
-      yearList: [],
       params: {
         schoolYear: '',
         organId: '',
-        realNameOrcertNo: ''
+        realNameOrcertNo: '',
+        schoolOrganId: ''
       },
       photoData: [],
       page: {
         pageCurrent: 1,
         pageSize: 20,
         totalCount: 0,
-        totalPage: 0
+        totalPage: 0,
       },
       componentName: '',
-      dialogVisible: false
+      dialogVisible: false,
     }
   },
   computed: {
+    ...mapGetters(['organList', 'schoolYearOptions']),
     paginationConfig() {
       return {
         total: this.page.totalCount,
         pageSize: this.page.pageSize,
         pageSizes: [20, 50, 100, 200]
       }
-    },
-    ...mapGetters(['organList'])
+    }
   },
   mounted() {
     setTimeout(async () => {
-      this.$set(this.params, 'organId', this.organList[0].id)
-      const result1 = (await api.getSysDictList({ code: '0014' })) || {}
-      this.yearList = result1.data || []
-      // this.params.schoolYear = this.yearList[0].dictValue
+      this.$set(this.params, 'organId', this.organListAll[0].id)
       this.init()
     }, 500)
   },
@@ -162,17 +190,17 @@ export default {
         ...this.params,
         pageCurrent: this.page.pageCurrent,
         pageSize: this.page.pageSize,
-        ...query
+        ...query,
       }
       api
         .studentImgInfo(params)
-        .then(res => {
+        .then((res) => {
           this.photoData = res.data.rows ? res.data.rows : []
           this.page.totalCount = res.data.totalCount
           this.page.totalPage = res.data.totalPage
           this.loading = false
         })
-        .catch(err => {
+        .catch((err) => {
           this.photoData = []
           this.loading = false
         })
@@ -182,9 +210,9 @@ export default {
       const params = {
         pageCurrent: this.page.pageCurrent,
         pageSize: this.page.pageSize,
-        ...this.params
+        ...this.params,
       }
-      if(!params.schoolYear) return this.$message.error('学年不能为空!')
+      if (!params.schoolYear) return this.$message.error('学年不能为空!')
       this.download(
         params,
         '/course/student_picture/zip/download',
@@ -202,8 +230,8 @@ export default {
         item.studentNo,
         'jpg'
       )
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -213,6 +241,7 @@ export default {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    background-color: #f3f5f7;
     .organ-select {
       /deep/ .el-select {
         width: 240px;

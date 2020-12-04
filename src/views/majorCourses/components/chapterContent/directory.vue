@@ -23,10 +23,9 @@
           :highlight-current="true"
           :props="defaultProps"
           :expand-on-click-node="false">
-        <div class="custom-tree-node" slot-scope="{ node, data }">
+        <div class="custom-tree-node" slot-scope="{ node, data }" @dblclick="editMenu(data)">
           <span class="chapterName" @click="selChapterCont(data)">{{ node.label }}</span>
           <span>
-              <i class="tree-item el-icon-edit" @click="editMenu(data)"></i>
               <i class="tree-item el-icon-plus treeAdd" @click="addMenu(data)"></i>
               <i class="tree-item iconfont icon-delete" @click="() => remove(node, data)"></i>
           </span>
@@ -108,7 +107,7 @@ export default {
           if (this.isAdd) {
             api.addCourseMenu(this.aadMenuData).then(res => {
               if (res.code === 200) {
-                if (_this.parentMenu) {
+                if (_this.parentMenu && _this.parentMenu.children) {
                   _this.parentMenu.children.push({
                     ..._this.aadMenuData,
                     id: res.data
@@ -133,6 +132,9 @@ export default {
       });
     },
     selChapterCont(data) {
+      if (data.parentId === '-1') {
+        return void '一级菜单只做一个锚点'
+      }
       this.$emit('change-chapter', data)
     },
     editMenu(data) {

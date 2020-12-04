@@ -26,7 +26,7 @@
           <el-input class="flex-2" v-model="params.testNo" placeholder="请输入考生号"></el-input>
         </div>
         <div class="id-box" style="margin-left: 130px;">
-          <div class="flex-1">身份证号码</div>
+          <div class="flex-1">证件号码</div>
           <el-input class="flex-2" v-model="params.certNo" placeholder="请输入证件号码"></el-input>
         </div>
       </div>

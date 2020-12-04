@@ -23,7 +23,13 @@
       <el-row v-for="(item,index) of fillAnswer" :key="index" style="margin-top: 10px">
         <span>{{ index+1 }}</span>
         <el-input style="width: 74%;margin-left:2%" v-model="item.content"></el-input>
-        <el-input-number :min="0" :step="1" style="display:inline-flex;margin-left: 2%" v-model="item.score"></el-input-number>
+        <el-input-number
+          :min="0"
+          :step="1"
+          style="display:inline-flex;margin-left: 2%"
+          v-model="item.score"
+          @change="changeScore(item.score)"
+        ></el-input-number>
         <i
           class="el-icon-delete"
           style="display:inline-flex;margin-left: 2%"
@@ -50,6 +56,9 @@ export default {
     answer: {
       type: [String, Array],
       required: true,
+    },
+    score: {
+      type: [Number],
     },
   },
   computed: {
@@ -82,6 +91,14 @@ export default {
     },
   },
   methods: {
+    changeScore(val) {
+      const values = Object.values(this.fillAnswer)
+      let score = 0
+      values.forEach((item) => {
+        score = score + item.score
+      })
+      this.$emit('update:score', score)
+    },
     createEdit(name, dom, value) {
       const E = require('wangeditor')
       this[name] = new E(dom)

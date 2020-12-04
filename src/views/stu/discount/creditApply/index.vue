@@ -7,11 +7,35 @@
         </el-form-item>
         <el-form-item>
           <div class="organ-box">
-            <el-select class="organ-select" filterable v-model="params.organId" placeholder="请选择合作单位">
+            <el-select
+              class="organ-select"
+              v-model="params.organId"
+              filterable
+              v-if="showSchool"
+              clearable
+              @change="getTableData"
+              placeholder="请选择学校"
+            >
               <el-option
-                v-for="item in organList"
+                v-for="item in schoolOrgansListAll"
                 :key="item.id"
-                @click.native="getOrganId(item)"
+                :label="item.name"
+                :value="item.id"
+              ></el-option>
+            </el-select>
+            <el-select
+              class="organ-select"
+              v-model="params.schoolOrganId"
+              filterable
+              clearable
+              v-if="showTeacher"
+              lsSchool
+              @change="getTableData"
+              placeholder="请选择教学点"
+            >
+              <el-option
+                v-for="item in organListAll"
+                :key="item.id"
                 :label="item.name"
                 :value="item.id"
               ></el-option>
@@ -20,7 +44,7 @@
               v-model.trim="params.realNameOrcertNo"
               prefix-icon="el-icon-search"
               @change="getTableData"
-              placeholder="姓名/身份证号"
+              placeholder="姓名/证件号码/学号"
             ></el-input>
             <!-- <div class="search-btn" @click="superSearch()"> -->
             <!-- <svg-icon icon-class="search" /> -->
@@ -28,20 +52,23 @@
           </div>
         </el-form-item>
       </el-form>
-      <courses-table class="table" :tableConfig="tableConfig" :tableData="tableData">
-        <div slot-scope="{ scope }" style="width:200px">
-          <span class="opr" @click="handleAttr(scope)">详情</span>
-          <span class="opr" @click="handleDelete(scope)">删除</span>
-        </div>
-      </courses-table>
-      <pagination
-        @handleSizeChange="handleSizeChange"
-        @handleCurrentChange="handleCurrentChange"
-        :currentPage="page.pageCurrent"
-        :pagination-config="paginationConfig"
-      />
+      <div class="main-content-container">
+        <courses-table class="table" :tableConfig="tableConfig" :tableData="tableData">
+          <div slot-scope="{ scope }" style="width:200px">
+            <span class="opr" @click="handleAttr(scope)">详情</span>
+            <span class="opr" @click="handleDelete(scope)">删除</span>
+          </div>
+        </courses-table>
+        <pagination
+          @handleSizeChange="handleSizeChange"
+          @handleCurrentChange="handleCurrentChange"
+          :currentPage="page.pageCurrent"
+          :pagination-config="paginationConfig"
+        />
+      </div>
     </div>
     <el-drawer
+      :wrapperClosable="false"
       :title="title"
       :visible.sync="dialogVisible"
       :size="width"
@@ -80,6 +107,7 @@ import { userInfo } from '../mock.js'
 import * as api from '../api'
 import search from '@/components/search'
 import { mapGetters } from 'vuex'
+import selectMixin from '@/views/mixins/select.js'
 
 export default {
   name: 'StudentTransaction',
@@ -88,17 +116,18 @@ export default {
     pagination,
     Attr,
     Add,
-    search
+    search,
   },
+  mixins: [selectMixin],
   computed: {
     ...mapGetters(['organList']),
     paginationConfig() {
       return {
         total: this.page.totalCount,
         pageSize: this.page.pageSize,
-        pageSizes: [20, 50, 100, 200]
+        pageSizes: [20, 50, 100, 200],
       }
-    }
+    },
   },
   data(vm) {
     return {
@@ -107,115 +136,118 @@ export default {
       levelList: [],
       params: {
         organId: '',
-        realNameOrcertNo: ''
+        realNameOrcertNo: '',
+        schoolOrganId: '',
       },
       page: {
         pageCurrent: 1,
         pageSize: 20,
         totalCount: 0,
-        totalPage: 0
+        totalPage: 0,
       },
       addData: {},
       currentData: {},
       tableData: [],
       tableConfig: {
         loading: false,
-        headerCellStyle: { background: '#F3F4F7', color: '#333333' },
+        // headerCellStyle: { background: '#F3F4F7', color: '#333333' },
         serialNumber: {
           label: '序号',
           type: 'index',
-          width: '64'
+          width: '64',
         },
         columnConfig: [
           {
             label: '学号',
             prop: 'studentNo',
-            width: '160'
+            width: '160',
           },
           {
             label: '姓名',
-            prop: 'realName'
+            prop: 'realName',
           },
           {
             label: '性别',
             prop: 'sex',
             type: 'enums',
-            enums: value => {
+            enums: (value) => {
               return value === '1' ? '男' : '女'
-            }
+            },
           },
           {
             label: '年级',
-            prop: 'schoolYear'
+            prop: 'schoolYear',
           },
           {
             label: '专业',
             prop: 'professionalName',
-            width: '160'
+            width: '160',
           },
           {
             label: '合作单位',
             prop: 'organId',
             type: 'enums',
             width: '160',
-            enums: value => {
-              return vm.organList.filter(item => item.id === value)[0].name
-            }
+            enums: (value) => {
+              return vm.organList.filter((item) => item.id === value)[0].name
+            },
           },
           {
             label: '类型',
             prop: 'noTestType',
             type: 'enums',
-            enums: value => {
-              return vm.noTestTypeList.filter(item => item.dictValue === '1')[0]
-                .dictName
-            }
+            enums: (value) => {
+              return vm.noTestTypeList.filter(
+                (item) => item.dictValue === '1'
+              )[0].dictName
+            },
           },
           {
             label: '层次',
             prop: 'enterLevel',
             type: 'enums',
-            enums: value => {
-              return vm.levelList.filter(item => item.dictValue === value)[0]
+            enums: (value) => {
+              return vm.levelList.filter((item) => item.dictValue === value)[0]
                 .dictName
-            }
+            },
           },
           {
             label: '减免学分',
             prop: 'money',
-            width: '120px'
+            width: '120px',
           },
           {
             label: '减免金额',
-            prop: 'money'
+            prop: 'money',
           },
           {
             label: '减免原因',
-            prop: 'approveStatus',
-            width: '160px',
+            prop: 'saleReason',
             type: 'enums',
-            enums: value => {
+            enums: (value) => {
               return vm.courseTypeList.filter(
-                item => item.dictValue === value
+                (item) => item.dictValue === value
               )[0].dictName
-            }
+            },
           },
           {
             label: '申请时间',
             prop: 'applicationDate',
-            width: '160px'
+            width: '160px',
           },
           {
             label: '申请人',
             prop: 'applicationUserName',
-            width: '120px'
           },
           {
             label: '审核结果',
             prop: 'approveStatus',
             type: 'enums',
-            enums: value => {
+            enums: (value) => {
               // 审核状态，1待审批，2通过，3不通过
+              if (!value) {
+                return '--'
+              }
               if (value === '1') {
                 return '待审批'
               } else if (value === '2') {
@@ -223,20 +255,21 @@ export default {
               } else {
                 return '不通过'
               }
-            }
+            },
           },
           {
             label: '审核人',
             prop: 'approveUserName',
-            width: '120px'
           },
           {
             label: '财务确认状态',
             prop: 'cfApproveStatus',
-            width: '120px',
             type: 'enums',
-            enums: value => {
+            enums: (value) => {
               // 审核状态，1待审批，2通过，3不通过
+              if (!value) {
+                return '--'
+              }
               if (value === '1') {
                 return '待审批'
               } else if (value === '2') {
@@ -244,19 +277,18 @@ export default {
               } else {
                 return '不通过'
               }
-            }
+            },
           },
           {
             label: '确认时间',
             prop: 'approveDate',
-            width: '160px'
+            width: '160px',
           },
           {
             label: '确认人',
             prop: 'cfApproveUserName',
-            width: '120px'
-          }
-        ]
+          },
+        ],
       },
       title: '',
       componentName: '',
@@ -265,12 +297,13 @@ export default {
       direction: 'rtl',
       isShowBtn: true,
       dialogVisible: false,
-      searchdialogVisible: false
+      searchdialogVisible: false,
     }
   },
   async created() {
     try {
-      this.params.organId = this.organList[0].id
+      this.params.organId = this.organListAll[0].id
+      this.params.schoolOrganId = this.schoolOrgansListAll[0].id
       await this.getCodeList()
       this.getTableData()
     } catch (err) {
@@ -327,8 +360,8 @@ export default {
           { label: '姓名', key: 'realName' },
           { label: '申请时间', key: 'applicationDate' },
           { label: '更新人', key: 'approveUserName' },
-          { label: '创建人', key: 'applicationUserName' }
-        ]
+          { label: '创建人', key: 'applicationUserName' },
+        ],
       }
     },
     add() {
@@ -340,7 +373,7 @@ export default {
     async getTableData(query) {
       const params = {
         ...this.params,
-        ...this.page
+        ...this.page,
       }
       const res = await api.creditSaleList(params)
       this.tableData = res.data.rows || []
@@ -352,9 +385,10 @@ export default {
     },
     confirm() {
       this.$nextTick(() => {
-        this.$refs[`${this.componentName}`].confirm(valid => {
+        this.$refs[`${this.componentName}`].confirm((valid) => {
           this.dialogVisible = !valid
           if (valid) {
+            this.componentName = ''
             this.init()
           }
         })
@@ -365,13 +399,13 @@ export default {
       this.$confirm('是否继续删除?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'warning',
       }).then(() => {
-        api.studentApplyDelete({ id: row.id }).then(res => {
+        api.studentApplyDelete({ id: row.id }).then((res) => {
           if (res.code === 200) {
             this.$message({
               type: 'success',
-              message: '删除成功!'
+              message: '删除成功!',
             })
             this.initPage()
             this.getTableData()
@@ -382,8 +416,8 @@ export default {
     handleCurrentChange(val) {
       this.page.currentPage = val
       this.getTableData()
-    }
-  }
+    },
+  },
 }
 </script>
 

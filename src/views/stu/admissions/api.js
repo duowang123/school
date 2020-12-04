@@ -80,6 +80,15 @@ export function studentDelete(data) {
   })
 }
 
+// 重置学生密码
+export function resetStuPWD(data) {
+  return request({
+    url: '/course/student/api/password/reset',
+    method: 'POST',
+    data
+  })
+}
+
 // 新增录入学生
 export function studentSave(data) {
   return request({
@@ -124,7 +133,6 @@ export function addStundentSave(data) {
   })
 }
 
-
 // 新增录入学生
 export function addStudentUpdate(data) {
   return request({
@@ -141,5 +149,29 @@ export function studentApprove(data) {
     data
   })
 }
+// 新增录入学生
+export function uploadDoc(data) {
+  return request({
+    url: '/course/upload/doc',
+    method: 'POST',
+    data
+  })
+}
 
+// 获取学生报名清单
+export function studentAutoSignList(data) {
+  return request({
+    url: '/course/studentSign/online/pageList',
+    method: 'POST',
+    data
+  })
+}
 
+// 线上报考信息修改
+export function stundentOnlineUpdate(data) {
+  return request({
+    url: '/course/studentSign/online/update',
+    method: 'POST',
+    data
+  })
+}

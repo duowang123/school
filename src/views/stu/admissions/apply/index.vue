@@ -14,7 +14,8 @@
           >
             <el-button plain type="primary">导入</el-button>
           </el-upload>
-          <el-button plain type="primary" style="margin-left: 24px">
+          <el-button plain type="primary" @click="exportExcel" style="margin-left: 16px">导出Excel</el-button>
+          <el-button plain type="primary" style="margin-left: 16px">
             <a download :href="STATIC_BASE + '/static/录取模版.xls'">
               <i class="el-icon-download el-icon--left"></i>模板下载
             </a>
@@ -23,18 +24,56 @@
         <div class="organ-box">
           <el-select
             class="organ-select"
+            v-model="params.schoolYear"
             filterable
-            v-model="params.organId"
             @change="organChange"
-            placeholder="请选择合作单位"
+            placeholder="请选择年级"
           >
-            <el-option v-for="item in organList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+            <el-option
+              v-for="item in schoolYearOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+          <el-select
+            class="organ-select"
+            v-model="params.organId"
+            filterable
+            v-if="showSchool"
+            clearable
+            @change="organChange"
+            placeholder="请选择学校"
+          >
+            <el-option
+              v-for="item in schoolOrgansListAll"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+          <el-select
+            class="organ-select"
+            v-model="params.schoolOrganId "
+            filterable
+            v-if="showTeacher"
+            lsSchool
+            clearable
+            @change="organChange"
+            placeholder="请选择教学点"
+          >
+            <el-option
+              v-for="item in organListAll"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            ></el-option>
           </el-select>
           <el-input
             v-model.trim="params.realNameOrcertNo"
             @change="organChange"
             @keyup.enter.native="organChange"
-            placeholder="姓名/身份证号"
+            placeholder="姓名/证件号码/学号"
           ></el-input>
           <el-button
             type="primary"
@@ -44,79 +83,85 @@
         </div>
       </el-form>
     </div>
-    <div>
-      <el-table
-        v-loading="ctrl.loading"
-        size="medium"
-        :header-cell-style="getRowClass"
-        :data="list"
-        stripe
-        style="width: 100%"
-      >
-        <el-table-column label width="24" align="center"></el-table-column>
-        <el-table-column type="index" align="center" label="序号" width="50"></el-table-column>
-        <el-table-column prop="testNo" label="考生号"></el-table-column>
-        <el-table-column prop="realName" label="姓名"></el-table-column>
-        <el-table-column label="性别">
-          <template slot-scope="scope">
-            <span>{{ scope.row.sex === '1' ? '男' : '女' }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="certNo" width="190" label="身份证"></el-table-column>
-        <el-table-column prop="organName" label="录取学校" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="schoolYear" label="年级"></el-table-column>
-        <el-table-column label="报考层次">
-          <template slot-scope="scope">
-            <span>{{ showEnterLevel(scope.row.enterLevel) }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="professionalName" width="120" label="报考专业"></el-table-column>
-        <el-table-column label="考试方式">
-          <template slot-scope="scope">
-            <span>{{ showEnterLevel(scope.row.testType, 'testType') }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="学院审核">
-          <template slot-scope="scope">
-            <span>{{ showEnterLevel(scope.row.approveStatus, 'approveStatus') }}</span>
-          </template>
-        </el-table-column>
-        <!-- <el-table-column prop label="录取状态"> -->
-        <!-- <template slot-scope="scope"> -->
-        <!-- <span>已录取</span> -->
-        <!-- </template> -->
-        <!-- </el-table-column> -->
-        <el-table-column label="注册状态">
-          <template slot-scope="scope">
-            <span>{{ scope.row.registerType ? registerTypeList.filter(item => item.dictValue === scope.row.registerType)[0].dictName : '' }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column fixed="right" align="center" label="操作" width="200">
-          <template slot-scope="scope">
-            <ul class="list-item-actions">
-              <div class="item">
-                <el-button type="text" @click="handleEdit(scope.row)">编辑</el-button>
-                <el-button type="text" @click="handleAttr(scope.row)">属性</el-button>
-                <el-button type="text" @click="handleVerify(scope.row)">审核</el-button>
-                <el-button type="text" @click="handleDelete(scope.row)">删除</el-button>
-              </div>
-            </ul>
-          </template>
-        </el-table-column>
-        <el-table-column label width="24" align="center"></el-table-column>
-      </el-table>
+    <div class="main-content-container">
+      <el-scrollbar :noresize="true" :style="{ height:tableHeight }">
+        <el-table
+          :data="list"
+          :header-cell-style="getRowClass"
+          :row-style="{height: '48px'}"
+          class="table"
+          v-loading="ctrl.loading"
+        >
+          <el-table-column align="center" width="24"></el-table-column>
+          <el-table-column align="center" label="序号" type="index" width="50"></el-table-column>
+          <el-table-column label="考生号" prop="testNo" width="200"></el-table-column>
+          <el-table-column label="学号" prop="studentNo" width="200"></el-table-column>
+          <el-table-column label="姓名" prop="realName"></el-table-column>
+          <el-table-column label="性别">
+            <template slot-scope="scope">
+              <span>{{ scope.row.sex === '1' ? '男' : '女' }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="教学点" prop="schoolOrganName"></el-table-column>
+          <el-table-column label="证件类型" prop="certTypeLabel"></el-table-column>
+          <el-table-column label="证件号码" prop="certNo" width="190"></el-table-column>
+          <el-table-column label="录取学校" prop="organName" show-overflow-tooltip width="170"></el-table-column>
+          <el-table-column label="年级" prop="schoolYear"></el-table-column>
+          <el-table-column label="报考层次">
+            <template slot-scope="scope">
+              <span>{{ showEnterLevel(scope.row.enterLevel) }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="报考专业" prop="professionalName" width="120"></el-table-column>
+          <el-table-column label="学制" prop="schoolSystem" width="60"></el-table-column>
+          <el-table-column label="冲突单位" prop="conflictUnit"></el-table-column>
+          <!-- <el-table-column label="考试方式"> -->
+          <!-- <template slot-scope="scope"> -->
+          <!-- <span>{{ showEnterLevel(scope.row.testType, 'testType') }}</span> -->
+          <!-- </template> -->
+          <!-- </el-table-column> -->
+          <el-table-column label="审核结果">
+            <template slot-scope="scope">
+              <span>{{ showEnterLevel(scope.row. registerType, ' registerType') }}</span>
+            </template>
+          </el-table-column>
+          <!-- <el-table-column prop label="录取状态"> -->
+          <!-- <template slot-scope="scope"> -->
+          <!-- <span>已录取</span> -->
+          <!-- </template> -->
+          <!-- </el-table-column> -->
+          <!-- <el-table-column label="注册状态"> -->
+          <!-- <template slot-scope="scope"> -->
+          <!-- <span>{{ scope.row.registerType ? registerTypeList.filter(item => item.dictValue === scope.row.registerType)[0].dictName : '' }}</span> -->
+          <!-- </template> -->
+          <!-- </el-table-column> -->
+          <el-table-column align="center" fixed="right" label="操作" width="250">
+            <template slot-scope="scope">
+              <ul class="list-item-actions">
+                <li class="item">
+                  <el-button @click="handleEdit(scope.row)" type="text">编辑</el-button>
+                  <el-button @click="handleAttr(scope.row)" type="text">属性</el-button>
+                  <el-button @click="handleVerify(scope.row)" type="text">审核</el-button>
+                  <el-button @click="handleResetPWD(scope.row)" type="text">重置密码</el-button>
+                </li>
+              </ul>
+            </template>
+          </el-table-column>
+          <el-table-column align="center" width="24"></el-table-column>
+        </el-table>
+      </el-scrollbar>
+      <el-pagination
+        class="pagination"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :page-size="page.pageSize"
+        :page-sizes="[20, 50, 100, 200]"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="page.totalCount"
+      ></el-pagination>
     </div>
-    <el-pagination
-      background
-      style="float: right;margin-top: 20px; margin-bottom: 22px"
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-      :page-size="page.pageSize"
-      :page-sizes="[20, 50, 100, 200]"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="page.totalCount"
-    ></el-pagination>
     <el-drawer
+      :wrapperClosable="false"
       title="属性"
       :visible.sync="drawer"
       direction="rtl"
@@ -159,8 +204,9 @@
         <el-button type="primary" @click="submit">确 定</el-button>
       </div>
     </el-dialog>
-    <search :dialogVisible.sync="serachVisable" :organId="organId" @closeDia="closeDia" />
+    <search :dialogVisible.sync="serachVisable" :organId="params.organId" @closeDia="closeDia" />
     <el-drawer
+      :wrapperClosable="false"
       :title="title"
       :visible.sync="dialogVerify"
       :size="width"
@@ -184,15 +230,19 @@ import verify from './verify'
 import { mapGetters } from 'vuex'
 import { STATIC_BASE } from '@/constant/global'
 import Search from '@/components/search'
+import mixin from '../../../mixins/download'
+import selectMixin from '../../../mixins/select.js'
+import heightMixin from '@/components/Table/heightMixin'
 
 export default {
   components: { addUserFrom, Search, verify },
   name: 'Apply',
+  mixins: [mixin, heightMixin, selectMixin],
   props: {
     organType: {
       type: Number,
-      default: 1, // 总院： 1, 分院： 2
-    },
+      default: 1 // 总院： 1, 分院： 2
+    }
   },
   data() {
     return {
@@ -203,6 +253,7 @@ export default {
       drawer: false,
       currentRow: {},
       studyOption: [],
+      registerTypeList: [],
       levelOption: [],
       list: [],
       map: {},
@@ -212,22 +263,23 @@ export default {
         loading: false,
         dialogVisible: false,
         proportionDialogVisible: false,
-        viewVisible: false,
+        viewVisible: false
       },
       opts: {
-        statusIdList: [],
+        statusIdList: []
       },
       page: {
         pageCurrent: 1,
         pageSize: 20,
         totalCount: 0,
-        totalPage: 0,
+        totalPage: 0
       },
       params: {
         realNameOrcertNo: '',
         organId: '',
+        schoolOrganId: '',
+        schoolYear: ''
       },
-      registerTypeList: [],
       serachVisable: false,
       title: '录取清单审核',
       componentName: '',
@@ -237,11 +289,14 @@ export default {
       isShowBtn: true,
       dialogVerify: false,
       changePictureUrl: '',
-      rowData: {},
+      rowData: {}
     }
   },
   computed: {
-    ...mapGetters(['organList']),
+    ...mapGetters(['organList', 'yearAndSemester']),
+    schoolYearOptions() {
+      return this.yearAndSemester.schoolYears
+    }
   },
   created() {
     api.listByCode({ code: '0006' }).then((res) => {
@@ -253,21 +308,38 @@ export default {
     api.listByCode({ code: '0012' }).then((res) => {
       this.registerTypeList = res.data || []
     })
-    this.params.organId = this.organList[0].value
     this.init()
   },
   methods: {
+    exportExcel() {
+      const params = {
+        ...this.params,
+        pageCurrent: this.page.pageCurrent,
+        pageSize: this.page.pageSize
+      }
+      this.download(
+        params,
+        '/course/student/enter/export',
+        'POST',
+        '批量导出',
+        'xls'
+      )
+    },
     showEnterLevel(value, key) {
-      if (key === 'approveStatus') {
-        if (value === '1') {
-          return '审核'
-        } else if (value === '2') {
-          return '合格'
-        } else if (value === '3') {
-          return '待定'
-        } else {
-          return '不通过'
-        }
+      if (key === ' registerType') {
+        if (!value) return value
+        return this.registerTypeList.filter(
+          (item) => item.dictValue === value
+        )[0].dictName
+        // if (value === '1') {
+        //   return '注册'
+        // } else if (value === '2') {
+        //   return '休学'
+        // } else if (value === '3') {
+        //   return '退学'
+        // } else {
+        //   return ''
+        // }
       }
       if (key === 'testType') {
         if (!value) return value
@@ -288,9 +360,9 @@ export default {
     handlerSearch() {
       this.serachVisable = true
     },
-    closeDia(params) {
+    closeDia() {
       this.initPage()
-      this.getTableData(params)
+      this.getTableData()
     },
     initPage() {
       this.page.pageCurrent = 1
@@ -298,13 +370,12 @@ export default {
     organChange() {
       this.init()
     },
-    getTableData(query) {
+    getTableData() {
       const params = {
-        organId: this.params.organId,
+        ...this.params,
         realNameOrcertNo: this.params.realNameOrcertNo,
         pageCurrent: this.page.pageCurrent,
-        pageSize: this.page.pageSize,
-        ...query,
+        pageSize: this.page.pageSize
       }
       api.getStudentList(params).then((res) => {
         this.list = res.data.rows
@@ -329,7 +400,7 @@ export default {
       const file = data.raw
       const param = new FormData()
       param.append('excelFile', file, file.name)
-      api.stundentSignImport(param).then((res) => {
+      api.importStudentFile(param).then((res) => {
         this.$message.info(res.data)
         this.init()
       })
@@ -356,14 +427,14 @@ export default {
     },
     handleVerify(row) {
       // if (row.approveStatus !== '1')
-        // return this.$message.warning('录取清单审核只能操作待审核的!')
-      this.componentData = row
+      // return this.$message.warning('录取清单审核只能操作待审核的!')
+      this.componentData = this.$_cloneDeep(row)
       this.componentName = 'verify'
       this.dialogVerify = true
     },
     // 修改跳页面操作
     handleEdit(user) {
-      this.currentRow = user
+      this.currentRow = this.$_cloneDeep(user)
       this.isAdd = false
       this.dialogVisible = true
       this.$nextTick(() => {
@@ -388,23 +459,33 @@ export default {
         })
       })
     },
-    handleDelete({ id }) {
-      this.$confirm('是否继续删除?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-      }).then(() => {
-        api.studentDelete({ id }).then((res) => {
+    handleResetPWD({ certNo, studentNo, realName }) {
+      this.$confirm(
+        '重置密码后为<strong>“xsl+身份证后6位”</strong>，是否继续密码重置？',
+        '提示',
+        {
+          dangerouslyUseHTMLString: true,
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      ).then(() => {
+        const params = {
+          certNo,
+          studentNo,
+          name: realName
+        }
+        api.resetStuPWD(params).then((res) => {
           if (res.code === 200) {
-            this.$message.success('删除成功')
+            this.$message.success('密码重置成功')
             this.init()
           } else {
-            this.$message.error('删除失败')
+            this.$message.error('密码重置失败')
           }
         })
       })
-    },
-  },
+    }
+  }
 }
 </script>
 
@@ -438,7 +519,7 @@ export default {
       width: 240px !important;
     }
     .organ-select {
-      margin-right: 24px;
+      // margin-right: 24px;
       /deep/ .el-select {
         width: 256px;
       }

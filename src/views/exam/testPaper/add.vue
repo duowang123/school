@@ -27,17 +27,32 @@
             <div class="main-content" style="justify-content: flex-start;">
               <div>
                 <div class="flex-1">
+                  学校名称
+                  <span class="required-icon">*</span>
+                </div>
+                <el-form-item>
+                  <el-select @change="handlerOption('level')" class="flex-2" placeholder="请选择" v-model="form.organId">
+                    <el-option
+                      :key="item.id"
+                      :label="item.name"
+                      :value="item.id"
+                      v-for="item in schoolOrgansList"
+                    ></el-option>
+                  </el-select>
+                </el-form-item>
+              </div>
+              <div class="margin-left">
+                <div class="flex-1">
                   层次
                   <span class="required-icon">*</span>
                 </div>
                 <el-form-item>
-                  <el-select class="flex-2" v-model="form.level" placeholder="请选择">
+                  <el-select @change="handlerOption('level')" class="flex-2" placeholder="请选择" v-model="form.level">
                     <el-option
-                      v-for="(item,index) in levelList"
-                      @click.native="handlerOption('level')"
+                      :key="index"
                       :label="item.dictName"
                       :value="item.dictValue"
-                      :key="index"
+                      v-for="(item,index) in levelList"
                     ></el-option>
                   </el-select>
                 </el-form-item>
@@ -64,30 +79,30 @@
                   </el-select>
                 </el-form-item>
               </div>
-              <div class="margin-left">
+            </div>
+            <div class="main-content" style="justify-content: flex-start;">
+              <div>
                 <div class="flex-1">
                   课程
                   <span class="required-icon">*</span>
                 </div>
                 <el-form-item>
                   <el-select
-                    class="flex-2"
-                    v-model="form.courseId"
                     @visible-change="visibleChange($event, 'courseId')"
+                    class="flex-2"
                     placeholder="请选择"
+                    v-model="form.courseId"
                   >
                     <el-option
-                      v-for="(item,index) in courseIdList"
+                      :key="index"
                       :label="item.courseName"
                       :value="item.id"
-                      :key="index"
+                      v-for="(item,index) in courseIdList"
                     ></el-option>
                   </el-select>
                 </el-form-item>
               </div>
-            </div>
-            <div class="main-content" style="justify-content: flex-start;">
-              <div>
+              <div class="margin-left">
                 <div class="flex-1">
                   试卷类型
                   <span class="required-icon">*</span>
@@ -145,7 +160,7 @@
                 <span class="auto" @click="handlerAuto(index)">+ 自动添加题目</span>
                 <!-- <span class="remove" @click="deleteQuestion(index)">删除</span> -->
               </el-row>
-              <el-row>
+              <el-row >
                 <draggable v-model="item.examQuests">
                   <transition-group>
                     <exam-question
@@ -166,7 +181,7 @@
     <table-question
       ref="question"
       :examPaperContents="form.examPaperContents"
-      :organId="organId"
+      :organId="form.organId"
       :dialogQuestion.sync="dialogQuestion"
     />
     <preview
@@ -186,6 +201,7 @@ import examQuestion from './examQuestion'
 import Preview from './preview'
 import Auto from './auto'
 import draggable from 'vuedraggable'
+import selectMixin from '@/views/mixins/select.js'
 
 export default {
   components: {
@@ -193,22 +209,19 @@ export default {
     examQuestion,
     Preview,
     Auto,
-    draggable,
+    draggable
   },
+  mixins: [selectMixin],
   props: {
-    organId: {
-      type: String,
-      required: true,
-    },
     data: {
-      type: Object,
+      type: Object
     },
     id: {
-      type: String,
-    },
+      type: String
+    }
   },
   computed: {
-    ...mapGetters(['organList']),
+    ...mapGetters(['organList'])
   },
   data() {
     return {
@@ -231,8 +244,8 @@ export default {
         paperNo: '',
         paperType: '',
         specialtyId: '',
-        examPaperContents: [],
-      },
+        examPaperContents: []
+      }
     }
   },
   created() {
@@ -254,14 +267,14 @@ export default {
         paperNo: '',
         paperType: '',
         specialtyId: '',
-        examPaperContents: [],
+        examPaperContents: []
       }
       this.specialtyIdList = []
       this.courseIdList = []
     },
     recoverData() {
-      api.examPaperGet(this.id).then(async (res) => {
-        this.form = res.data
+      api.examPaperGet(this.id).then(async(res) => {
+        Object.assign(this.form, res.data)
         const { level, specialtyId } = this.form
         if (level) {
           await this.handlerOption('level', true)
@@ -282,7 +295,7 @@ export default {
       this.$confirm('该题是否确定删除?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning',
+        type: 'warning'
       })
         .then(() => {
           item.examQuests.splice(i, 1)
@@ -290,7 +303,7 @@ export default {
         .catch(() => {
           this.$message({
             type: 'info',
-            message: '已取消删除',
+            message: '已取消删除'
           })
         })
     },
@@ -305,14 +318,14 @@ export default {
       return {
         id: this.$_gentID(6),
         title: '',
-        examQuests: [],
+        examQuests: []
       }
     },
     deleteQuestion(index) {
       this.$confirm('当前删除整个题型，是否确定删除?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning',
+        type: 'warning'
       })
         .then(() => {
           this.form.examPaperContents.splice(index, 1)
@@ -320,7 +333,7 @@ export default {
         .catch(() => {
           this.$message({
             type: 'info',
-            message: '已取消删除',
+            message: '已取消删除'
           })
         })
     },
@@ -329,7 +342,7 @@ export default {
     },
     handlerAuto(index) {
       this.autoVisible = true
-      this.$refs.auto.init(this.organId, index)
+      this.$refs.auto.init(this.form.organId, index)
     },
     handlerManual(index) {
       this.dialogQuestion = true
@@ -345,9 +358,12 @@ export default {
     },
     handlerOption(type, init) {
       if (type === 'level') {
+        if (!this.form.organId || !this.form.level) {
+          return void ''
+        }
         const params = {
-          organId: this.organId,
-          level: this.form.level,
+          organId: this.form.organId,
+          level: this.form.level
         }
         api.listByOrganIdAndLevel(params).then((res) => {
           this.specialtyIdList = res.data
@@ -370,12 +386,10 @@ export default {
       if (type === 'specialtyId') {
         if (!this.form.level) return this.$message.warning('请先选择层次!')
       } else if (type === 'courseId') {
-        if (!this.form.specialtyId)
-          return this.$message.warning('请先选择专业!')
+        if (!this.form.specialtyId) { return this.$message.warning('请先选择专业!') }
       }
     },
     confirm(callback) {
-      this.form.organId = this.organId
       if (this.id) {
         this.form.id = this.id
         api.examPaperUpdate(this.form).then((res) => {
@@ -392,8 +406,8 @@ export default {
           }
         })
       }
-    },
-  },
+    }
+  }
 }
 </script>
 

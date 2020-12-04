@@ -9,7 +9,7 @@
       <div>{{totalParams.getCredit}}</div>
     </div>
   </div>
-  
+
 </template>
 <script>
 import coursesTable from '@/components/Table/coursesTable'
@@ -34,8 +34,7 @@ export default {
         columnConfig: [
           {
             label: '学年',
-            prop: '',
-            width: 'schoolYear'
+            prop: 'schoolYear',
           },
           {
             label: '学期',

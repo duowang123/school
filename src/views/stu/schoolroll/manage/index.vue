@@ -3,7 +3,7 @@
     <div>
       <el-form class="user-form" :inline="true">
         <el-form-item>
-          <!-- <el-button type="primary">导出</el-button> -->
+          <el-button type="primary" @click="exportExcel">导出</el-button>
         </el-form-item>
         <div class="organ-box">
           <el-select
@@ -14,17 +14,41 @@
             placeholder="请选择年级"
           >
             <el-option
-              v-for="item in schoolYearList"
-              :key="item.id"
-              :label="item.dictName"
-              :value="item.dictValue"
+              v-for="item in schoolYearOptions"
+              :key="item.value"
+              @change="getOrganId()"
+              :label="item.label"
+              :value="item.value"
             ></el-option>
           </el-select>
-          <el-select class="organ-select" filterable v-model="params.organId" placeholder="请选择合作单位">
+          <el-select
+            class="organ-select"
+            v-model="params.organId"
+            filterable
+            @change="getOrganId()"
+            v-if="showSchool"
+            clearable
+            placeholder="请选择学校"
+          >
             <el-option
-              v-for="item in organList"
+              v-for="item in schoolOrgansListAll"
               :key="item.id"
-              @click.native="init"
+              :label="item.name"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+          <el-select
+            class="organ-select"
+            v-model="params.schoolOrganId"
+            filterable
+            clearable
+            @change="getOrganId()"
+            v-if="showTeacher"
+            placeholder="请选择教学点"
+          >
+            <el-option
+              v-for="item in organListAll"
+              :key="item.id"
               :label="item.name"
               :value="item.id"
             ></el-option>
@@ -32,12 +56,12 @@
           <el-input
             v-model.trim="params.realNameOrcertNo"
             @keyup.enter.native="init"
-            placeholder="姓名/身份证号/学号"
+            placeholder="姓名/证件号码/学号"
           ></el-input>
         </div>
       </el-form>
     </div>
-    <div>
+    <div class="main-content-container">
       <courses-table class="table" :tableConfig="tableConfig" :tableData="tableData">
         <template slot-scope="{ scope }">
           <div class="item">
@@ -59,6 +83,7 @@
       :size="width"
       destroy-on-close
       :direction="direction"
+      :wrapperClosable="false"
       class="drawer-content drawer-content-custom"
     >
       <component
@@ -81,10 +106,12 @@ import coursesTable from '@/components/Table/coursesTable'
 import pagination from '@/components/Table/pagination'
 import Attr from '@/components/Table/attr'
 import Info from './info'
-import { mapGetters, mapMutations } from 'vuex'
-
+import mixin from '../../../mixins/download'
+import { mapGetters } from 'vuex'
+import selectMixin from '@/views/mixins/select.js'
 export default {
   name: 'StudentManage',
+  mixins: [mixin, selectMixin],
   components: {
     coursesTable,
     pagination,
@@ -97,6 +124,7 @@ export default {
         organId: '',
         realNameOrcertNo: '',
         schoolYear: '',
+        schoolOrganId: '',
       },
       page: {
         pageCurrent: 1,
@@ -107,7 +135,7 @@ export default {
       tableData: [],
       tableConfig: {
         loading: false,
-        headerCellStyle: { background: '#F3F4F7', color: '#333333' },
+        // headerCellStyle: { background: '#F3F4F7', color: '#333333' },
         serialNumber: {
           label: '序号',
           type: 'index',
@@ -137,9 +165,18 @@ export default {
             },
           },
           {
-            label: '身份证号',
+            label: '教学点',
+            prop: 'schoolOrganName',
+            width: '170',
+          },
+          {
+            label: '证件类型',
+            prop: 'certTypeLabel',
+          },
+          {
+            label: '证件号码',
             prop: 'certNo',
-            width: '210'
+            width: '170',
           },
           {
             label: '层次',
@@ -148,30 +185,36 @@ export default {
             enums: (value) => {
               return vm.levelList.filter((item) => item.dictValue === value)[0]
                 .dictName
-            }
+            },
           },
           {
             label: '年级',
-            prop: 'schoolYear'
+            prop: 'schoolYear',
           },
           {
-            label: '报考学校',
-            prop: 'organName'
+            label: '注册学校',
+            prop: 'organName',
           },
           {
             label: '专业',
             prop: 'professionalName',
-            width: '200'
+          },
+          {
+            label: '转专业',
+            prop: 'enterTransfer',
+            width: '120',
+            type: 'enums',
+            enums: (value) => {
+              return value === '1' ? '是' : '否'
+            },
           },
           {
             label: '联系电话',
             prop: 'mobile',
-            width: '170px',
           },
           {
             label: '学籍状态',
             prop: 'studentStatus',
-            width: '120px',
             type: 'enums',
             enums: (value) => {
               return vm.infoList.filter((item) => item.dictValue === value)[0]
@@ -182,7 +225,6 @@ export default {
             label: '异动原因',
             prop: 'changeReason',
             type: 'enums',
-            width: '170px',
             enums: (value) => {
               if (!value) return value
               const valueArr = value.split(',')
@@ -202,7 +244,6 @@ export default {
       },
       levelList: [],
       changeReasonList: [],
-      schoolYearList: [],
       infoList: [],
       title: '',
       componentName: '',
@@ -211,9 +252,17 @@ export default {
       direction: 'rtl',
       isShowBtn: true,
       dialogVisible: false,
+      organListAll: [],
+      schoolOrgansListAll: [],
     }
   },
   computed: {
+    ...mapGetters([
+      'organList',
+      'teacherList',
+      'schoolOrgansList',
+      'schoolYearOptions',
+    ]),
     paginationConfig() {
       return {
         total: this.page.totalCount,
@@ -221,24 +270,58 @@ export default {
         pageSizes: [20, 50, 100, 200],
       }
     },
-    ...mapGetters(['organList']),
+    isAll() {
+      return this.$store.getters.userOrganId + '' === '1'
+    },
+    isSchool() {
+      return (
+        this.$store.getters.property && this.$store.getters.property === '1'
+      )
+    },
+    isTeacher() {
+      return (
+        this.$store.getters.property && this.$store.getters.property === '2'
+      )
+    },
+  },
+  created() {
+    const all = {
+      id: '',
+      name: '全部',
+      oldName: '全部',
+    }
+    this.organListAll = [all, ...this.teacherList]
+    this.schoolOrgansListAll = [all, ...this.schoolOrgansList]
+    this.params.organId = this.organListAll[0].id
+    this.params.schoolOrganId = this.schoolOrgansListAll[0].id
   },
   mounted() {
     setTimeout(async () => {
-      this.$set(this.params, 'organId', this.organList[0].id)
       const levelData = (await api.getSysDictList({ code: '0015' })) || {}
       const infoData = (await api.getSysDictList({ code: '0029' })) || {}
-      const schoolYearData = (await api.getSysDictList({ code: '0014' })) || {}
       const changeReasonData =
         (await api.getSysDictList({ code: '0022' })) || {}
       this.levelList = levelData.data || []
       this.infoList = infoData.data || []
       this.changeReasonList = changeReasonData.data || []
-      this.schoolYearList = schoolYearData.data || []
       this.init()
     }, 500)
   },
   methods: {
+    exportExcel() {
+      const params = {
+        ...this.params,
+        pageCurrent: this.page.pageCurrent,
+        pageSize: this.page.pageSize,
+      }
+      this.download(
+        params,
+        '/course//student_roll/enter/export',
+        'POST',
+        '批量导出',
+        'xls'
+      )
+    },
     async init() {
       await this.initPage()
       await this.getTableData()
@@ -279,7 +362,8 @@ export default {
         keys: [
           { label: '学号', key: 'studentNo' },
           { label: '姓名', key: 'realName' },
-          { label: '身份证', key: 'certNo' },
+          { label: '证件类型', key: 'certTypeLabel' },
+          { label: '证件号码', key: 'certNo' },
           { label: '电话', key: 'mobile' },
         ],
       }
@@ -336,7 +420,7 @@ export default {
       display: flex;
       justify-content: flex-end;
       align-items: center;
-      margin-bottom: 24px;
+      margin-bottom: 16px;
       .organ-select {
         /deep/ .el-select {
           width: 256px;

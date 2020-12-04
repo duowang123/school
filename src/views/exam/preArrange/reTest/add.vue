@@ -3,30 +3,19 @@
     <el-form :rules="rules" :model="ruleForm" ref="addForm" label-width="0">
       <div class="form-item">
         <div class="container">
-          <el-form-item label="学号/身份证号">
+          <el-form-item label="学号/证件号码">
             <el-input
               suffix-icon="el-icon-search"
               v-model="studentNoOrCertNo"
               @keyup.enter.native="onSearch"
-              placeholder="学号/身份证"
+              placeholder="学号/证件号码"
             ></el-input>
-            <el-row v-show="rows.realName" :gutter="24" v-loading="loading">
-              <el-col :span="10">
-                <div>学号：{{ rows.studentNo || 'xx' }}</div>
-                <div>性别：{{ rows.sex ? (rows.sex === '1' ? '男' : '女') : 'XX' }}</div>
-              </el-col>
-              <el-col :span="14">
-                <div>
-                  <div>姓名：{{ rows.realName || 'xx' }}</div>
-                  <div>证件号码：{{ rows.certNo || 'xx' }}</div>
-                </div>
-              </el-col>
-            </el-row>
+            <stu-card :detail="rows" v-loading="loading"></stu-card>
           </el-form-item>
           <el-row :gutter="10" class="el-row-select">
             <el-col :span="12">
               <el-form-item label="学年" prop="schoolYear">
-                <el-select v-model="ruleForm.schoolYear" placeholder="请选择">
+                <el-select v-model="ruleForm.schoolYear" @change="getCourseList" placeholder="请选择">
                   <el-option
                     v-for="item in schoolYearOptions"
                     :key="item.value"
@@ -38,7 +27,7 @@
             </el-col>
             <el-col :span="12">
               <el-form-item label="学期" prop="semester">
-                <el-select v-model="ruleForm.semester" placeholder="请选择">
+                <el-select v-model="ruleForm.semester" @change="getCourseList" placeholder="请选择">
                   <el-option
                     v-for="item in semesterOptions"
                     :key="item.value"
@@ -63,7 +52,7 @@
             <el-input v-model="ruleForm.testScore" disabled placeholder="成绩" style="margin-bottom: 10px" />
           </el-form-item>
           <el-form-item label="考试计划" prop="planId">
-            <el-select v-model="ruleForm.planId" placeholder="请选择">
+            <el-select v-model="ruleForm.planId" clearable placeholder="请选择">
               <el-option
                 v-for="(item, index) in examPlanInfoList"
                 :key="index"
@@ -72,7 +61,7 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="扫描件">
+          <el-form-item label="扫描件" prop="pictureUrl">
             <upload class="upload-icon" ref="upload" :url="ruleForm.pictureUrl" />
           </el-form-item>
         </div>
@@ -84,6 +73,7 @@
 <script>
   import Upload from '@/components/ImgUpload'
   import * as api from '../../api'
+  import { mapGetters } from 'vuex'
   export default {
     components: {
       Upload
@@ -103,7 +93,7 @@
           id: '',
           studentId: '',
           planId: '',
-          testScore: '',
+          testScore: '0',
           semester: '',
           schoolYear: '',
           courseId: '',
@@ -111,45 +101,25 @@
           remark: ''
         },
         rules: {
-          testScore: [{ required: true, message: '请输入成绩', trigger: 'blur' },
-            {
-              pattern: '^[1-9][0-9]*(\\.[0-9]+)?$',
-              message: '只能是数字',
-              trigger: 'blur'
-            }],
-          testStatus: [{ required: true, message: '请输入考试状态', trigger: 'blur' }],
-          testType: [{ required: true, message: '请选择考试方式', trigger: 'change' }],
-          planId: [{ required: true, message: '请选择', trigger: 'change' }],
-          planInfoId: [{ required: true, message: '请选择', trigger: 'change' }]
+          // pictureUrl: [{ required: true, message: '请选择', trigger: 'blur' }],
+          // planId: [{ required: true, message: '请选择', trigger: 'change' }],
+          courseId: [{ required: true, message: '请选择', trigger: 'change' }],
+          schoolYear: [{ required: true, message: '请选择', trigger: 'change' }],
+          semester: [{ required: true, message: '请选择', trigger: 'change' }]
         },
         studentCourseList: []
       }
     },
-    watch: {
-      'ruleForm.studentId': {
-        handler(val) {
-          //do something
-          api.getStudentCourses(val).then(res => {
-            this.studentCourseList = res.data.studentCourseInfos.map(t => {
-              return {
-                label: t.courseName,
-                value: t.courseId,
-                score: t.score
-              }
-            })
-          })
-        }
-      }
-    },
     computed: {
-      examPlanInfoList() {
-        return this.data.examPlanInfoList
+      ...mapGetters(['yearAndSemester']),
+      schoolYearOptions() {
+        return this.yearAndSemester.schoolYears
       },
       semesterOptions() {
-        return this.data.semesterOptions
+        return this.yearAndSemester.semesterMap[this.ruleForm.schoolYear] || []
       },
-      schoolYearOptions() {
-        return this.data.schoolYearOptions
+      examPlanInfoList() {
+        return this.data.examPlanInfoList
       }
     },
     created() {
@@ -167,12 +137,30 @@
       }
     },
     methods: {
-      courseChange() {
-        const arr = this.studentCourseList.filter(t => {
-          return t.value === this.ruleForm.courseId
+      getCourseList() {
+        const { schoolYear, semester, studentId } = this.ruleForm
+        const params = { schoolYeal: schoolYear, semester, studentId }
+        api.getStudentCoursesList(params).then(res => {
+          this.studentCourseList = res.data.map(t => {
+            return {
+              label: t.courseName,
+              value: t.id,
+              score: t.score
+            }
+          })
         })
-        console.log(arr)
-        this.ruleForm.testScore = arr[0].score
+      },
+      courseChange() {
+        const params = { courseId: this.ruleForm.courseId, studentId: this.ruleForm.studentId }
+        api.getCourseRealScore(params).then(res => {
+          console.log(res.data.realScore)
+          this.ruleForm.testScore = res.data.realScore
+        })
+        // const arr = this.studentCourseList.filter(t => {
+        //   return t.value === this.ruleForm.courseId
+        // })
+        // console.log(arr)
+        // this.ruleForm.testScore = arr[0].score || 0
       },
       async onSearch() {
         this.loading = true
@@ -186,6 +174,7 @@
           // }
           this.ruleForm.studentId = res.data.id
           this.loading = false
+          this.getCourseList()
         } catch (err) {
           this.loading = false
         }
@@ -199,7 +188,7 @@
             return false
           }
           if (valid) {
-            if (!this.rows.id) return this.$message.warning('请先搜索学号/身份证!')
+            if (!this.rows.id) return this.$message.warning('请先搜索学号/证件号码!')
             Object.assign(this.ruleForm, {
               pictureUrl: uploadRes.data,
               organId: this.data.organId

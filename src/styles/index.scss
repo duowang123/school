@@ -110,7 +110,7 @@ a:hover {
   padding: 10px;
 }
 .pad20 {
-  padding: 20px;
+  padding: 0 20px;
 }
 .mgt10 {
   margin-top: 10px;
@@ -195,3 +195,12 @@ a:hover {
 body .el-table th.gutter{
   display: table-cell!important;
 }
+
+.table {
+  .el-scrollbar__wrap {
+    background: #ffffff;
+    height: calc(100vh - 64px - 56px - 40px - 16px - 32px - 10px - 10px);
+    overflow-x: hidden;
+  }
+}
+

@@ -6,6 +6,7 @@
       direction="rtl"
       size="816px"
       :before-close="closeDia"
+      :wrapperClosable="false"
     >
       <div class="drawer-content">
         <div class="content-container" style="margin-left: 24px">

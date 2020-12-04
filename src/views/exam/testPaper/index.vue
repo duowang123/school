@@ -9,14 +9,15 @@
           <div class="organ-box">
             <el-select
               class="organ-select"
-              filterable
               v-model="params.organId"
-              placeholder="请选择合作单位"
+              filterable
+              clearable
+              @change="init"
+              placeholder="请选择学校"
             >
               <el-option
-                v-for="item in organList"
+                v-for="item in schoolOrgansListAll"
                 :key="item.id"
-                @click.native="getOrganId(item)"
                 :label="item.name"
                 :value="item.id"
               ></el-option>
@@ -25,27 +26,33 @@
               v-model.trim="params.queryContent"
               prefix-icon="el-icon-search"
               @change="init"
-              placeholder="题目"
+              placeholder="试卷"
             ></el-input>
           </div>
         </el-form-item>
       </el-form>
-      <courses-table class="table" :tableConfig="tableConfig" :tableData="tableData">
-        <div slot-scope="{ scope }" style="width:200px">
-          <span class="opr" @click="handleEdit(scope)">编辑</span>
-          <span class="opr" @click="handleIsEnable(scope.row)">{{scope.row.isEnable ? '禁用': '启用' }}</span>
-          <span class="opr" @click="handleAttr(scope)">详情</span>
-          <span class="opr" @click="handleDelete(scope)">删除</span>
-        </div>
-      </courses-table>
-      <pagination
-        @handleSizeChange="handleSizeChange"
-        @handleCurrentChange="handleCurrentChange"
-        :currentPage="page.pageCurrent"
-        :pagination-config="paginationConfig"
-      />
+      <div class="main-content-container">
+        <courses-table class="table" :tableConfig="tableConfig" :tableData="tableData">
+          <div slot-scope="{ scope }" style="width:200px">
+            <span class="opr" @click="handleEdit(scope)">编辑</span>
+            <span
+              class="opr"
+              @click="handleIsEnable(scope.row)"
+            >{{scope.row.isEnable ? '禁用': '启用' }}</span>
+            <span class="opr" @click="handleAttr(scope)">详情</span>
+            <span class="opr" @click="handleDelete(scope)">删除</span>
+          </div>
+        </courses-table>
+        <pagination
+          @handleSizeChange="handleSizeChange"
+          @handleCurrentChange="handleCurrentChange"
+          :currentPage="page.pageCurrent"
+          :pagination-config="paginationConfig"
+        />
+      </div>
     </div>
     <el-drawer
+      :wrapperClosable="false"
       :title="title"
       :visible.sync="dialogVisible"
       :size="width"
@@ -83,6 +90,7 @@ import Attr from '@/components/Table/attr'
 import Add from './add.vue'
 import * as api from '../api'
 import { mapGetters } from 'vuex'
+import selectMixin from '@/views/mixins/select.js'
 
 export default {
   name: 'StudentTransaction',
@@ -92,6 +100,7 @@ export default {
     Attr,
     Add,
   },
+  mixins: [selectMixin],
   computed: {
     ...mapGetters(['organList']),
     paginationConfig() {
@@ -130,6 +139,10 @@ export default {
           width: '64',
         },
         columnConfig: [
+          {
+            label: '学校名称',
+            prop: 'organName',
+          },
           {
             label: '试卷编号',
             prop: 'paperNo',
@@ -189,7 +202,7 @@ export default {
   },
   async created() {
     try {
-      this.params.organId = this.organList[0].id
+      this.params.organId = this.schoolOrgansListAll[0].id
       this.getTableData()
     } catch (err) {
       console.log(err)
@@ -217,19 +230,32 @@ export default {
       this.getTableData()
     },
     handleIsEnable({ id, isEnable }) {
-      api
-        .examPaperEnable({
-          id,
-          isEnable: !isEnable,
+      const fn = () => {
+        api
+          .examPaperEnable({
+            id,
+            isEnable: !isEnable,
+          })
+          .then((res) => {
+            if (isEnable) {
+              this.$message.success('试卷禁用成功!')
+            } else {
+              this.$message.success('试卷启用成功!')
+            }
+            this.init()
+          })
+      }
+      if (isEnable) {
+        this.$confirm('是否继续禁用?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        }).then(() => {
+          fn()
         })
-        .then((res) => {
-          if (isEnable) {
-            this.$message.success('试卷禁用成功!')
-          } else {
-            this.$message.success('试卷启用成功!')
-          }
-          this.init()
-        })
+      } else {
+        fn()
+      }
     },
     handleEdit({ row }) {
       this.id = row.id

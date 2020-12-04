@@ -139,3 +139,22 @@ export function getStuInfo(data) {
     data
   })
 }
+
+// 获取学籍的论文信息
+
+export function getThesisInfo(data) {
+  return request({
+    url: `/course/paper_write/findStudentWiter`,
+    method: 'post',
+    data
+  })
+}
+
+// 获取毕业信息
+export function getGrudationInfo(data) {
+  return request({
+    url: `/course/stu_graduate/getGrudation`,
+    method: 'post',
+    data
+  })
+}

@@ -1,9 +1,6 @@
 <template>
   <div class="login-container">
-    <div class="left-section">
-      <img class="login_img_title" src="@/assets/images/logo.png" />
-      <img class="login_img" src="@/assets/images/login-img.png" />
-    </div>
+    <bg-comp />
     <div class="right-section">
       <div class="login" v-if="loginVisible">
         <el-form
@@ -14,6 +11,7 @@
           auto-complete="on"
           label-position="left"
         >
+          <div class="welcome">WELCOME</div>
           <h3 class="title">教学管理平台</h3>
           <el-form-item prop="mobile">
             <span class="svg-container">
@@ -144,17 +142,25 @@
 </template>
 <script>
 import * as api from '@/api/login'
+import CryptoJS from 'crypto-js'
+
+const PUBLIC_KEY = 1234567890123456
+
+import BgComp from './BgComp'
 
 export default {
   name: 'Login',
+  components: {
+    BgComp,
+  },
   data() {
     return {
       loginForm: {
-        // mobile: '15555555555',
-        // mobile: '',
-        // password: '',
+        // mobile: 'root',
+        // password: '123456',
         mobile: '18888888888',
         password: '123456',
+        // system_qc Shiji123
         // mobile: '',
         // password: '',
         // mobile: '',
@@ -168,8 +174,8 @@ export default {
       },
 
       loginRules: {
-        mobile: [{ required: true, trigger: 'blur' }],
-        password: [{ required: true, trigger: 'blur' }],
+        mobile: [{ required: true, message: '请输入账号', trigger: 'blur' }],
+        password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
         mobilePsw: [{ required: true, trigger: 'blur' }],
         rePwd: [{ required: true, trigger: 'blur' }],
       },
@@ -194,6 +200,15 @@ export default {
     },
   },
   methods: {
+    encrypt(data) {
+      const key = CryptoJS.enc.Utf8.parse(PUBLIC_KEY)
+      const iv = CryptoJS.enc.Utf8.parse(PUBLIC_KEY)
+      return CryptoJS.AES.encrypt(data, key, {
+        iv: iv,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.ZeroPadding,
+      }).toString()
+    },
     showPwd() {
       if (this.pwdType === 'password') {
         this.pwdType = ''
@@ -205,8 +220,12 @@ export default {
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
           this.loading = true
+          const params = {
+            ...this.loginForm,
+            password: this.encrypt(this.loginForm.password),
+          }
           this.$store
-            .dispatch('Login', this.loginForm)
+            .dispatch('Login', params)
             .then((res) => {
               // 首次登录状态判断
               this.loading = false
@@ -242,8 +261,13 @@ export default {
       })
     },
     async goHome() {
+      this.$store.dispatch('updategetSchoolOrgansList')
+      this.$store.dispatch('updateSchoolList')
+      this.$store.dispatch('updateTeacherList')
+      this.$store.dispatch('updateIdentificationList')
+      this.$store.dispatch('getYearAndSemester')
       this.$router.push({ path: this.redirect || '/' })
-    },
+    }
   },
 }
 </script>
@@ -279,11 +303,17 @@ $light_gray: #444;
     color: #454545;
     margin-bottom: 32px;
     &.submit {
-      margin-top: 72px;
+      margin-top: 48px;
+      margin-bottom: 20px;
     }
   }
   .el-dialog__header {
     text-align: left;
+  }
+  /deep/ .el-form-item__content {
+    background-color: #ffffff;
+    border: 1px solid #aab6c3;
+    border-radius: 4px;
   }
 }
 </style>
@@ -299,6 +329,7 @@ $light_gray: #444;
   background-color: $bg;
   display: flex;
   .left-section {
+    z-index: 10;
     height: 100vh;
     background-color: #3f93db;
     flex: 0 0 36vw;
@@ -321,7 +352,14 @@ $light_gray: #444;
     width: 520px;
     max-width: 100%;
     padding: 0 35px 0 44px;
-    margin: 62px auto 0;
+    margin: 32px auto 0;
+    .welcome {
+      opacity: 0.2;
+      font-size: 50px;
+      color: #a3aab3;
+      letter-spacing: 0;
+      margin-bottom: 18px;
+    }
   }
   .login_logo_img {
     width: 60px;
@@ -342,9 +380,10 @@ $light_gray: #444;
     right: 155px;
   }
   .right-section {
-    flex: 1 0;
-    justify-content: center;
-    align-items: center;
+    position: fixed;
+    z-index: 20;
+    top: 24vh;
+    right: 33vw;
     display: flex;
     .login {
       height: 480px;
@@ -392,9 +431,8 @@ $light_gray: #444;
   }
   .title {
     font-size: 24px;
-    font-weight: 400;
     color: $light_gray;
-    margin: 0 auto 56px auto;
+    margin: 0 auto 32px auto;
     font-weight: bold;
   }
   .show-pwd {

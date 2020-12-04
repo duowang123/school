@@ -14,9 +14,9 @@
               placeholder="请选择合作单位"
             >
               <el-option
-                v-for="item in organList"
-                :key="item.id"
+                v-for="item in organListAll"
                 @click.native="getOrganId(item)"
+                :key="item.id"
                 :label="item.name"
                 :value="item.id"
               ></el-option>
@@ -30,21 +30,29 @@
           </div>
         </el-form-item>
       </el-form>
-      <courses-table class="table" :tableConfig="tableConfig" :tableData="tableData" :colWidth="{ opear: '140px' }">
-        <div slot-scope="{ scope }" style="width:200px">
-          <span class="opr" @click="handleEdit(scope)">编辑</span>
-          <span class="opr" @click="handleAttr(scope)">详情</span>
-          <span class="opr" @click="handleDelete(scope)">删除</span>
-        </div>
-      </courses-table>
-      <pagination
-        @handleSizeChange="handleSizeChange"
-        @handleCurrentChange="handleCurrentChange"
-        :currentPage="page.pageCurrent"
-        :pagination-config="paginationConfig"
-      />
+      <div class="main-content-container">
+        <courses-table
+          class="table"
+          :tableConfig="tableConfig"
+          :tableData="tableData"
+          :colWidth="{ opear: '140px' }"
+        >
+          <div slot-scope="{ scope }" style="width:200px">
+            <span class="opr" v-all @click="handleEdit(scope)">编辑</span>
+            <span class="opr" @click="handleAttr(scope)">详情</span>
+            <span class="opr" v-all @click="handleDelete(scope)">删除</span>
+          </div>
+        </courses-table>
+        <pagination
+          @handleSizeChange="handleSizeChange"
+          @handleCurrentChange="handleCurrentChange"
+          :currentPage="page.pageCurrent"
+          :pagination-config="paginationConfig"
+        />
+      </div>
     </div>
     <el-drawer
+      :wrapperClosable="false"
       :title="title"
       :visible.sync="dialogVisible"
       :size="width"
@@ -62,327 +70,331 @@
   </div>
 </template>
 <script>
-  import coursesTable from '@/components/Table/coursesTable'
-  import pagination from '@/components/Table/pagination'
-  import Attr from '@/components/Table/attr'
-  import * as api from '../../api'
-  import { mapGetters } from 'vuex'
-  import Add from './add.vue'
+import coursesTable from '@/components/Table/coursesTable'
+import pagination from '@/components/Table/pagination'
+import Attr from '@/components/Table/attr'
+import * as api from '../../api'
+import { mapGetters } from 'vuex'
+import Add from './add.vue'
+import selectMixin from '@/views/mixins/select.js'
 
-  export default {
-    name: 'Index',
-    components: {
-      coursesTable,
-      pagination,
-      Attr,
-      Add,
-    },
-    computed: {
-      ...mapGetters(['organList']),
-      paginationConfig() {
-        return {
-          total: this.page.totalCount,
-          pageSize: this.page.pageSize,
-          pageSizes: [20, 50, 100, 200],
-        }
-      },
-    },
-    data(vm) {
+export default {
+  name: 'Index',
+  components: {
+    coursesTable,
+    pagination,
+    Attr,
+    Add,
+  },
+  mixins: [selectMixin],
+  computed: {
+    ...mapGetters(['organList']),
+    paginationConfig() {
       return {
-        courseTypeList: [],
-        noTestTypeList: [],
-        levelList: [],
-        params: {
-          organId: '',
-          roomName: '',
+        total: this.page.totalCount,
+        pageSize: this.page.pageSize,
+        pageSizes: [20, 50, 100, 200],
+      }
+    },
+  },
+  data(vm) {
+    return {
+      courseTypeList: [],
+      noTestTypeList: [],
+      levelList: [],
+      params: {
+        organId: '',
+        roomName: '',
+      },
+      page: {
+        pageCurrent: 1,
+        pageSize: 20,
+        totalCount: 0,
+        totalPage: 0,
+      },
+      addData: {},
+      currentData: {},
+      tableData: [],
+      tableConfig: {
+        loading: false,
+        headerCellStyle: { background: '#F3F4F7', color: '#333333' },
+        serialNumber: {
+          label: '序号',
+          type: 'index',
+          width: '64',
         },
-        page: {
-          pageCurrent: 1,
-          pageSize: 20,
-          totalCount: 0,
-          totalPage: 0,
-        },
-        addData: {},
-        currentData: {},
-        tableData: [],
-        tableConfig: {
-          loading: false,
-          headerCellStyle: { background: '#F3F4F7', color: '#333333' },
-          serialNumber: {
-            label: '序号',
-            type: 'index',
-            width: '64',
+        columnConfig: [
+          {
+            label: '考场编号',
+            prop: 'roomCode',
           },
-          columnConfig: [
-            {
-              label: '考场编号',
-              prop: 'roomCode'
-            },
-            {
-              label: '考场名称',
-              prop: 'roomName',
-              width: '180'
-            },
-            {
-              label: '所属考点',
-              prop: 'testCerterId',
-              width: '150',
-              type: 'enums',
-              enums: value => {
-                return vm.openCenterList.filter(
-                  item => item.value === value
-                )[0].label
+          {
+            label: '考场名称',
+            prop: 'roomName',
+            width: '180',
+          },
+          {
+            label: '所属考点',
+            prop: 'testCerterName',
+            width: '150',
+          },
+          {
+            label: '教学点',
+            prop: 'organName',
+          },
+          {
+            label: '座位数',
+            prop: 'seatNumber',
+          },
+          {
+            label: '状态',
+            prop: 'status',
+            type: 'enums',
+            enums: (value) => {
+              // 状态，1启用，2禁用
+              if (value === '1') {
+                return '启用'
+              } else if (value === '2') {
+                return '禁用'
+              } else {
+                return ''
               }
             },
-            {
-              label: '合作单位',
-              prop: 'organName',
-            },
-            {
-              label: '座位数',
-              prop: 'seatNumber',
-            },
-            {
-              label: '状态',
-              prop: 'status',
-              type: 'enums',
-              enums: value => {
-                // 状态，1启用，2禁用
-                if (value === '1') {
-                  return '启用'
-                } else if (value === '2') {
-                  return '禁用'
-                } else {
-                  return ''
-                }
-              }
-            },
-            {
-              label: '地址',
-              prop: 'address'
-            }
-          ],
-        },
-        title: '',
-        componentName: '',
-        componentData: null,
-        width: '552px',
-        direction: 'rtl',
-        isShowBtn: true,
-        dialogVisible: false,
-        openCenterList: []
-      }
-    },
-    async created() {
-      try {
-        this.params.organId = this.organList[0].id
-        this.initSelectOptions()
-        this.getTableData()
-      } catch (err) {
-        console.log(err)
-        this.tableData = []
-      }
-    },
-    watch: {
-      dialogVisible(val) {
-        val || (this.componentName = '')
-      }
-    },
-    methods: {
-      // 从字典中获取下拉框数据
-      initSelectOptions() {
-        api.getOpenTestCenterList({ organId: this.params.organId }).then(res => {
-          this.openCenterList = res.data.map(t => {
-            return {
-              label: t.name,
-              value: t.id
-            }
-          })
-        })
+          },
+          {
+            label: '地址',
+            prop: 'address',
+          },
+        ],
       },
-      getOrganId(item) {
-        this.initPage()
-        this.initSelectOptions()
-        this.getTableData({ organId: item.id })
-      },
-      handlerAdd() {
-        this.dialogVisible = true
-        this.title = '新增考场'
-        this.componentName = 'Add'
-        this.width = '450px'
-        this.isShowBtn = true
-        this.componentData = {
-          isAdd: true,
-          organId: this.params.organId,
-          openCenterList: this.openCenterList
-        }
-      },
-      // 编辑
-      handleEdit({ row }) {
-        this.title = '编辑考场'
-        this.dialogVisible = true
-        this.componentName = 'Add'
-        this.width = '450px'
-        this.isShowBtn = true
-        this.componentData = {
-          ...row,
-          isAdd: false,
-          openCenterList: this.openCenterList
-        }
-      },
-      async init() {
-        this.initPage()
-        this.getTableData()
-      },
-      // 属性
-      handleAttr({ row }) {
-        this.title = '属性'
-        this.dialogVisible = true
-        this.componentName = 'Attr'
-        this.width = '450px'
-        this.isShowBtn = false
-        this.componentData = {
-          data: row,
-          keys: [
-            { label: '考场编号', key: 'roomCode' },
-            { label: '考场名称', key: 'roomName' },
-            { label: '创建时间', key: 'createDate' },
-            { label: '创建人', key: 'createUserName' },
-            { label: '更新时间', key: 'updateDate' },
-            { label: '更新人', key: 'updateUserName' }
-          ]
-        }
-      },
-      initPage() {
-        this.page.pageCurrent = 1
-      },
-      async getTableData(query) {
-        const params = {
-          ...this.params,
-          ...this.page,
-        }
-        const res = await api.getExamRoomList(params)
-        this.tableData = res.data.rows || []
-        this.page.totalCount = res.data.totalCount
-      },
-      handleSizeChange(val) {
-        this.page.pageSize = val
-        this.getTableData()
-      },
-      confirm() {
-        this.$nextTick(() => {
-          this.$refs[`${this.componentName}`].confirm((valid) => {
-            this.dialogVisible = !valid
-            if (valid) {
-              this.init()
-            }
-          })
-        })
-      },
-      // 删除
-      handleDelete({ row }) {
-        this.$confirm('是否继续删除?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning',
-        }).then(() => {
-          api.examRoomDelete({ id: row.id }).then((res) => {
-            if (res.code === 200) {
-              this.$message({
-                type: 'success',
-                message: '删除成功!',
-              })
-              this.initPage()
-              this.getTableData()
-            }
-          })
-        })
-      },
-      handleCurrentChange(val) {
-        this.page.currentPage = val
-        this.getTableData()
-      }
+      title: '',
+      componentName: '',
+      componentData: null,
+      width: '552px',
+      direction: 'rtl',
+      isShowBtn: true,
+      dialogVisible: false,
+      openCenterList: [],
     }
-  }
+  },
+  async created() {
+    try {
+      this.params.organId = this.organListAll[0].id
+      // this.initSelectOptions()
+      this.getTableData()
+    } catch (err) {
+      console.log(err)
+      this.tableData = []
+    }
+  },
+  watch: {
+    dialogVisible(val) {
+      val || (this.componentName = '')
+    },
+  },
+  methods: {
+    //从字典中获取下拉框数据
+    initSelectOptions() {
+      api
+        .getOpenTestCenterList({ organId: this.params.organId })
+        .then((res) => {
+          this.openCenterList = res.data.map((t) => {
+            return {
+              label: t.address,
+              label: t.name,
+              value: t.id,
+            }
+          })
+        })
+    },
+    getOrganId(item) {
+      this.initPage()
+      if (this.params.organId) {
+        this.initSelectOptions()
+      } else {
+        this.openCenterList = []
+      }
+
+      this.getTableData({ organId: item.id })
+    },
+    handlerAdd() {
+      this.dialogVisible = true
+      this.title = '新增考场'
+      this.componentName = 'Add'
+      this.width = '450px'
+      this.isShowBtn = true
+      this.componentData = {
+        isAdd: true,
+        organId: this.params.organId,
+        openCenterList: this.openCenterList,
+      }
+    },
+    // 编辑
+    handleEdit({ row }) {
+      this.title = '编辑考场'
+      this.dialogVisible = true
+      this.componentName = 'Add'
+      this.width = '450px'
+      this.isShowBtn = true
+      this.componentData = {
+        ...row,
+        isAdd: false,
+        openCenterList: this.openCenterList,
+      }
+    },
+    async init() {
+      this.initPage()
+      this.getTableData()
+    },
+    // 属性
+    handleAttr({ row }) {
+      this.title = '属性'
+      this.dialogVisible = true
+      this.componentName = 'Attr'
+      this.width = '450px'
+      this.isShowBtn = false
+      this.componentData = {
+        data: row,
+        keys: [
+          { label: '考场编号', key: 'roomCode' },
+          { label: '考场名称', key: 'roomName' },
+          { label: '创建时间', key: 'createDate' },
+          { label: '创建人', key: 'createUserName' },
+          { label: '更新时间', key: 'updateDate' },
+          { label: '更新人', key: 'updateUserName' },
+        ],
+      }
+    },
+    initPage() {
+      this.page.pageCurrent = 1
+    },
+    async getTableData(query) {
+      const params = {
+        ...this.params,
+        ...this.page,
+      }
+      const res = await api.getExamRoomList(params)
+      this.tableData = res.data.rows || []
+      this.page.totalCount = res.data.totalCount
+    },
+    handleSizeChange(val) {
+      this.page.pageSize = val
+      this.getTableData()
+    },
+    confirm() {
+      this.$nextTick(() => {
+        this.$refs[`${this.componentName}`].confirm((valid) => {
+          this.dialogVisible = !valid
+          if (valid) {
+            this.init()
+          }
+        })
+      })
+    },
+    // 删除
+    handleDelete({ row }) {
+      this.$confirm('是否继续删除?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(() => {
+        api.examRoomDelete({ id: row.id }).then((res) => {
+          if (res.code === 200) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!',
+            })
+            this.initPage()
+            this.getTableData()
+          }
+        })
+      })
+    },
+    handleCurrentChange(val) {
+      this.page.currentPage = val
+      this.getTableData()
+    },
+  },
+}
 </script>
 
 <style lang="scss" scoped>
-  .student-plan-right {
-    .user-form {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      .organ-box {
-        display: flex;
-        justify-content: flex-end;
-      }
-      /deep/ .el-form .el-input,
-      .el-form .el-select,
-      .el-form .el-textarea {
-        width: 240px !important;
-      }
-      /deep/ .el-select {
-        width: 256px !important;
-      }
-      /deep/ .el-select-dropdown {
-        width: 256px !important;
-      }
-      /deep/ .el-input {
-        width: 240px !important;
-      }
-      .organ-select {
-        /deep/ .el-select {
-          width: 256px;
-        }
-      }
-    }
-  }
-  .icon-item {
-    width: 100%;
-    height: 40px;
-    padding: 9px 16px;
-    text-align: left;
-    font-size: 14px;
-    font-weight: 400;
-    color: rgba(51, 51, 51, 1);
-    line-height: 22px;
-    cursor: pointer;
+.student-plan-right {
+  .user-form {
     display: flex;
-    align-items: center;
-  }
-  .student-plan-right /deep/ .el-drawer__wrapper /deep/ {
-    .attrStyle /deep/ {
-      margin: 24px 24px 0 24px;
-      .title {
-        height: 24px;
-        font-size: 14px;
-        font-weight: 400;
-        color: rgba(102, 102, 102, 1);
-        line-height: 24px;
-      }
-      .cont {
-        height: 24px;
-        font-size: 14px;
-        font-weight: 500;
-        color: rgba(51, 51, 51, 1);
-        line-height: 24px;
+    flex-direction: row;
+    justify-content: space-between;
+    .organ-box {
+      display: flex;
+      justify-content: flex-end;
+    }
+    /deep/ .el-form .el-input,
+    .el-form .el-select,
+    .el-form .el-textarea {
+      width: 240px !important;
+    }
+    /deep/ .el-select {
+      width: 256px !important;
+    }
+    /deep/ .el-select-dropdown {
+      width: 256px !important;
+    }
+    /deep/ .el-input {
+      width: 240px !important;
+    }
+    .organ-select {
+      /deep/ .el-select {
+        width: 256px;
       }
     }
   }
-  .search-btn {
-    cursor: pointer;
-    margin-left: 20px;
+}
+.icon-item {
+  width: 100%;
+  height: 40px;
+  padding: 9px 16px;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(51, 51, 51, 1);
+  line-height: 22px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+.student-plan-right /deep/ .el-drawer__wrapper /deep/ {
+  .attrStyle /deep/ {
+    margin: 24px 24px 0 24px;
+    .title {
+      height: 24px;
+      font-size: 14px;
+      font-weight: 400;
+      color: rgba(102, 102, 102, 1);
+      line-height: 24px;
+    }
+    .cont {
+      height: 24px;
+      font-size: 14px;
+      font-weight: 500;
+      color: rgba(51, 51, 51, 1);
+      line-height: 24px;
+    }
   }
-  .opr {
-    color: #3f93db;
-    cursor: pointer;
-    display: inline-flex;
-    margin-right: 5px;
-  }
+}
+.search-btn {
+  cursor: pointer;
+  margin-left: 20px;
+}
+.opr {
+  color: #3f93db;
+  cursor: pointer;
+  display: inline-flex;
+  margin-right: 5px;
+}
 </style>
 <style lang="scss">
-  .drawer-content-custom /deep/ .el-drawer__body {
-    overflow: auto;
-    overflow-x: hidden;
-  }
+.drawer-content-custom /deep/ .el-drawer__body {
+  overflow: auto;
+  overflow-x: hidden;
+}
 </style>

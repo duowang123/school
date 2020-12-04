@@ -23,9 +23,9 @@
             </div>
           </div>
           <el-form-item label="审核结论" prop="course" class="select-width-240">
-            <el-select v-model="ruleForm.approveStatus" placeholder="请选择">
+            <el-select v-model="ruleForm.registerType" placeholder="请选择">
               <el-option
-                v-for="(item, index) in approveStatusList"
+                v-for="(item, index) in registerTypeList"
                 :key="index"
                 :label="item.dictName"
                 :value="item.dictValue"
@@ -57,29 +57,31 @@ export default {
   data(vm) {
     return {
       ruleForm: {
-        approveStatus: '',
+        registerType: '',
         id: vm.data.id,
-        notPassRemark: '',
+        notPassRemark: ''
       },
-      approveStatusList: [],
+      registerTypeList: [],
       rules: {
-        approveStatus: [
-          { required: true, message: '请选择审核结论', trigger: 'blur' },
-        ],
-      },
+        registerType: [
+          { required: true, message: '请选择审核结论', trigger: 'blur' }
+        ]
+      }
+    }
+  },
+  watch: {
+    data(val) {
+      this.ruleForm.registerType = val.registerType
     }
   },
   created() {
     api.listByCode({ code: '0012' }).then((res) => {
-      this.approveStatusList = res.data || []
+      this.registerTypeList = res.data || []
     })
-    this.ruleForm.approveStatus = this.data.approveStatus
+    this.ruleForm.registerType = this.data.registerType
     // this.ruleForm.notPassRemark = this.data.notPassRemark
   },
   methods: {
-    // handlerApproveStatus({ value }) {
-      // if (value !== '3') this.ruleForm.notPassRemark = ''
-    // },
     confirm(callBack) {
       this.$refs.addForm.validate(async (valid) => {
         if (valid) {

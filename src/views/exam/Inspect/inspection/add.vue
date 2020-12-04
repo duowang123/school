@@ -3,6 +3,16 @@
     <el-form :rules="rules" :model="ruleForm" ref="addForm" label-width="0">
       <div class="form-item">
         <div class="container">
+          <el-form-item label="学校" prop="organId">
+            <el-select placeholder="请选择" v-model="ruleForm.organId">
+              <el-option
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+                v-for="item in schoolOrgansList"
+              ></el-option>
+            </el-select>
+          </el-form-item>
           <el-form-item label="考试批次" prop="planInfoId">
             <el-select v-model="ruleForm.planInfoId" placeholder="请选择">
               <el-option
@@ -50,13 +60,16 @@
     },
     data(vm) {
       return {
+        inspectorList: [],
         ruleForm: {
           id: '',
+          organId: '',
           inspectorIds: [],
           type: '',
           planInfoId: ''
         },
         rules: {
+          organId: [{ required: true, message: '请选择学校', trigger: 'change' }],
           inspectorIds: [{ required: true, message: '请选择巡考员', trigger: 'change' }],
           type: [{ required: true, message: '请选择巡考方式', trigger: 'change' }],
           planInfoId: [{ required: true, message: '请选择考试批次', trigger: 'change' }]
@@ -70,19 +83,38 @@
       inspectionTypeOptions() {
         return this.data.inspectionTypeOptions
       },
-      inspectorList() {
-        return this.data.inspectorList
-      }
     },
     created() {
       if (!this.data.isAdd) {
         this.ruleForm.id = this.data.id || ''
-        this.ruleForm.inspectorIds = this.data.inspectorIds || []
+        this.ruleForm.organId = this.data.organId || ''
         this.ruleForm.type = this.data.type || ''
         this.ruleForm.planInfoId = this.data.planInfoId || ''
+        this.getInspectorList()
       }
     },
     methods: {
+      getInspectorList() {
+        api.inspectorListByOrganId({
+          organId: this.ruleForm.organId,
+          pageCurrent: 0,
+          pageSize: 100
+        }).then((res) => {
+            this.inspectorList = res.data.map((t) => {
+              return {
+                label: t.realName,
+                value: t.id
+              }
+            })
+            const arr = []
+            this.data.inspectorIds.forEach(t => {
+              if (this.inspectorList.map(o => o.value).includes(t)) {
+                arr.push(t)
+              }
+            })
+            this.ruleForm.inspectorIds = arr
+          })
+      },
       confirm(callBack) {
         this.$refs.addForm.validate(async valid => {
           if (valid) {

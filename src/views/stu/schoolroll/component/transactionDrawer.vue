@@ -7,6 +7,7 @@
       direction="rtl"
       size="380px"
       :before-close="closeDia"
+      :wrapperClosable="false"
     >
       <el-scrollbar id="scroll-box">
         <div class="drawer-content">
@@ -15,14 +16,14 @@
               <div class="OEP-form-item">
                 <div class="container">
                   <p class="label">
-                    学号/身份证
+                    学号/证件号码
                     <span class="required-icon">*</span>
                   </p>
                   <el-form-item prop="studentId">
                     <el-input
                       v-model="addData.studentId"
                       prefix-icon="el-icon-search"
-                      placeholder="学号/身份证"
+                      placeholder="学号/证件号码"
                     ></el-input>
                   </el-form-item>
                 </div>
@@ -174,7 +175,7 @@ export default {
         { value: '其他', label: '其他' }
       ],
       rules: {
-        id: [{ required: true, message: '请选择学号/身份证号', trigger: 'blur' }],
+        id: [{ required: true, message: '请选择学号/证件号码', trigger: 'blur' }],
         type: [{ required: true, message: '请选择异动类型', trigger: 'blur' }],
         reason: [{ required: true, message: '请选择异动原因', trigger: 'blur' }]
       },
@@ -216,16 +217,8 @@ export default {
     },
     async uploadFiles() {
       // 上传图片
-      const ret = await this.$refs.imgList.uploadImg()
-      if (!ret) {
-        this.$message({
-          showClose: true,
-          message: '图片上传失败',
-          type: 'error'
-        })
-        return false
-      }
-      return this.fileList.join('&')
+      const list = await this.$refs.imgList.uploadImg()
+      return list.join('&')
     },
     async addSave() {
       const url = await this.uploadFiles()

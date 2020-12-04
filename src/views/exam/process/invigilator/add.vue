@@ -3,40 +3,47 @@
     <el-form :rules="rules" :model="ruleForm" ref="addForm" label-width="0">
       <div class="form-item">
         <div class="container">
-          <el-form-item label="计划项目" prop="planId">
-            <el-select v-model="ruleForm.planId" @change="planProjectChange" placeholder="请选择">
-              <el-option
-                v-for="(item, index) in examPlanProjectList"
-                :key="index"
-                :label="item.projectName"
-                :value="item.id"
-              ></el-option>
-            </el-select>
-            <el-row v-show="rows.projectName" :gutter="24" v-loading="loading">
-              <el-col :span="24">
-                <div>计划名称：{{ rows.projectName || '--' }}</div>
-              </el-col>
-            </el-row>
-            <el-row v-show="rows.projectName" :gutter="24" v-loading="loading">
-              <el-col :span="24">
-                <div>考试批次：{{ rows.planId || '--' }}</div>
-              </el-col>
-            </el-row>
-            <el-row v-show="rows.projectName" :gutter="24" v-loading="loading">
-              <el-col :span="12">
-                <div>学年：{{ rows.schoolYear || '--' }}</div>
-                <div>考场：{{ rows.examRoomId || '--' }}</div>
-              </el-col>
-              <el-col :span="12">
-                <div>学期：{{ rows.semester || '--' }}</div>
-                <div>座位数：{{ rows.seatNumber || '--' }}</div>
-              </el-col>
-            </el-row>
+          <el-form-item label="">
+<!--            <el-select v-model="ruleForm.planId" @change="planProjectChange" placeholder="请选择">-->
+<!--              <el-option-->
+<!--                v-for="(item, index) in examPlanProjectList"-->
+<!--                :key="index"-->
+<!--                :label="item.projectName"-->
+<!--                :value="item.id"-->
+<!--              ></el-option>-->
+<!--            </el-select>-->
+            <template v-if="data.projectName">
+              <el-row v-show="data.projectName" :gutter="24" v-loading="loading">
+                <el-col :span="24">
+                  <div>学校：{{ data.organName || '--' }}</div>
+                </el-col>
+                <el-col :span="24">
+                  <div>考试科目：{{ data.projectName || '--' }}</div>
+                </el-col>
+              </el-row>
+              <el-row :gutter="24" v-loading="loading">
+                <el-col :span="24">
+                  <div>考试批次：{{ data.planName || '--' }}</div>
+                </el-col>
+              </el-row>
+              <el-row :gutter="24" v-loading="loading">
+                <el-col :span="12">
+                  <div>学年：{{ data.schoolYear || '--' }}</div>
+                  <div>考场：{{ data.roomName || '--' }}</div>
+                </el-col>
+                <el-col :span="12">
+                  <div>学期：{{ data.semester || '--' }}</div>
+                  <div>座位数：{{ data.seatNumber || '--' }}</div>
+                </el-col>
+              </el-row>
+            </template>
           </el-form-item>
           <el-form-item label="监考人数" prop="invigilatorNum">
             <el-input
+              :min="0"
+              disabled
               v-model="ruleForm.invigilatorNum"
-              placeholder="学号/身份证"
+              placeholder="监考人数"
             ></el-input>
           </el-form-item>
           <el-form-item prop="coachIds" label="监考老师安排">
@@ -77,14 +84,15 @@
           coachIds: ''
         },
         rules: {
-          invigilatorNum: [{ required: true, message: '请输入监考人数', trigger: 'blur' },
-            {
-              pattern: '^[1-9]\\d*$',
-              message: '只能是数字',
-              trigger: 'blur'
-            }],
           coachIds: [{ required: true, message: '请选择', trigger: 'change' }],
           planId: [{ required: true, message: '请选择', trigger: 'change' }]
+        }
+      }
+    },
+    watch: {
+      'ruleForm.coachIds': {
+        handler: function(val) {
+          this.ruleForm.invigilatorNum = val.length
         }
       }
     },
@@ -92,23 +100,31 @@
       coachList() {
         return this.data.coachList
       },
-      rows() {
-        if(this.ruleForm.planId) {
-          return this.examPlanProjectList.filter(t => t.id === this.ruleForm.planId)[0]
-        }
-        return {}
-      }
+      // rows() {
+      //   if (this.ruleForm.planId) {
+      //     return this.examPlanProjectList.filter(t => t.id === this.ruleForm.planId)[0]
+      //   }
+      //   return {}
+      // }
     },
     created() {
-      api.listByOrganId({ organId: this.data.organId }).then(res => {
-        this.examPlanProjectList = res.data
-      })
+      // api.listByOrganId({ organId: this.data.organId, planId: this.data.planId }).then(res => {
+      //   this.examPlanProjectList = res.data
+      // })
       if (!this.data.isAdd) {
         this.ruleForm.id = this.data.id || ''
         this.ruleForm.planId = this.data.planId || ''
         this.ruleForm.planInfoId = this.data.planInfoId || ''
-        this.ruleForm.invigilatorNum = this.data.invigilatorNum.toString() || ''
-        this.ruleForm.coachIds = this.data.coachIds || []
+        this.ruleForm.invigilatorNum = (this.data.invigilatorNum || '').toString()
+        var arr = []
+        if(this.data.coachIds && this.data.coachIds.length > 0) {
+          this.data.coachIds.forEach(t => {
+            if (this.coachList.map(o => o.value).includes(t)) {
+              arr.push(t)
+            }
+          })
+        }
+        this.ruleForm.coachIds = arr
       }
     },
     methods: {

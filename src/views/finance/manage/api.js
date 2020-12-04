@@ -35,6 +35,15 @@ export function getStudentPayLogList(data) {
   })
 }
 
+// 学生缴费导入
+export function stundentPayLogImport(data) {
+  return request({
+    url: '/course/student_pay_log/api/pay/import',
+    method: 'post',
+    data
+  })
+}
+
 // 获取学生应缴费查询列表
 export function getStudentPayAbleList(data) {
   return request({
@@ -79,3 +88,5 @@ export function addPayLog(data) {
     data
   })
 }
+
+

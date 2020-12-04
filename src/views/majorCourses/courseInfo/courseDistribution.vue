@@ -80,7 +80,7 @@
           bindCourseToOrgan(params).then(res => {
             if (res.code === 200) {
               this.$message.success('绑定成功')
-              this.$emit('update', this.organId)
+              this.$emit('update-distribution', this.organId)
             }
           })
         }

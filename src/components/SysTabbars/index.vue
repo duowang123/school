@@ -13,7 +13,8 @@ export default {
   name: 'SysTabBars',
   data() {
     return {
-      activeName: '机构'
+      activeName: '',
+      activeSys: ''
     }
   },
   computed: {
@@ -25,18 +26,27 @@ export default {
     }
   },
   mounted() {
-    this.initMenu()
+    this.activeName = this.menu.activeSys
+    setTimeout(() => {
+      this.initMenu()
+    })
   },
   methods: {
     ...mapMutations(['set_system_menu', 'set_active_system']),
-    handleClick({ name }, event) {
-      this.set_system_menu(this.menu.sys[name])
+    handleClick({ name, init = false }, event) {
+      const menu = this.menu.sys[name]
+      this.set_system_menu(menu)
       this.set_active_system(this.activeName)
+      if (!init) {
+        const firstChildMenuUrl = this.$_getValue(menu, '0.children.0.menuUrl', '')
+        this.$nextTick(() => {
+          firstChildMenuUrl && this.$router.replace(firstChildMenuUrl)
+        })
+      }
     },
     // 根据当前路径初始化菜单
     initMenu() {
       const curPath = this.$route.path
-      console.log(this.menu.sys)
       for (const sysName in this.menu.sys) {
         const menu = this.menu.sys[sysName]
         menu.forEach(e => {
@@ -50,8 +60,13 @@ export default {
           })
         })
       }
-      this.handleClick({ name: this.activeName })
-      this.set_active_system(this.activeName)
+
+      const name = this.activeName || this.sys[0].label
+      // console.log(this.$_getValue(this.menu, `sys.${name}.0.children.0.menuUrl`, 'dashboard'))
+      // if (false) {
+      //   this.$router.replace({ path: this.$_getValue(this.menu, `sys.${name}.0.children.0.menuUrl`, 'dashboard')})
+      // }
+      this.handleClick({ name, init: true })
     }
   }
 }
@@ -61,13 +76,14 @@ export default {
 .sys-tabBars {
   display: inline-block;
   margin: 0 0 0 24px;
+  border-bottom: 2px solid #fff;
   /deep/ .el-tabs__item {
     font-size: 18px;
     font-weight: 500;
     text-align: center;
-    color: #666666;
+    color: #fff;
     &.is-active {
-      color: #3F93DB;
+      color: #fff;
     }
   }
   /deep/ .el-tabs__nav-wrap::after  {

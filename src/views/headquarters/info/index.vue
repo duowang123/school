@@ -1,5 +1,5 @@
 <template>
-  <div class="situation">
+  <div class="situation main-content-container">
     <el-scrollbar style="height:100%" :noresize="true">
       <el-form :model="managerInfo" :rules="rules" ref="ruleForm" label-width="0" class="demo-ruleForm">
         <div class="basic">
@@ -98,18 +98,6 @@
                   </div>
                   <div class="OEP-form-item margin_r_48">
                     <div class="container">
-                      <p class="label">身份证<span class="required-icon">*</span></p>
-                      <el-form-item prop="contactsIdCard">
-                        <el-input
-                            class="form-item-input"
-                            :disabled="disabled"
-                            v-model="managerInfo.contactInfoS[0].idCard"
-                            placeholder="请输入身份证"></el-input>
-                      </el-form-item>
-                    </div>
-                  </div>
-                  <div class="OEP-form-item margin_r_48">
-                    <div class="container">
                       <p class="label">性别<span class="required-icon">*</span></p>
                       <div class="radio-container">
                         <el-form-item prop="contactsSex">
@@ -119,6 +107,18 @@
                           </el-radio-group>
                         </el-form-item>
                       </div>
+                    </div>
+                  </div>
+                  <div class="OEP-form-item margin_r_48">
+                    <div class="container">
+                      <p class="label">身份证<span class="required-icon">*</span></p>
+                      <el-form-item prop="contactsIdCard">
+                        <el-input
+                            class="form-item-input"
+                            :disabled="disabled"
+                            v-model="managerInfo.contactInfoS[0].idCard"
+                            placeholder="请输入身份证"></el-input>
+                      </el-form-item>
                     </div>
                   </div>
                   <div class="OEP-form-item margin_r_48">
@@ -172,19 +172,6 @@
                   </div>
                   <div class="OEP-form-item margin_r_48">
                     <div class="container">
-                      <p class="label">身份证</p>
-                      <el-form-item >
-                        <el-input
-                            class="form-item-input"
-                            :disabled="disabled"
-                            v-model="managerInfo.contactInfoS[1].idCard"
-                            @input="forceChange()"
-                            placeholder="请输入身份证"></el-input>
-                      </el-form-item>
-                    </div>
-                  </div>
-                  <div class="OEP-form-item margin_r_48">
-                    <div class="container">
                       <p class="label">性别</p>
                       <div class="radio-container">
                         <el-form-item >
@@ -194,6 +181,19 @@
                           </el-radio-group>
                         </el-form-item>
                       </div>
+                    </div>
+                  </div>
+                  <div class="OEP-form-item margin_r_48">
+                    <div class="container">
+                      <p class="label">身份证</p>
+                      <el-form-item >
+                        <el-input
+                            class="form-item-input"
+                            :disabled="disabled"
+                            v-model="managerInfo.contactInfoS[1].idCard"
+                            @input="forceChange()"
+                            placeholder="请输入身份证"></el-input>
+                      </el-form-item>
                     </div>
                   </div>
                   <div class="OEP-form-item margin_r_48">
@@ -250,19 +250,6 @@
                   </div>
                   <div class="OEP-form-item margin_r_48">
                     <div class="container">
-                      <p class="label">身份证</p>
-                      <el-form-item >
-                        <el-input
-                            class="form-item-input"
-                            :disabled="disabled"
-                            v-model="managerInfo.contactInfoS[2].idCard"
-                            @input="forceChange()"
-                            placeholder="请输入身份证"></el-input>
-                      </el-form-item>
-                    </div>
-                  </div>
-                  <div class="OEP-form-item margin_r_48">
-                    <div class="container">
                       <p class="label">性别</p>
                       <div class="radio-container">
                         <el-form-item >
@@ -272,6 +259,19 @@
                           </el-radio-group>
                         </el-form-item>
                       </div>
+                    </div>
+                  </div>
+                  <div class="OEP-form-item margin_r_48">
+                    <div class="container">
+                      <p class="label">身份证</p>
+                      <el-form-item >
+                        <el-input
+                            class="form-item-input"
+                            :disabled="disabled"
+                            v-model="managerInfo.contactInfoS[2].idCard"
+                            @input="forceChange()"
+                            placeholder="请输入身份证"></el-input>
+                      </el-form-item>
                     </div>
                   </div>
                   <div class="OEP-form-item margin_r_48">
@@ -328,19 +328,6 @@
                   </div>
                   <div class="OEP-form-item margin_r_48">
                     <div class="container">
-                      <p class="label">身份证</p>
-                      <el-form-item >
-                        <el-input
-                            class="form-item-input"
-                            :disabled="disabled"
-                            v-model="managerInfo.contactInfoS[3].idCard"
-                            @input="forceChange()"
-                            placeholder="请输入身份证"></el-input>
-                      </el-form-item>
-                    </div>
-                  </div>
-                  <div class="OEP-form-item margin_r_48">
-                    <div class="container">
                       <p class="label">性别</p>
                       <div class="radio-container">
                         <el-form-item >
@@ -350,6 +337,19 @@
                           </el-radio-group>
                         </el-form-item>
                       </div>
+                    </div>
+                  </div>
+                  <div class="OEP-form-item margin_r_48">
+                    <div class="container">
+                      <p class="label">身份证</p>
+                      <el-form-item >
+                        <el-input
+                            class="form-item-input"
+                            :disabled="disabled"
+                            v-model="managerInfo.contactInfoS[3].idCard"
+                            @input="forceChange()"
+                            placeholder="请输入身份证"></el-input>
+                      </el-form-item>
                     </div>
                   </div>
                   <div class="OEP-form-item margin_r_48">
@@ -397,7 +397,7 @@
           证件上传
           <span style="color: #8d8d8d; font-size: 14px; margin-left: 15px">( 办学许可证 / 企业单位登记证书 / 法人身份证 )</span></h2>
           <div class="row uploader-container">
-            <img-list ref="imgList" :imgs="fileList" @delete-img="deleteImgHandler" :deleteable="!disabled"/>
+            <img-list ref="imgList" :imgs="fileList" @delete-img="deleteImgHandler" :disabled="!disabled"/>
           </div>
         </div>
         <div>
@@ -407,6 +407,8 @@
               <div class="container">
                 <p class="label">辅导老师人数</p>
                 <el-input-number
+                    :min="0"
+                    :max="1000"
                     class="form-item-input_number"
                     :disabled="disabled"
                     v-model="managerInfo.teacherNum"
@@ -417,6 +419,8 @@
               <div class="container">
                 <p class="label">管理员人数</p>
                 <el-input-number
+                    :max="1000"
+                    :min="0"
                     class="form-item-input_number"
                     v-model="managerInfo.managerNum"
                     :disabled="disabled"
@@ -427,6 +431,8 @@
               <div class="container">
                 <p class="label">其他人员人数</p>
                 <el-input-number
+                    :max="1000"
+                    :min="0"
                     class="form-item-input_number"
                     v-model="managerInfo.otherNum"
                     :disabled="disabled"
@@ -498,6 +504,9 @@
         disabled: true,
         managerInfo: { contactInfoS: {}},
         propertyOption: [{
+          value: '',
+          label: '请选择'
+        }, {
           value: '1',
           label: '招生'
         }, {
@@ -585,16 +594,8 @@
 
       async update() {
         // 上传图片
-        const ret = await this.$refs.imgList.uploadImg()
-        if (!ret) {
-          this.$message({
-            showClose: true,
-            message: '图片上传失败',
-            type: 'error'
-          });
-          return false
-        }
-        this.managerInfo.unitCertUrl = this.fileList.join('&')
+        const list = await this.$refs.imgList.uploadImg()
+        this.managerInfo.unitCertUrl = list.join('&')
         api.updateOrgan(this.managerInfo).then(res => {
           if (res.data === '1') {
             this.$message({
@@ -628,14 +629,13 @@
 
 <style scoped lang="scss">
   .situation {
-    margin: 56px 24px 24px;
+    margin: 0 24px 24px;
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
     background-color: #ffffff;
-    box-shadow: 0 4px 8px 0 rgba(0, 11, 30, 0.08);
     padding-left: 24px;
 
     /deep/ .el-form-item {
@@ -660,14 +660,15 @@
     }
 
     .contact {
-      height: 360px;
+      height: 275px;
       .users-tab {
         margin-left: -25px;
         border: none;
         box-shadow: none;
         height: 48px;
         padding-right: calc(100% - 544px);
-        background-color: #E6E9EC;
+        border-bottom: 1px solid #D7E0E7;
+        /*background-color: #E6E9EC;*/
 
         /deep/ .el-tabs__item {
           width: 96px;
@@ -685,7 +686,7 @@
 
       /deep/ .el-tabs {
         .el-tabs__content {
-          height: 360px;
+          /*height: 360px;*/
           width: 1200px;
           padding-left: 27px;
           .el-tab-pane {

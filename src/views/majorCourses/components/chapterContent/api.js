@@ -60,3 +60,27 @@ export function searchVideo(data) {
     data
   })
 }
+
+export function getDoc(data) {
+  return request({
+    url: '/course/chapter/getDoc',
+    method: 'POST',
+    data
+  })
+}
+
+export function getVideo(data) {
+  return request({
+    url: '/course/chapter/getVideo',
+    method: 'POST',
+    data
+  })
+}
+
+export function getDiscusses(data) {
+  return request({
+    url: '/course/chapter/getDiscusses',
+    method: 'POST',
+    data
+  })
+}

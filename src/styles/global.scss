@@ -1,3 +1,20 @@
+//滚动条的宽度
+::-webkit-scrollbar {
+  width: 10px;
+  height: 8px;
+}
+//滚动条的滑块
+::-webkit-scrollbar-thumb {
+  background-color: #a1a3a9;
+  border-radius: 3px;
+}
+
+.main-content-container {
+  box-shadow: 0 4px 8px 0 rgba(0,11,30,0.08);
+  //box-shadow: 0 4px 8px 0 red;
+  border-radius: 4px;
+}
+
 .OEP-form-item {
   display: inline-block;
   width: 288px;
@@ -14,7 +31,7 @@
     }
     .radio-container{
       display: flex;
-      padding-top: 24px;
+      //padding-top: 24px;
       .form-item-radio {
         width: 96px;
       }
@@ -25,6 +42,10 @@
       }
     }
   }
+}
+
+.must-label {
+
 }
 
 .margin_r_48 {
@@ -105,6 +126,10 @@
   color: #FFF;
 }
 
+.user-form {
+  background-color: #f3f5f7 !important;
+}
+
 .required-icon {
   width: 8px;
   height: 8px;
@@ -118,9 +143,16 @@
 // }
 //
 .pagination {
-  float: right;
-  margin-top: 20px;
-  margin-bottom: 22px
+  background: #ffffff;
+  text-align: right;
+  //float: right;
+  //margin-top: 20px;
+  //margin-bottom: 22px
+  //margin-top: 5px;
+  //margin-bottom: 5px;
+  //border-top: 1px solid #f4f4f5;
+  border-radius: 0 0 4px 4px;
+  padding: 6px 15px 16px 0;
 }
 
 //.el-select-dropdown__wrap {
@@ -135,4 +167,13 @@
   .el-tree-node__children {
     overflow: visible!important;
   }
+}
+
+.video-js .vjs-big-play-button {
+  top: 330px;
+  left: 50px;
+}
+
+.el-message-box {
+  width: 450px;
 }

@@ -8,6 +8,21 @@
     height="700px"
     width="1200px"
   >
+    <el-select
+      :disabled="!isAll"
+      class="organ-select"
+      clearable
+      filterable
+      placeholder="请选择学校"
+      v-model="form.organId"
+    >
+      <el-option
+        :key="item.id"
+        :label="item.name"
+        :value="item.id"
+        v-for="item in schoolOrgansList"
+      ></el-option>
+    </el-select>
     <el-form ref="form" :model="form" label-width="100px" label-position="left" v-loading="loading">
       <el-form-item label="题目类型" required>
         <el-radio-group v-model="form.type" @change="handlerRadio()">
@@ -62,16 +77,23 @@
         <div id="answer" class="toolbar"></div>
       </el-form-item>
       <el-form-item class="flex-coulmn" label="分数" required>
-        <el-input-number :min="0" v-model="form.score" :step="1" style="display:inline-flex"></el-input-number>
+        <el-input-number
+          :min="0"
+          v-model="form.score"
+          :step="1"
+          style="display:inline-flex"
+          :disabled="form.type === '4'"
+        ></el-input-number>
       </el-form-item>
-      <el-form-item class="flex-coulmn" label="难度" required>
-        <el-rate v-model="form.difficulty"></el-rate>
-      </el-form-item>
+      <!-- <el-form-item class="flex-coulmn" label="难度" required> -->
+      <!-- <el-rate v-model="form.difficulty"></el-rate> -->
+      <!-- </el-form-item> -->
       <el-form-item class="flex-coulmn" style="margin-top: 10px" label="标准答案" required>
         <answer
           :options="options"
           :answer.sync="form.answer"
           :type="form.type"
+          :score.sync="form.score"
           ref="answer"
           @update-answer="updateAnswer"
         />
@@ -90,6 +112,7 @@
 import * as api from '../api'
 import Answer from './answer'
 import Preview from './preview'
+import selectMixin from '@/views/mixins/select.js'
 export default {
   props: {
     dialogAdd: {
@@ -109,6 +132,7 @@ export default {
       required: true,
     },
   },
+  mixins: [selectMixin],
   components: {
     Answer,
     Preview,
@@ -141,6 +165,7 @@ export default {
         },
       ],
       form: {
+        organId: '',
         type: '1',
         level: '', // 层次
         courseId: '', // 课程id
@@ -149,7 +174,7 @@ export default {
         answer: '',
         score: '',
         analysis: '',
-        difficulty: null,
+        // difficulty: null,
       },
       stemEdit: undefined,
       answerEdit: undefined,
@@ -168,6 +193,7 @@ export default {
     }
   },
   async created() {
+    this.form.organId = this.organId ? this.organId : this.schoolOrgansList[0].id
     this.init = true
     this.typeList = ((await api.listByCode({ code: '0032' })) || {}).data || []
     if (this.id) await this.handlerForm(this.id)
@@ -202,7 +228,7 @@ export default {
         }
       })
       if (this.id) this.previewInfo.id = this.id
-      this.previewInfo.organId = this.organId
+      this.previewInfo.organId = this.form.organId
       this.previewInfo.examOption = [{ ...examOption }]
       // 判断是否是多选
       if (Array.isArray(this.previewInfo.answer)) {
@@ -216,7 +242,8 @@ export default {
       const valid = this.checkRules(this.previewInfo)
       if (!isfillAnswer || !valid) return this.$message.warning('请填写完整!')
       // 填空赋值
-      if (this.previewInfo.type === this.arr[3])  this.previewInfo.fillAnswer = this.$refs.answer.fillAnswer
+      if (this.previewInfo.type === this.arr[3])
+        this.previewInfo.fillAnswer = this.$refs.answer.fillAnswer
       this.previewVisible = true
     },
     // 数据重置
@@ -224,8 +251,8 @@ export default {
       for (let key in this.form) {
         if (key === 'answer' && this.form.type === this.arr[1]) {
           this.form.answer = []
-        } else if (key === 'difficulty') {
-          this.form[key] = null
+          // } else if (key === 'difficulty') {
+          // this.form[key] = null
         } else if (key !== 'type') {
           this.form[key] = ''
         }
@@ -254,10 +281,10 @@ export default {
         if (courseId)
           this.handlerSelect(this.selectList[2], this.selectList[2].key)
         for (let key in this.form) {
-          if ((key === 'answer') && data.type === this.arr[1]) {
+          if (key === 'answer' && data.type === this.arr[1]) {
             this.form.answer = data.answer.split(',')
-          } else if (key === 'difficulty') {
-            this.form[key] = parseInt(data[key])
+            // } else if (key === 'difficulty') {
+            // this.form[key] = parseInt(data[key])
           } else if (key === 'score') {
             this.form[key] = data[key].toString()
           } else {
@@ -324,7 +351,7 @@ export default {
         }
       })
       if (this.id) formCopy.id = this.id
-      formCopy.organId = this.organId
+      formCopy.organId = this.form.organId
       formCopy.examOption = [{ ...examOption }]
       // 判断是否是多选
       if (Array.isArray(formCopy.answer)) {
@@ -337,7 +364,8 @@ export default {
       const valid = this.checkRules(formCopy)
       if (!isfillAnswer || !valid) return this.$message.warning('请填写完整!')
       // 填空赋值
-      if (formCopy.type === this.arr[3]) formCopy.fillAnswer = this.$refs.answer.fillAnswer
+      if (formCopy.type === this.arr[3])
+        formCopy.fillAnswer = this.$refs.answer.fillAnswer
       if (this.id) {
         api.examQuestionUpdate(formCopy).then((res) => {
           if (res.code === 200) this.$message.success('修改成功!')
@@ -349,7 +377,6 @@ export default {
       }
       this.$emit('updateTable')
       this.$emit('update:dialogAdd', false)
-      
     },
     handlerRadio() {
       this.isOptionsVisable = !(
@@ -409,7 +436,7 @@ export default {
         },
         specialtyId: async () => {
           const params = {
-            organId: this.organId,
+            organId: this.form.organId,
             level: this.form.level,
           }
           if (!this.form.level) return this.$message.warning('请先选择层次!')

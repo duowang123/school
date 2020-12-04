@@ -153,10 +153,11 @@ export default {
     async getExamOption(id, stemId) {
       this.examOptionLoading = true
       try {
+        this.examOption = {}
         const res = await api.examPaperPreview(id)
         this.examOption = res.data
         this.id = stemId
-        this.examOption.difficulty = parseInt(this.examOption.difficulty)
+        // this.examOption.difficulty = parseInt(this.examOption.difficulty)
       } catch (err) {
         this.examOptionLoading = false
         console.log(err)

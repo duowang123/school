@@ -20,7 +20,7 @@ const menu = {
     menuArr: [],
     menuSet: {},
     sys: [],
-    activeSys: '机构'
+    activeSys: ''
   },
   mutations: {
     set_system_menu: (state, menu) => {
@@ -67,12 +67,13 @@ const menu = {
 
 export default menu
 
-function formatMenu(data) {
-  const activeSys = '机构'
+function formatMenu(data = []) {
   const sys = {}
   data.forEach(e => {
     e.children && (sys[e.menuName] = e.children)
   })
+  const active = data[0] || {}
+  const activeSys = active.menuName || ''
   return {
     activeSys,
     sys

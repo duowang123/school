@@ -15,6 +15,7 @@ import courseList from './courseList'
 import transactions from './transactions'
 import grade from './grade'
 import study from './study'
+import Thesis from './Thesis'
 export default {
   props: {
     data: {
@@ -28,7 +29,8 @@ export default {
     courseList,
     transactions,
     grade,
-    study
+    study,
+    Thesis
   },
   data() {
     return {
@@ -50,6 +52,10 @@ export default {
           label: '异动历史',
           name: 'transactions'
         },
+        {
+          label: '论文毕业',
+          name: 'Thesis'
+        }
         // {
           // label: '学习汇总',
           // name: 'study'

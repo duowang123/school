@@ -33,7 +33,7 @@
           <el-table-column label="题干" show-overflow-tooltip>
             <template slot-scope="{ row }">{{ $_getSimpleText(row.stem) }}</template>
           </el-table-column>
-          <el-table-column prop="difficulty" label="难度" align="center"></el-table-column>
+          <!-- <el-table-column prop="difficulty" label="难度" align="center"></el-table-column> -->
           <el-table-column prop="score" label="分数" align="center"></el-table-column>
         </el-table>
       </el-row>
@@ -100,7 +100,7 @@ export default {
       type: '',
       page: {
         pageCurrent: 1,
-        pageSize: 10,
+        pageSize: 20,
         totalCount: 0,
         totalPage: 0,
       },

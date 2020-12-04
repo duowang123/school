@@ -6,7 +6,7 @@
           <el-button type="primary" @click="handleAdd">新增</el-button>
           <el-upload
             class="upload-demo"
-            style="margin-left: 24px; display: inline-flex;"
+            style="margin-left: 16px; display: inline-flex;"
             :on-change="onFileChange"
             :auto-upload="false"
             :show-file-list="false"
@@ -14,8 +14,8 @@
           >
             <el-button plain type="primary">导入</el-button>
           </el-upload>
-          <!-- <el-button type="primary" @click="exportExcel">导出Excel</el-button> -->
-          <el-button plain type="primary" style="margin-left: 24px">
+          <el-button plain type="primary" @click="exportExcel" style="margin-left: 16px">导出Excel</el-button>
+          <el-button plain type="primary" style="margin-left: 16px">
             <a download :href="STATIC_BASE + '/static/报名清单.xls'">
               <i class="el-icon-download el-icon--left"></i>模板下载
             </a>
@@ -24,18 +24,42 @@
         <div class="organ-box">
           <el-select
             class="organ-select"
-            v-model="organId"
+            v-if="showSchool"
+            clearable
             filterable
+            v-model="params.organId"
             @change="organChange"
-            placeholder="请选择合作单位"
+            placeholder="请选择学校"
           >
-            <el-option v-for="item in organList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+            <el-option
+              v-for="item in schoolOrgansListAll"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+          <el-select
+            class="organ-select"
+            v-model="params.schoolOrganId"
+            filterable
+            clearable
+            v-if="showTeacher"
+            lsSchool
+            @change="organChange"
+            placeholder="请选择教学点"
+          >
+            <el-option
+              v-for="item in organListAll"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            ></el-option>
           </el-select>
           <el-input
             v-model.trim="params.realNameOrcertNo"
             @change="getTableData"
             @keyup.enter.native="getTableData"
-            placeholder="姓名/身份证号"
+            placeholder="姓名/证件号码"
           ></el-input>
           <el-button
             type="primary"
@@ -45,75 +69,28 @@
         </div>
       </el-form>
     </div>
-    <div>
-      <el-table
-        v-loading="ctrl.loading"
-        size="medium"
-        :data="list"
-        stripe
-        :header-cell-style="getRowClass"
-        style="width: 100%"
+    <div class="main-content-container">
+      <courses-table
+        class="table"
+        :tableConfig="tableConfig"
+        :tableData="tableData"
+        :colWidth="{ opear: '140px' }"
       >
-        <el-table-column label width="24" align="center"></el-table-column>
-        <el-table-column type="index" align="center" label="序号" width="50"></el-table-column>
-        <el-table-column prop="testNo" label="考生号"></el-table-column>
-        <el-table-column prop="realName" label="姓名"></el-table-column>
-        <el-table-column label="性别">
-          <template slot-scope="scope">
-            <span>{{ scope.row.sex === '1' ? '男' : '女' }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="certNo" width="190" label="身份证号"></el-table-column>
-        <el-table-column prop="organName" label="报考一志愿学校" width="200"></el-table-column>
-        <el-table-column prop="professionalName" label="报考一志愿专业"></el-table-column>
-        <el-table-column prop="organName2" label="报考二志愿学校" width="200"></el-table-column>
-        <el-table-column prop="professionalName2" label="报考二志愿专业"></el-table-column>
-        <el-table-column prop="schoolYear" label="年级"></el-table-column>
-        <el-table-column label="报考层次">
-          <template slot-scope="scope">
-            <span>{{ showEnterLevel(scope.row.enterLevel) }}</span>
-          </template>
-        </el-table-column>
-
-        <el-table-column label="考试方式">
-          <template slot-scope="scope">
-            <span>{{ showText(scope.row.testType, 'testType') }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="学院审核">
-          <template slot-scope="scope">
-            <span>{{ showText(scope.row.approveStatus, 'approveStatus') }}</span>
-          </template>
-        </el-table-column>
-        <!-- <el-table-column label="注册状态"> -->
-          <!-- <template slot-scope="scope"> -->
-            <!-- <span>{{ scope.row.registerType ? registerTypeList.filter(item => item.dictValue === scope.row.registerType)[0].dictName : '' }}</span> -->
-          <!-- </template> -->
-        <!-- </el-table-column> -->
-        <el-table-column prop="remark" label="备注" show-overflow-tooltip></el-table-column>
-        <el-table-column fixed="right" align="center" label="操作" width="150">
-          <template slot-scope="scope">
-            <div class="item">
-              <el-button type="text" @click="handleEdit(scope.row)">编辑</el-button>
-              <el-button type="text" @click="handleAttr(scope.row)">属性</el-button>
-              <el-button type="text" @click="handleDelete(scope.row)">删除</el-button>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column label width="24" align="center"></el-table-column>
-      </el-table>
+        <div slot-scope="{ scope }" style="width:200px">
+          <el-button class="opr" type="text" @click="handleEdit(scope.row)">编辑</el-button>
+          <el-button class="opr" type="text" @click="handleAttr(scope.row)">详情</el-button>
+          <el-button class="opr" type="text" v-all @click="handleDelete(scope.row)">删除</el-button>
+        </div>
+      </courses-table>
+      <pagination
+        @handleSizeChange="handleSizeChange"
+        @handleCurrentChange="handleCurrentChange"
+        :currentPage="page.pageCurrent"
+        :pagination-config="paginationConfig"
+      />
     </div>
-    <el-pagination
-      background
-      style="float: right;margin-top: 20px; margin-bottom: 22px"
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-      :page-size="page.pageSize"
-      :page-sizes="[20, 50, 100, 200]"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="page.totalCount"
-    ></el-pagination>
     <el-drawer
+      :wrapperClosable="false"
       title="属性"
       :visible.sync="drawer"
       direction="rtl"
@@ -141,7 +118,7 @@
     <el-dialog title="新增" :close-on-click-modal="false" :visible.sync="dialogVisible" width="950px">
       <div style="height: 550px">
         <!-- <add-user-from ref="addUserFrom" :is-add="isAdd" :user="addUser" organ-id="1"/> -->
-        <add ref="addFrom" :data="currentData" :organId="organId" />
+        <add ref="addFrom" :data="currentData" :organId="organId" :is-add="isAdd" />
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
@@ -157,17 +134,29 @@ import Add from './add'
 import { mapGetters } from 'vuex'
 import { STATIC_BASE } from '@/constant/global'
 import Search from '@/components/search'
+import mixin from '../../../mixins/download'
+import coursesTable from '@/components/Table/coursesTable'
+import pagination from '@/components/Table/pagination'
+import tableMixin from '@/components/Table/tableMixin'
+import selectMixin from '../../../mixins/select.js'
 
 export default {
-  components: { Add, Search },
+  components: {
+    Add,
+    Search,
+    coursesTable,
+    pagination
+  },
+  mixins: [mixin, tableMixin, selectMixin],
   name: 'Admit',
   props: {
     organType: {
       type: Number,
-      default: 1, // 总院： 1, 分院： 2
-    },
+      default: 1 // 总院： 1, 分院： 2
+    }
   },
   data() {
+    const vm = this
     return {
       isAdd: true,
       roles: [],
@@ -177,11 +166,114 @@ export default {
       addUser: {},
       drawer: false,
       currentData: {},
-      organId: '',
       params: {
+        organId: '',
         realNameOrcertNo: '',
+        schoolOrganId: ''
       },
-      list: [],
+      tableConfig: {
+        loading: false,
+        // headerCellStyle: { background: '#F3F4F7', color: '#333333' },
+        serialNumber: {
+          label: '序号',
+          type: 'index',
+          width: '64'
+        },
+        columnConfig: [
+          {
+            label: '考生号',
+            prop: 'testNo',
+            width: 200
+          },
+          {
+            label: '姓名',
+            prop: 'realName'
+          },
+          {
+            label: '教学点',
+            prop: 'schoolOrganName',
+            width: '170'
+          },
+          {
+            label: '性别',
+            prop: 'sex',
+            type: 'enums',
+            enums: (value) => {
+              return value === '1' ? '男' : '女'
+            }
+          },
+          {
+            label: '证件类型',
+            prop: 'certTypeLabel'
+          },
+          {
+            label: '证件号码',
+            prop: 'certNo',
+            width: '160'
+          },
+          {
+            label: '报考一志愿学校',
+            prop: 'organName',
+            width: '160'
+          },
+          {
+            label: '报考一志愿专业',
+            prop: 'professionalName',
+            width: '160'
+          },
+          {
+            label: '报考一志愿学制',
+            prop: 'schoolSystem'
+          },
+          {
+            label: '报考二志愿学校',
+            prop: 'organName2',
+            width: '160'
+          },
+          {
+            label: '报考二志愿专业',
+            prop: 'professionalName2',
+            width: '160'
+          },
+          {
+            label: '报考二志愿学制',
+            prop: 'schoolSystem2'
+          },
+          {
+            label: '年级',
+            prop: 'schoolYear'
+          },
+          {
+            label: '报考层次',
+            prop: 'enterLevel',
+            type: 'enums',
+            enums: (value) => {
+              return vm.showEnterLevel(value)
+            }
+          },
+          {
+            label: '考试方式',
+            prop: 'enterLevel',
+            type: 'enums',
+            enums: (value) => {
+              return vm.showText(value, 'testType')
+            }
+          },
+          {
+            label: '学院审核',
+            prop: 'enterLevel',
+            type: 'enums',
+            enums: (value) => {
+              return vm.showText(value, 'approveStatus')
+            }
+          },
+          {
+            label: '备注',
+            prop: 'remark'
+          }
+        ]
+      },
+      tableData: [],
       map: {},
       formData: {},
       lecturerExt: {},
@@ -189,16 +281,10 @@ export default {
         loading: false,
         dialogVisible: false,
         proportionDialogVisible: false,
-        viewVisible: false,
+        viewVisible: false
       },
       opts: {
-        statusIdList: [],
-      },
-      page: {
-        pageCurrent: 1,
-        pageSize: 20,
-        totalCount: 0,
-        totalPage: 0,
+        statusIdList: []
       },
       visible: '',
       testTypeList: [],
@@ -208,7 +294,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['organList']),
+    ...mapGetters(['organList', 'teacherList', 'schoolOrgansList'])
   },
   async created() {
     api.listByCode({ code: '0006' }).then((res) => {
@@ -216,7 +302,7 @@ export default {
         return {
           id: e.id,
           label: e.dictName,
-          value: e.dictValue,
+          value: e.dictValue
         }
       })
     })
@@ -234,7 +320,7 @@ export default {
       const file = data.raw
       const param = new FormData()
       param.append('excelFile', file, file.name)
-      api.importStudentFile(param).then((res) => {
+      api.stundentSignImport(param).then((res) => {
         this.$message.info(res.data)
         this.getTableData()
       })
@@ -246,7 +332,7 @@ export default {
     showText(value, key) {
       if (key === 'approveStatus') {
         if (value === '1') {
-          return '审核'
+          return '未审核'
         } else if (value === '2') {
           return '合格'
         } else if (value === '3') {
@@ -261,7 +347,8 @@ export default {
           .dictName
       }
     },
-    showEnterLevel(value) {
+    showEnterLevel(value = '') {
+      if (!value) return value
       return this.levelOption.filter((item) => item.value === value)[0].label
     },
     resetUser() {
@@ -288,13 +375,9 @@ export default {
     },
     // 搜索
     searchBtn() {},
-    async init() {
-      await this.getOrganList()
-      await this.initPageCurrent()
+    init() {
+      this.initPageCurrent()
       this.getTableData()
-    },
-    async getOrganList() {
-      this.organId = this.organList[0].value
     },
     initPageCurrent() {
       this.page.pageCurrent = 1
@@ -304,30 +387,30 @@ export default {
     },
     getTableData(query) {
       const params = {
-        organId: this.organId,
-        realNameOrcertNo: this.params.realNameOrcertNo,
+        ...this.params,
         pageCurrent: this.page.pageCurrent,
         pageSize: this.page.pageSize,
-        ...query,
+        ...query
       }
       api.studentSignList(params).then((res) => {
-        this.list = res.data.rows
+        this.tableData = res.data.rows
         this.page.totalCount = res.data.totalCount
         this.page.totalPage = res.data.totalPage
       })
     },
     exportExcel() {
       const params = {
-        organId: this.organId,
-        realNameOrcertNo: this.params.realNameOrcertNo,
+        ...this.params,
         pageCurrent: this.page.pageCurrent,
-        pageSize: this.page.pageSize,
+        pageSize: this.page.pageSize
       }
-      api.exportExcelByStudentSign(params).then((res) => {
-        if (res.code === 200) {
-          this.$message.success('导出成功')
-        }
-      })
+      this.download(
+        params,
+        '/course/studentSign/enter/export',
+        'POST',
+        '批量导出',
+        'xls'
+      )
     },
     handleAttr(data) {
       this.currentData = data
@@ -358,8 +441,8 @@ export default {
     // 修改跳页面操作
     handleEdit(user) {
       this.addUser = this.resetUser()
-      this.currentData = user
-      this.addUser = user
+      this.currentData = this.$_cloneDeep(user)
+      this.addUser = this.$_cloneDeep(user)
       this.isAdd = false
       this.dialogVisible = true
       this.$nextTick(() => {
@@ -380,7 +463,7 @@ export default {
       this.$confirm('是否继续删除?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning',
+        type: 'warning'
       }).then(() => {
         api.deleteStudentSign({ id }).then((res) => {
           if (res.code === 200) {
@@ -391,8 +474,8 @@ export default {
           }
         })
       })
-    },
-  },
+    }
+  }
 }
 </script>
 

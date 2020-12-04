@@ -10,12 +10,13 @@
 
   // 侧边栏 Sidebar container
   .sidebar-container {
+    //box-shadow: 0 4px 8px 0 rgba(0,11,30,0.08);
     transition: width 0.28s;
     width: $sideBarWidth !important;
     height: 100%;
     position: fixed;
-    font-size: 0px;
-    top: 0;
+    //font-size: 0;
+    top: 64px;
     bottom: 0;
     left: 0;
     z-index: 1001;
@@ -63,11 +64,17 @@
     .el-submenu__title {
       &:hover {
         background-color: $menuHover !important;
+        i.iconfont {
+          color: $subMenuActiveText;
+        }
       }
     }
 
     .is-active>.el-submenu__title {
-      color: $subMenuActiveText !important;
+      color: $subMenuActiveText;
+      i.iconfont {
+        color: $subMenuActiveText;
+      }
     }
 
     & .nest-menu .el-submenu>.el-submenu__title,

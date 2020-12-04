@@ -4,11 +4,35 @@
       <el-form class="user-form" :inline="true">
         <el-form-item>
           <div class="organ-box">
-            <el-select class="organ-select" filterable v-model="params.organId" placeholder="请选择合作单位">
+            <el-select
+              class="organ-select"
+              v-model="params.organId"
+              filterable
+              v-if="showSchool"
+              clearable
+              @change="getTableData"
+              placeholder="请选择学校"
+            >
               <el-option
-                v-for="item in organList"
+                v-for="item in schoolOrgansListAll"
                 :key="item.id"
-                @click.native="getOrganId(item)"
+                :label="item.name"
+                :value="item.id"
+              ></el-option>
+            </el-select>
+            <el-select
+              class="organ-select"
+              v-model="params.schoolOrganId"
+              filterable
+              v-if="showTeacher"
+              lsSchool
+              clearable
+              @change="getTableData"
+              placeholder="请选择教学点"
+            >
+              <el-option
+                v-for="item in organListAll"
+                :key="item.id"
                 :label="item.name"
                 :value="item.id"
               ></el-option>
@@ -17,7 +41,7 @@
               v-model.trim="params.realNameOrcertNo"
               prefix-icon="el-icon-search"
               @keyup.enter.native="init"
-              placeholder="姓名/身份证号"
+              placeholder="姓名/证件号码/学号"
             ></el-input>
             <!-- <div class="search-btn" @click="superSearch()"> -->
             <!-- <svg-icon icon-class="search" /> -->
@@ -25,24 +49,27 @@
           </div>
         </el-form-item>
       </el-form>
-      <courses-table
-        class="table"
-        :tableConfig="tableConfig"
-        :tableData="tableData"
-        @btnTxt="btnTxt"
-      >
-        <div slot-scope="{ scope }" style="width:200px">
-          <span class="opr" @click="handleApply(scope.row)">审核</span>
-        </div>
-      </courses-table>
-      <pagination
-        @handleSizeChange="handleSizeChange"
-        @handleCurrentChange="handleCurrentChange"
-        :currentPage="page.pageCurrent"
-        :pagination-config="paginationConfig"
-      />
+      <div class="main-content-container">
+        <courses-table
+          class="table"
+          :tableConfig="tableConfig"
+          :tableData="tableData"
+          @btnTxt="btnTxt"
+        >
+          <div slot-scope="{ scope }" style="width:200px">
+            <span class="opr" v-all @click="handleApply(scope.row)">审核</span>
+          </div>
+        </courses-table>
+        <pagination
+          @handleSizeChange="handleSizeChange"
+          @handleCurrentChange="handleCurrentChange"
+          :currentPage="page.pageCurrent"
+          :pagination-config="paginationConfig"
+        />
+      </div>
     </div>
     <el-drawer
+      :wrapperClosable="false"
       :title="title"
       :visible.sync="dialogVisible"
       :size="width"
@@ -67,6 +94,7 @@ import search from '@/components/search'
 import ScanText from '../../schoolroll/component/scanText'
 import add from './add'
 import { mapGetters } from 'vuex'
+import selectMixin from '@/views/mixins/select.js'
 
 export default {
   name: 'StudentTransaction',
@@ -75,17 +103,18 @@ export default {
     pagination,
     search,
     ScanText,
-    add
+    add,
   },
+  mixins: [selectMixin],
   computed: {
     ...mapGetters(['organList']),
     paginationConfig() {
       return {
         total: this.page.totalCount,
         pageSize: this.page.pageSize,
-        pageSizes: [20, 50, 100, 200]
+        pageSizes: [20, 50, 100, 200],
       }
-    }
+    },
   },
   data(vm) {
     return {
@@ -94,115 +123,117 @@ export default {
       levelList: [],
       params: {
         organId: '',
-        realNameOrcertNo: ''
+        realNameOrcertNo: '',
+        schoolOrganId: '',
       },
       page: {
         pageCurrent: 1,
         pageSize: 20,
         totalCount: 0,
-        totalPage: 0
+        totalPage: 0,
       },
       addData: {},
       currentData: {},
       tableData: [],
       tableConfig: {
         loading: false,
-        headerCellStyle: { background: '#F3F4F7', color: '#333333' },
+        // headerCellStyle: { background: '#F3F4F7', color: '#333333' },
         serialNumber: {
           label: '序号',
           type: 'index',
-          width: '64'
+          width: '64',
         },
         columnConfig: [
           {
             label: '学号',
             prop: 'studentNo',
-            width: '160'
+            width: '160',
           },
           {
             label: '姓名',
-            prop: 'realName'
+            prop: 'realName',
           },
           {
             label: '性别',
             prop: 'sex',
             type: 'enums',
-            enums: value => {
+            enums: (value) => {
               return value === '1' ? '男' : '女'
-            }
+            },
           },
           {
             label: '年级',
-            prop: 'schoolYear'
+            prop: 'schoolYear',
           },
           {
             label: '专业',
             prop: 'professionalName',
-            width: '160'
+            width: '160',
           },
           {
             label: '合作单位',
             prop: 'organId',
             type: 'enums',
             width: '160',
-            enums: value => {
-              return vm.organList.filter(item => item.id === value)[0].name
-            }
+            enums: (value) => {
+              return vm.organList.filter((item) => item.id === value)[0].name
+            },
           },
           {
             label: '类型',
             prop: 'noTestType',
             type: 'enums',
-            enums: value => {
-              return vm.noTestTypeList.filter(item => item.dictValue === '1')[0]
-                .dictName
-            }
+            enums: (value) => {
+              return vm.noTestTypeList.filter(
+                (item) => item.dictValue === '1'
+              )[0].dictName
+            },
           },
           {
             label: '层次',
             prop: 'enterLevel',
             type: 'enums',
-            enums: value => {
-              return vm.levelList.filter(item => item.dictValue === value)[0]
+            enums: (value) => {
+              return vm.levelList.filter((item) => item.dictValue === value)[0]
                 .dictName
-            }
+            },
           },
           {
             label: '减免学分',
             prop: 'money',
-            width: '120px'
           },
           {
             label: '减免金额',
-            prop: 'money'
+            prop: 'money',
           },
           {
             label: '减免原因',
-            prop: 'approveStatus',
-            width: '160px',
+            prop: 'saleReason',
             type: 'enums',
-            enums: value => {
+            enums: (value) => {
               return vm.courseTypeList.filter(
-                item => item.dictValue === value
+                (item) => item.dictValue === value
               )[0].dictName
-            }
+            },
           },
           {
             label: '申请时间',
             prop: 'applicationDate',
-            width: '160px'
+            width: '160px',
           },
           {
             label: '申请人',
             prop: 'applicationUserName',
-            width: '120px'
           },
           {
             label: '审核结果',
             prop: 'approveStatus',
             type: 'enums',
-            enums: value => {
+            enums: (value) => {
               // 审核状态，1待审批，2通过，3不通过
+              if (!value) {
+                return '--'
+              }
               if (value === '1') {
                 return '待审批'
               } else if (value === '2') {
@@ -210,20 +241,21 @@ export default {
               } else {
                 return '不通过'
               }
-            }
+            },
           },
           {
             label: '审核人',
             prop: 'approveUserName',
-            width: '120px'
           },
           {
             label: '财务确认状态',
             prop: 'cfApproveStatus',
-            width: '120px',
             type: 'enums',
-            enums: value => {
+            enums: (value) => {
               // 审核状态，1待审批，2通过，3不通过
+              if (!value) {
+                return '--'
+              }
               if (value === '1') {
                 return '待审批'
               } else if (value === '2') {
@@ -231,19 +263,18 @@ export default {
               } else {
                 return '不通过'
               }
-            }
+            },
           },
           {
             label: '确认时间',
             prop: 'approveDate',
-            width: '160px'
+            width: '160px',
           },
           {
             label: '确认人',
             prop: 'cfApproveUserName',
-            width: '120px'
-          }
-        ]
+          },
+        ],
       },
       title: '学分优惠审核',
       componentName: '',
@@ -253,12 +284,13 @@ export default {
       isShowBtn: true,
       dialogVisible: false,
       changePictureUrl: '',
-      rowData: {}
+      rowData: {},
     }
   },
   async created() {
     try {
-      this.params.organId = this.organList[0].id
+      this.params.organId = this.organListAll[0].id
+      this.params.schoolOrganId = this.schoolOrgansListAll[0].id
       await this.getCodeList()
       this.getTableData()
     } catch (err) {
@@ -301,7 +333,8 @@ export default {
     },
     // 优惠申请
     handleApply(row) {
-      if(row.approveStatus !== '1') return this.$message.warning('学分优惠审核只能操作待审核的!')
+      if (row.approveStatus !== '1')
+        return this.$message.warning('学分优惠审核只能操作待审核的!')
       this.componentData = row
       this.componentName = 'add'
       this.dialogVisible = true
@@ -312,7 +345,7 @@ export default {
     async getTableData(query) {
       const params = {
         ...this.params,
-        ...this.page
+        ...this.page,
       }
       const res = await api.cfPageList(params)
       this.tableData = res.data.rows || []
@@ -324,7 +357,7 @@ export default {
     },
     confirm() {
       this.$nextTick(() => {
-        this.$refs[`${this.componentName}`].confirm(valid => {
+        this.$refs[`${this.componentName}`].confirm((valid) => {
           this.dialogVisible = !valid
           if (valid) {
             this.init()
@@ -337,7 +370,7 @@ export default {
       this.$confirm('是否继续删除?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'warning',
       }).then(() => {
         // api.studentDelete({ id: row.id }).then(res => {
         // if (res.code === 200) {
@@ -354,8 +387,8 @@ export default {
     handleCurrentChange(val) {
       this.page.currentPage = val
       this.getTableData()
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -413,14 +446,14 @@ export default {
   display: inline-flex;
   margin-right: 5px;
 }
-.stu-info-title{
+.stu-info-title {
   font-size: 14px;
   font-family: PingFangSC, PingFangSC-Medium;
   font-weight: 500;
   color: #333333;
   margin-bottom: 16px;
 }
-.stu-info-box{
+.stu-info-box {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -435,14 +468,14 @@ export default {
     color: #666666;
     margin-bottom: 8px;
   }
-  .cont{
+  .cont {
     font-size: 14px;
     font-family: PingFangSC, PingFangSC-Medium;
     font-weight: 500;
     color: #333333;
   }
 }
-/deep/ .el-form-item__label{
+/deep/ .el-form-item__label {
   font-size: 14px;
   font-family: PingFangSC, PingFangSC-Regular;
   font-weight: 400;

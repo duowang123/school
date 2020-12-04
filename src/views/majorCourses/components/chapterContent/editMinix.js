@@ -2,14 +2,30 @@ import { getToken } from '@/utils/auth'
 import { BASE_API } from '@/constant/global'
 
 export default {
+  props: {
+    chapterCont: {
+      type: Object
+    }
+  },
   data() {
     return {
       editor: null,
-      idName: '',
-      contKey: ''
+      idName: ''
     }
   },
+  watch: {
+    'chapterCont.navId'() {
+      this.updateText()
+    }
+  },
+  mounted() {
+    this.createEdit()
+    this.updateText()
+  },
   methods: {
+    updateText() {
+      this.editor.txt.html(this.chapterCont.content, '')
+    },
     createEdit() {
       const E = require('wangeditor')
       this.editor = new E(`${this.idName}-toolbar`, `${this.idName}-text`)
@@ -64,7 +80,8 @@ export default {
         }
       }
       this.editor.customConfig.onchange = (html) => {
-        this.chapterCont[this.contKey].content = html
+        console.log(this.chapterCont.navId)
+        this.chapterCont.content = html
       }
       this.editor.create()
     }

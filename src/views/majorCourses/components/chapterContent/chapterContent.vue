@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-show="componentName">
     <LenTime v-show="showTime" class="lenTime" ref="lenTime" :time-data="time"/>
     <component :is="componentName" :ref="componentName" :chapterCont="ChapterCont"/>
   </div>
@@ -7,46 +7,33 @@
 
 <script>
   import LenTime from './lenTime'
-  import courseGuide from './guided'
+  import courseMaterial from './courseMaterial'
   import teachVideo from './teachVideo'
-  import courseExpandResource from './expandResources'
-  import courseMaterial from './learnMaterial'
   import courseTopicDiscusses from './topicDiscuss'
   export default {
     name: 'ChapterContent',
     props: {
-      componentName: {
-        type: String
-      },
       ChapterCont: {
         type: Object,
         default: () => ({})
-      },
-      activeKey: String
+      }
     },
     components: {
       LenTime,
-      courseGuide,
-      teachVideo,
-      courseExpandResource,
       courseMaterial,
+      teachVideo,
       courseTopicDiscusses
     },
     computed: {
+      componentName() {
+        return this.ChapterCont.key
+      },
       showTime() {
         // 主题讨论没有content字段
-        return this.activeKey !== 'courseTopicDiscusses'
+        return this.componentName !== 'courseTopicDiscusses'
       },
       time() {
-        return this.ChapterCont[this.activeKey] || {}
-      }
-    },
-    methods: {
-      initData() {
-        this.$nextTick(() => {
-          // this.$refs.lenTime.initData()
-          this.$refs[this.componentName].initData()
-        })
+        return this.ChapterCont || {}
       }
     }
   }

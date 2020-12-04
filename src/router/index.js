@@ -125,6 +125,12 @@ export const asyncRouterMap = [
         meta: { requireAuth: true }
       },
       {
+        // 自助报名清单
+        path: 'auto',
+        component: () => import('@/views/stu/admissions/autoAdmit'),
+        meta: { requireAuth: true }
+      },
+      {
         path: 'apply',
         component: () => import('@/views/stu/admissions/apply'),
         meta: { requireAuth: true }
@@ -175,6 +181,18 @@ export const asyncRouterMap = [
       {
         path: 'creditCode',
         component: () => import('@/views/stu/discount/creditCode'),
+        meta: { requireAuth: true }
+      },
+      // 注册前异动
+      {
+        path: 'registerChanges',
+        component: () => import('@/views/stu/register/registerChanges'),
+        meta: { requireAuth: true }
+      },
+      // 注册前异动审核
+      {
+        path: 'beforeRegistration',
+        component: () => import('@/views/stu/register/beforeRegistration'),
         meta: { requireAuth: true }
       }
     ]
@@ -452,6 +470,12 @@ export const asyncRouterMap = [
         component: () => import('@/views/sysNotice/notice/index'),
         meta: { requireAuth: true }
       },
+      {
+        // 政策
+        path: 'policy',
+        component: () => import('@/views/sysNotice/policy/index'),
+        meta: { requireAuth: true }
+      }
     ]
   },
   // 考务
@@ -496,9 +520,21 @@ export const asyncRouterMap = [
         meta: { requireAuth: true }
       },
       {
+        // 考试科目
+        path: 'couse',
+        component: () => import('@/views/exam/arrange/couse'),
+        meta: { requireAuth: true }
+      },
+      {
         // 学生考试安排
         path: 'pageList',
         component: () => import('@/views/exam/arrange/pageList'),
+        meta: { requireAuth: true }
+      },
+      {
+        // 学生考试科目安排
+        path: 'page-course-list',
+        component: () => import('@/views/exam/arrange/pageCourseList'),
         meta: { requireAuth: true }
       },
       {
@@ -534,13 +570,13 @@ export const asyncRouterMap = [
       {
         // 巡考员安排
         path: 'inspector',
-        component: () => import('@/views/exam/inspect/inspector'),
+        component: () => import('@/views/exam/Inspect/inspector/index'),
         meta: { requireAuth: true }
       },
       {
         // 巡考安排
         path: 'inspection',
-        component: () => import('@/views/exam/inspect/inspection'),
+        component: () => import('@/views/exam/Inspect/inspection/index'),
         meta: { requireAuth: true }
       },
       {
@@ -566,7 +602,87 @@ export const asyncRouterMap = [
         path: 'cheat',
         component: () => import('@/views/exam/process/cheat'),
         meta: { requireAuth: true }
+      },
+      {
+        // 人脸识别
+        path: 'face-auth',
+        component: () => import('@/views/exam/process/face'),
+        meta: { requireAuth: true }
       }
+    ]
+  },
+  // 论文
+  {
+    path: 'paper',
+    component: () => import('@/views/paper'),
+    children: [
+      {
+        // 论文计划查询
+        path: 'writing-plan',
+        component: () => import('@/views/paper/writing/plan'),
+        meta: { requireAuth: true }
+      },
+      {
+        // 论文选题查询
+        path: 'writing-topic',
+        component: () => import('@/views/paper/writing/topic'),
+        meta: { requireAuth: true }
+      },
+      {
+        // 论文写作学生
+        path: 'writing-student',
+        component: () => import('@/views/paper/writing/student'),
+        meta: { requireAuth: true }
+      },
+      {
+        // 论文写作查询
+        path: 'writing-query',
+        component: () => import('@/views/paper/writing/query'),
+        meta: { requireAuth: true }
+      },
+      {
+        // 论文写作统计
+        path: 'writing-statistics',
+        component: () => import('@/views/paper/writing/statistics'),
+        meta: { requireAuth: true }
+      },
+      {
+        // 论文答辩计划
+        path: 'defence-plan',
+        component: () => import('@/views/paper/defence/plan'),
+        meta: { requireAuth: true }
+      },
+      {
+        // 答辩预约学生
+        path: 'defence-student',
+        component: () => import('@/views/paper/defence/student'),
+        meta: { requireAuth: true }
+      },
+      {
+        // 论文答辩律师信息
+        path: 'defence-lawyer',
+        component: () => import('@/views/paper/defence/lawyer'),
+        meta: { requireAuth: true }
+      }
+    ]
+  },
+  // 毕业
+  {
+    path: 'graduate',
+    component: () => import('@/views/graduate'),
+    children: [
+      {
+        // 毕业计划
+        path: 'plan',
+        component: () => import('@/views/graduate/plan/plan'),
+        meta: { requireAuth: true }
+      },
+      {
+        // 毕业学生申请
+        path: 'apply',
+        component: () => import('@/views//graduate/stuQuery/apply'),
+        meta: { requireAuth: true }
+      },
     ]
   }
 ]
@@ -578,8 +694,10 @@ export const constantRouterMap = [
     path: '/',
     component: Layout,
     redirect: 'dashboard', // 设置登陆系统默认页面
+    // redirect: 'login', // 设置登陆系统默认页面
     children: [
       { path: 'iframe', component: () => import('@/views/iframe/index') },
+      // { path: 'redirect/:path*', component: () => import('@/views/redirect/index') },
       { path: 'redirect/:path*', component: () => import('@/views/redirect/index') },
       ...asyncRouterMap
     ]

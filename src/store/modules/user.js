@@ -3,10 +3,12 @@ import { getToken, setToken, removeToken } from '@/utils/auth'
 
 const user = {
   state: {
-    token: getToken(),
+    token: getToken() || '',
     name: '',
     avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
-    roles: []
+    roles: [],
+    organId: localStorage.getItem('userOrganId') || '',
+    property: sessionStorage.getItem('property') || '' // 机构类型字段， 总院为空，1是学校 2是教学点
   },
 
   mutations: {
@@ -21,6 +23,14 @@ const user = {
     },
     SET_ROLES: (state, roles) => {
       state.roles = roles
+    },
+    SET_ORGAN_ID: (state, id) => {
+      localStorage.setItem('userOrganId', id)
+      state.organId = id
+    },
+    SET_PROPERTY: (state, property) => {
+      sessionStorage.setItem('property', property)
+      state.property = property
     }
   },
 
@@ -34,7 +44,9 @@ const user = {
         login(mobile, userInfo.password, clientId, ip).then(response => {
           const data = response.data
           setToken(data.token)
+          commit('SET_ORGAN_ID', data.organId)
           commit('SET_TOKEN', data.token)
+          commit('SET_PROPERTY', data.property || '')
           resolve(response)
         }).catch(error => {
           reject(error)

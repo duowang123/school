@@ -1,29 +1,32 @@
 <template>
   <div class="student-plan-right pad20">
     <el-button type="primary" @click="handleAdd()" style="margin:0 20px 20px 0">新增</el-button>
-    <courses-table class="table" :tableConfig="tableConfig" :tableData="tableData">
-      <div slot-scope="{ scope }" style="width:200px">
-        <span class="opr" @click="handleEdit(scope.row)">编辑</span>
-        <span
-          class="opr"
-          @click="handleOn(scope.row)"
-        >{{ scope.row.msgStatus === '1' ? '启用' : '禁用'}}</span>
-        <span class="opr" @click="handleAttr(scope.row)">属性</span>
-        <span class="opr" @click="handleDelete(scope.row)">删除</span>
-      </div>
-    </courses-table>
-    <pagination
-      @handleSizeChange="handleSizeChange"
-      @handleCurrentChange="handleCurrentChange"
-      :currentPage="page.pageCurrent"
-      :pagination-config="paginationConfig"
-    />
+    <div class="main-content-container">
+      <courses-table class="table" :tableConfig="tableConfig" :tableData="tableData">
+        <div slot-scope="{ scope }" style="width:200px">
+          <span class="opr" @click="handleEdit(scope.row)">编辑</span>
+          <span
+              class="opr"
+              @click="handleOn(scope.row)"
+          >{{ scope.row.msgStatus === '1' ? '启用' : '禁用'}}</span>
+          <span class="opr" @click="handleAttr(scope.row)">属性</span>
+          <span class="opr" @click="handleDelete(scope.row)">删除</span>
+        </div>
+      </courses-table>
+      <pagination
+          @handleSizeChange="handleSizeChange"
+          @handleCurrentChange="handleCurrentChange"
+          :currentPage="page.pageCurrent"
+          :pagination-config="paginationConfig"
+      />
+    </div>
     <el-drawer
       :title="title"
       :visible.sync="dialogVisible"
       :size="width"
       destroy-on-close
       :direction="direction"
+      :wrapperClosable="false"
       class="drawer-content drawer-content-custom"
     >
       <div class="drawer-container-box">
@@ -139,7 +142,7 @@ export default {
     },
     handleEdit(row) {
       this.title = '编辑'
-      this.componentData = row
+      this.componentData = this.$_cloneDeep(row)
       this.componentName = 'Add'
       this.dialogVisible = true
     },

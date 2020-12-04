@@ -9,14 +9,15 @@
           <div class="organ-box">
             <el-select
               class="organ-select"
-              filterable
               v-model="params.organId"
-              placeholder="请选择合作单位"
+              filterable
+              clearable
+              @change="init"
+              placeholder="请选择学校"
             >
               <el-option
-                v-for="item in organList"
+                v-for="item in schoolOrgansListAll"
                 :key="item.id"
-                @click.native="getOrganId(item)"
                 :label="item.name"
                 :value="item.id"
               ></el-option>
@@ -30,25 +31,28 @@
           </div>
         </el-form-item>
       </el-form>
-      <courses-table class="table" :tableConfig="tableConfig" :tableData="tableData">
-        <div slot-scope="{ scope }" style="width:200px">
-          <span class="opr" @click="handleEdit(scope)">编辑</span>
-          <span class="opr" @click="handleAttr(scope)">详情</span>
-          <span class="opr" @click="handleDelete(scope)">删除</span>
-        </div>
-      </courses-table>
-      <pagination
-        @handleSizeChange="handleSizeChange"
-        @handleCurrentChange="handleCurrentChange"
-        :currentPage="page.pageCurrent"
-        :pagination-config="paginationConfig"
-      />
+      <div class="main-content-container">
+        <courses-table class="table" :tableConfig="tableConfig" :tableData="tableData">
+          <div slot-scope="{ scope }" style="width:200px">
+            <span class="opr" @click="handleEdit(scope)">编辑</span>
+            <span class="opr" @click="handleAttr(scope)">详情</span>
+            <span class="opr" @click="handleDelete(scope)">删除</span>
+          </div>
+        </courses-table>
+        <pagination
+          @handleSizeChange="handleSizeChange"
+          @handleCurrentChange="handleCurrentChange"
+          :currentPage="page.pageCurrent"
+          :pagination-config="paginationConfig"
+        />
+      </div>
     </div>
     <el-drawer
       :title="title"
       :visible.sync="dialogVisible"
       :size="width"
       :direction="direction"
+      :wrapperClosable="false"
       class="drawer-content drawer-content-custom"
     >
       <div class="drawer-container-box">
@@ -76,6 +80,7 @@ import Attr from '@/components/Table/attr'
 import * as api from '../api'
 import { mapGetters } from 'vuex'
 import Add from './add.vue'
+import selectMixin from '@/views/mixins/select.js'
 
 export default {
   name: 'StudentTransaction',
@@ -85,6 +90,7 @@ export default {
     Attr,
     Add,
   },
+  mixins: [selectMixin],
   computed: {
     ...mapGetters(['organList']),
     paginationConfig() {
@@ -125,6 +131,10 @@ export default {
         },
         columnConfig: [
           {
+            label: '学校名称',
+            prop: 'organName',
+          },
+          {
             label: '层次',
             prop: 'levelLabel',
           },
@@ -145,10 +155,10 @@ export default {
             prop: 'stem',
             type: 'html',
           },
-          {
-            label: '难度',
-            prop: 'difficulty',
-          },
+          // {
+          // label: '难度',
+          // prop: 'difficulty',
+          // },
           {
             label: '分数',
             prop: 'score',
@@ -167,7 +177,7 @@ export default {
   },
   async created() {
     try {
-      this.params.organId = this.organList[0].id
+      this.params.organId = this.schoolOrgansListAll[0].id
       this.getTableData()
     } catch (err) {
       console.log(err)
@@ -181,7 +191,7 @@ export default {
     },
     handleEdit({ row }) {
       this.id = row.id
-      this.type == 'edit'
+      this.type = 'Add'
       this.dialogAdd = true
     },
     getOrganId(item) {
@@ -189,7 +199,7 @@ export default {
       this.getTableData({ organId: item.id })
     },
     handlerAdd() {
-      this.type == 'add'
+      this.type = 'Add'
       this.id = ''
       this.dialogAdd = true
     },
@@ -200,7 +210,6 @@ export default {
     },
     // 属性
     handleAttr({ row }) {
-      delete row.id
       this.title = '属性'
       this.dialogVisible = true
       this.componentName = 'Attr'

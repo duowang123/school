@@ -3,7 +3,7 @@
  */
 // 校验手机号是否合法
 export function isvalidMobile(str) {
-  const valid_map = 11 && /^((13|14|15|17|18)[0-9]{1}\d{8})$/
+  const valid_map = /^1\d{10}$/
   return valid_map.test(str)
 }
 // 校验手机号是否合法
@@ -61,4 +61,8 @@ export function validateIdCard(id) {
 
 export function isExternal(path) {
   return /^(https?:|mailto:|tel:)/.test(path)
+}
+
+export function isMoney(val) {
+  return /^[0-9]+\.[0-9]{2}$/.test(val)
 }

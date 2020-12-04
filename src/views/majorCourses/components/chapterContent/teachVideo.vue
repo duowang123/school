@@ -31,7 +31,6 @@
 </template>
 
 <script>
-  import { CHAPTER_CONT_TYPE } from './constant'
   import CoursesTable from '@/components/Table/coursesTable'
   import Pagination from '@/components/Table/pagination'
 
@@ -78,9 +77,19 @@
         }
       }
     },
+    watch: {
+      'chapterCont.navId': {
+        immediate: true,
+        handler() {
+          this.$nextTick(() => {
+            this.initData()
+          })
+        }
+      }
+    },
     computed: {
       cont() {
-        return this.chapterCont[CHAPTER_CONT_TYPE.shipin].content || {}
+        return this.chapterCont.content || {}
       },
       paginationConfig() {
         return {
@@ -115,7 +124,7 @@
 
       initData() {
         if (typeof this.cont === "string") {
-          this.chapterCont[CHAPTER_CONT_TYPE.shipin].content = {
+          this.chapterCont.content = {
             fileId: '',
             fileUrl: '',
             fileName: ''
@@ -127,8 +136,8 @@
       },
       selVideo(data) {
         this.selName = data.name
-        if (!this.chapterCont[CHAPTER_CONT_TYPE.shipin].content) {
-          this.chapterCont[CHAPTER_CONT_TYPE.shipin].content = {
+        if (!this.chapterCont.content) {
+          this.chapterCont.content = {
             fileId: data.fileId,
             fileUrl: data.fileUrl,
             fileName: data.name
