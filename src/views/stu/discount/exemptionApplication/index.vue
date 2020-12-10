@@ -97,21 +97,21 @@ import * as api from '../api'
 import selectMixin from '@/views/mixins/select.js'
 
 export default {
-  name: 'studentTransaction',
+  name: 'StudentTransaction',
   components: {
     coursesTable,
     pagination,
     Attr,
-    Add,
+    Add
   },
   computed: {
     paginationConfig() {
       return {
         total: this.page.totalCount,
         pageSize: this.page.pageSize,
-        pageSizes: [20, 50, 100, 200],
+        pageSizes: [20, 50, 100, 200]
       }
-    },
+    }
   },
   mixins: [selectMixin],
   data(vm) {
@@ -121,14 +121,14 @@ export default {
       params: {
         organId: '',
         realNameOrcertNo: '',
-        schoolOrganId: '',
+        schoolOrganId: ''
       },
       page: {
         pageCurrent: 1,
         pageSize: 20,
         totalCount: 0,
         totalPage: 0,
-        order: 'asc',
+        order: 'asc'
       },
       addData: {},
       currentData: {},
@@ -139,17 +139,22 @@ export default {
         serialNumber: {
           label: '序号',
           type: 'index',
-          width: '64',
+          width: '64'
         },
         columnConfig: [
           {
+            label: '学校',
+            prop: 'organName',
+            width: '170'
+          },
+          {
             label: '学号',
             prop: 'studentNo',
-            width: '160',
+            width: '160'
           },
           {
             label: '姓名',
-            prop: 'realName',
+            prop: 'realName'
           },
           {
             label: '性别',
@@ -157,20 +162,20 @@ export default {
             type: 'enums',
             enums: (value) => {
               return value === '1' ? '男' : '女'
-            },
+            }
           },
           {
             label: '年级',
-            prop: 'schoolYear',
+            prop: 'schoolYear'
           },
           {
             label: '专业',
             prop: 'professionalName',
-            width: '120',
+            width: '120'
           },
           {
             label: '课程',
-            prop: 'courseName',
+            prop: 'courseName'
           },
           {
             label: '类型',
@@ -180,17 +185,17 @@ export default {
               return vm.noTestTypeList.filter(
                 (item) => item.dictValue === value
               )[0].dictName
-            },
+            }
           },
           {
             label: '申请时间',
             prop: 'applicationDate',
-            width: '160px',
+            width: '160px'
           },
           {
             label: '申请人',
             prop: 'applicationUserName',
-            width: '120',
+            width: '120'
           },
           {
             label: '审核结果',
@@ -208,19 +213,24 @@ export default {
               } else {
                 return '不通过'
               }
-            },
+            }
           },
           {
             label: '审核人',
             prop: 'approveUserName',
-            width: '160',
+            width: '160'
           },
           {
             label: '审核时间',
             prop: 'approveDate',
-            width: '160px',
+            width: '160px'
           },
-        ],
+          {
+            label: '教学点',
+            prop: 'schoolOrganName',
+            width: '170'
+          }
+        ]
       },
       title: '',
       componentName: '',
@@ -228,7 +238,7 @@ export default {
       width: '552px',
       direction: 'rtl',
       isShowBtn: true,
-      dialogVisible: false,
+      dialogVisible: false
     }
   },
   async created() {
@@ -277,8 +287,8 @@ export default {
           { label: '姓名', key: 'realName' },
           { label: '申请时间', key: 'applicationDate' },
           { label: '更新人', key: 'approveUserName' },
-          { label: '创建人', key: 'applicationUserName' },
-        ],
+          { label: '创建人', key: 'applicationUserName' }
+        ]
       }
     },
     add() {
@@ -295,7 +305,7 @@ export default {
       const params = {
         ...this.params,
         ...this.page,
-        ...query,
+        ...query
       }
       const res = await api.studentTest(params)
       this.tableData = res.data.rows || []
@@ -320,13 +330,13 @@ export default {
       this.$confirm('是否继续删除?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning',
+        type: 'warning'
       }).then(() => {
         api.studentDelete({ id: row.id }).then((res) => {
           if (res.code === 200) {
             this.$message({
               type: 'success',
-              message: '删除成功!',
+              message: '删除成功!'
             })
             this.initPage()
             this.getTableData()
@@ -337,8 +347,8 @@ export default {
     handleCurrentChange(val) {
       this.page.currentPage = val
       this.getTableData()
-    },
-  },
+    }
+  }
 }
 </script>
 

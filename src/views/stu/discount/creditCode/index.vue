@@ -103,7 +103,7 @@ export default {
     pagination,
     search,
     ScanText,
-    add,
+    add
   },
   mixins: [selectMixin],
   computed: {
@@ -112,9 +112,9 @@ export default {
       return {
         total: this.page.totalCount,
         pageSize: this.page.pageSize,
-        pageSizes: [20, 50, 100, 200],
+        pageSizes: [20, 50, 100, 200]
       }
-    },
+    }
   },
   data(vm) {
     return {
@@ -124,13 +124,13 @@ export default {
       params: {
         organId: '',
         realNameOrcertNo: '',
-        schoolOrganId: '',
+        schoolOrganId: ''
       },
       page: {
         pageCurrent: 1,
         pageSize: 20,
         totalCount: 0,
-        totalPage: 0,
+        totalPage: 0
       },
       addData: {},
       currentData: {},
@@ -141,17 +141,22 @@ export default {
         serialNumber: {
           label: '序号',
           type: 'index',
-          width: '64',
+          width: '64'
         },
         columnConfig: [
           {
+            label: '学校',
+            prop: 'organName',
+            width: '170'
+          },
+          {
             label: '学号',
             prop: 'studentNo',
-            width: '160',
+            width: '160'
           },
           {
             label: '姓名',
-            prop: 'realName',
+            prop: 'realName'
           },
           {
             label: '性别',
@@ -159,25 +164,16 @@ export default {
             type: 'enums',
             enums: (value) => {
               return value === '1' ? '男' : '女'
-            },
+            }
           },
           {
             label: '年级',
-            prop: 'schoolYear',
+            prop: 'schoolYear'
           },
           {
             label: '专业',
             prop: 'professionalName',
-            width: '160',
-          },
-          {
-            label: '合作单位',
-            prop: 'organId',
-            type: 'enums',
-            width: '160',
-            enums: (value) => {
-              return vm.organList.filter((item) => item.id === value)[0].name
-            },
+            width: '160'
           },
           {
             label: '类型',
@@ -187,7 +183,7 @@ export default {
               return vm.noTestTypeList.filter(
                 (item) => item.dictValue === '1'
               )[0].dictName
-            },
+            }
           },
           {
             label: '层次',
@@ -196,15 +192,15 @@ export default {
             enums: (value) => {
               return vm.levelList.filter((item) => item.dictValue === value)[0]
                 .dictName
-            },
+            }
           },
           {
             label: '减免学分',
-            prop: 'money',
+            prop: 'money'
           },
           {
             label: '减免金额',
-            prop: 'money',
+            prop: 'money'
           },
           {
             label: '减免原因',
@@ -214,16 +210,16 @@ export default {
               return vm.courseTypeList.filter(
                 (item) => item.dictValue === value
               )[0].dictName
-            },
+            }
           },
           {
             label: '申请时间',
             prop: 'applicationDate',
-            width: '160px',
+            width: '160px'
           },
           {
             label: '申请人',
-            prop: 'applicationUserName',
+            prop: 'applicationUserName'
           },
           {
             label: '审核结果',
@@ -241,11 +237,11 @@ export default {
               } else {
                 return '不通过'
               }
-            },
+            }
           },
           {
             label: '审核人',
-            prop: 'approveUserName',
+            prop: 'approveUserName'
           },
           {
             label: '财务确认状态',
@@ -263,18 +259,23 @@ export default {
               } else {
                 return '不通过'
               }
-            },
+            }
           },
           {
             label: '确认时间',
             prop: 'approveDate',
-            width: '160px',
+            width: '160px'
           },
           {
             label: '确认人',
-            prop: 'cfApproveUserName',
+            prop: 'cfApproveUserName'
           },
-        ],
+          {
+            label: '教学点',
+            prop: 'schoolOrganName',
+            width: '170'
+          }
+        ]
       },
       title: '学分优惠审核',
       componentName: '',
@@ -284,13 +285,11 @@ export default {
       isShowBtn: true,
       dialogVisible: false,
       changePictureUrl: '',
-      rowData: {},
+      rowData: {}
     }
   },
   async created() {
     try {
-      this.params.organId = this.organListAll[0].id
-      this.params.schoolOrganId = this.schoolOrgansListAll[0].id
       await this.getCodeList()
       this.getTableData()
     } catch (err) {
@@ -333,8 +332,7 @@ export default {
     },
     // 优惠申请
     handleApply(row) {
-      if (row.approveStatus !== '1')
-        return this.$message.warning('学分优惠审核只能操作待审核的!')
+      if (row.approveStatus !== '1') { return this.$message.warning('学分优惠审核只能操作待审核的!') }
       this.componentData = row
       this.componentName = 'add'
       this.dialogVisible = true
@@ -345,7 +343,7 @@ export default {
     async getTableData(query) {
       const params = {
         ...this.params,
-        ...this.page,
+        ...this.page
       }
       const res = await api.cfPageList(params)
       this.tableData = res.data.rows || []
@@ -370,7 +368,7 @@ export default {
       this.$confirm('是否继续删除?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning',
+        type: 'warning'
       }).then(() => {
         // api.studentDelete({ id: row.id }).then(res => {
         // if (res.code === 200) {
@@ -387,8 +385,8 @@ export default {
     handleCurrentChange(val) {
       this.page.currentPage = val
       this.getTableData()
-    },
-  },
+    }
+  }
 }
 </script>
 

@@ -6,6 +6,7 @@
       @search="search"
       @select="organChange"
       @school-detail="schoolDetail"
+      searchPlaceholder="计划名称"
       :select-options="schoolOrgansListAll"
     />
     <div class="main-content-container">
@@ -137,6 +138,7 @@ import Attr from '@/components/Table/attr'
 import Add from './add'
 import Courses from './courses'
 import selectMixin from '@/views/mixins/select.js'
+import { addTeachingPlan, getCourseByTeachingPlan } from '../api'
 
 export default {
   name: 'TeachProgram',
@@ -146,7 +148,7 @@ export default {
     Pagination,
     Add,
     Attr,
-    Courses
+    Courses,
   },
   mixins: [selectMixin],
   data() {
@@ -157,7 +159,7 @@ export default {
       selectOptions: [],
       params: {
         organId: '',
-        queryContent: ''
+        queryContent: '',
       },
       tableData: [],
       tableConfig: {
@@ -165,43 +167,43 @@ export default {
         serialNumber: {
           label: '序号',
           type: 'index',
-          width: '64'
+          width: '64',
         },
         columnConfig: [
           {
             label: '计划名称',
             prop: 'name',
-            width: '170'
+            width: '170',
           },
           {
             label: '计划类型',
-            prop: 'typeName'
+            prop: 'typeName',
           },
           {
             label: '学校名称',
             prop: 'organName',
-            width: '170'
+            width: '170',
           },
           {
             label: '专业名称',
             prop: 'specialtyName',
-            width: '170'
+            width: '170',
           },
           {
             label: '层次',
-            prop: 'levelLabel'
+            prop: 'levelLabel',
           },
           {
             label: '学年',
-            prop: 'schoolYear'
+            prop: 'schoolYear',
           },
           {
             label: '学期',
-            prop: 'semesterName'
+            prop: 'semesterName',
           },
           {
             label: '学生入学学年',
-            prop: 'stuSchoolYear'
+            prop: 'stuSchoolYear',
           },
           {
             label: '学生入学学期',
@@ -209,7 +211,7 @@ export default {
             type: 'enums',
             enums: (value) => {
               return value === '1' ? '上学期' : '下学期'
-            }
+            },
           },
           {
             label: '状态',
@@ -217,21 +219,21 @@ export default {
             type: 'enums',
             enums: (value) => {
               return value ? '启用' : '禁用'
-            }
+            },
           },
           {
             label: '学院',
-            prop: 'collegeName'
+            prop: 'collegeName',
           },
           {
             label: '课程清单',
             prop: '',
             slot: {
               type: 'btnTxt',
-              txt: '查看'
-            }
-          }
-        ]
+              txt: '查看',
+            },
+          },
+        ],
       },
       schoolYearOptions: [],
       levelOption: [],
@@ -242,7 +244,7 @@ export default {
         pageCurrent: 1,
         pageSize: 20,
         totalCount: 0,
-        totalPage: 0
+        totalPage: 0,
       },
       dialogVisible: false,
       schoolDetailVisible: false,
@@ -250,31 +252,31 @@ export default {
         schoolYear: [{ required: true, message: '请选择', trigger: 'blur' }],
         semester: [{ required: true, message: '请选择', trigger: 'blur' }],
         startDate: [{ required: true, message: '请选择', trigger: 'blur' }],
-        endDate: [{ required: true, message: '请选择', trigger: 'blur' }]
+        endDate: [{ required: true, message: '请选择', trigger: 'blur' }],
       },
       addSchoolDetailForm: {
         schoolYear: '',
         semester: '',
         startDate: '',
-        endDate: ''
+        endDate: '',
       },
       schoolDetailData: [],
       selData: {
         date: [],
-        id: ''
+        id: '',
       },
       title: '',
       componentName: '',
       componentData: null,
       width: '500px',
       direction: 'rtl',
-      isShowBtn: true
+      isShowBtn: true,
     }
   },
   watch: {
     dialogVisible(val) {
       val || (this.componentName = '')
-    }
+    },
   },
   created() {
     this.init()
@@ -285,9 +287,9 @@ export default {
       return {
         total: this.page.totalCount,
         pageSize: this.page.pageSize,
-        pageSizes: [20, 50, 100, 200]
+        pageSizes: [20, 50, 100, 200],
       }
-    }
+    },
   },
   methods: {
     addSemester() {
@@ -301,10 +303,10 @@ export default {
         schoolYear: '',
         semester: '',
         startDate: '',
-        endDate: ''
+        endDate: '',
       }
       this.schoolDetailData.push({
-        add: true
+        add: true,
       })
     },
     async init() {
@@ -317,7 +319,7 @@ export default {
       const params = {
         ...this.params,
         pageCurrent: this.page.pageCurrent,
-        pageSize: this.page.pageSize
+        pageSize: this.page.pageSize,
       }
       api.getTeachingPlanList(params).then((res) => {
         this.tableData = this.formatData(res.data.rows)
@@ -336,7 +338,7 @@ export default {
           return {
             id: e.id,
             label: e.dictName,
-            value: e.dictValue
+            value: e.dictValue,
           }
         })
       })
@@ -345,7 +347,7 @@ export default {
           return {
             id: e.id,
             label: e.dictName,
-            value: e.dictValue
+            value: e.dictValue,
           }
         })
       })
@@ -354,7 +356,7 @@ export default {
           return {
             id: e.id,
             label: e.dictName,
-            value: e.dictValue
+            value: e.dictValue,
           }
         })
       })
@@ -383,7 +385,7 @@ export default {
     schoolDetail() {
       this.selData = {
         date: [],
-        id: ''
+        id: '',
       }
       const params = { pageCurrent: 1, pageSize: 100 }
       api.getSchoolDetail(params).then((res) => {
@@ -404,7 +406,7 @@ export default {
         levelOption: this.levelOption,
         specialtyOptions: this.specialtyOptions,
         typeOptions: this.typeOptions,
-        courseList: this.courseList
+        courseList: this.courseList,
       }
     },
     confirm() {
@@ -435,7 +437,7 @@ export default {
             schoolYear: '',
             semester: '',
             startDate: '',
-            endDate: ''
+            endDate: '',
           }
           this.$store.dispatch('getYearAndSemester')
           this.schoolDetail()
@@ -449,7 +451,7 @@ export default {
       // this.$forceUpdate()
       this.selData = {
         id: row.id,
-        date: [row.startDate, row.endDate]
+        date: [row.startDate, row.endDate],
       }
       this.$forceUpdate()
     },
@@ -457,7 +459,7 @@ export default {
       this.$confirm('是否继续删除?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'warning',
       }).then(() => {
         api.delSchoolDetail({ id: row.id }).then((res) => {
           if (res.code === 200) {
@@ -477,7 +479,7 @@ export default {
       const params = {
         id: this.selData.id,
         startDate: this.selData.date[0],
-        endDate: this.selData.date[1]
+        endDate: this.selData.date[1],
       }
       api.updateSchoolDetail(params).then((res) => {
         if (res.code === 200) {
@@ -503,10 +505,43 @@ export default {
         levelOption: this.levelOption,
         specialtyOptions: this.specialtyOptions,
         typeOptions: this.typeOptions,
-        courseList: this.courseList
+        courseList: this.courseList,
       }
     },
-    handleCopy({ row }) {},
+    async handleCopy({ row }) {
+      const ruleForm = {
+        type: row.typeId,
+        name: '',
+        semester: '',
+        schoolYear: '',
+        specialtyId: '',
+        stuSchoolYear: '',
+        stuSemester: '',
+        level: '',
+        organId: '',
+        enable: true,
+      }
+      const res = (await getCourseByTeachingPlan(row.id).courseInfoList) || []
+      for (let key in row) {
+        ruleForm[key] = row[key]
+      }
+      const params = {
+        ...ruleForm,
+        name: `${ruleForm.name}(1)`,
+        enable: false,
+        courseIds: res.map((e) => e.courseId || e.id),
+      }
+      addTeachingPlan(params).then((res) => {
+        if (res.code === 200) {
+          this.$message({
+            type: 'success',
+            message: '复制成功!',
+          })
+          this.initPage()
+          this.getTableData()
+        }
+      })
+    },
     // 属性
     handleAttr({ row }) {
       this.title = '属性'
@@ -521,8 +556,8 @@ export default {
           { label: '最近更新时间', key: 'updateDate' },
           { label: '更新人', key: 'updateUserId' },
           { label: '创建时间', key: 'createDate' },
-          { label: '创建人', key: 'createUserId' }
-        ]
+          { label: '创建人', key: 'createUserId' },
+        ],
       }
     },
     // 删除
@@ -530,13 +565,13 @@ export default {
       this.$confirm('是否继续删除?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'warning',
       }).then(() => {
         api.deleteTeachingPlan({ id: row.id }).then((res) => {
           if (res.code === 200) {
             this.$message({
               type: 'success',
-              message: '删除成功!'
+              message: '删除成功!',
             })
             this.initPage()
             this.getTableData()
@@ -551,8 +586,8 @@ export default {
     handleCurrentChange(val) {
       this.page.currentPage = val
       this.getTableData()
-    }
-  }
+    },
+  },
 }
 </script>
 

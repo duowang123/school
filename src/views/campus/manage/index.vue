@@ -228,19 +228,12 @@ export default {
       relevanceDataValue: [],
       isSchoolVisable: false,
       schoolData: [],
-      organListAll: [],
     }
   },
   computed: {
     ...mapGetters(['organList', 'schoolList']),
   },
   created() {
-    const all = {
-      id: '',
-      name: '全部',
-      oldName: '全部',
-    }
-    this.organListAll = [all, ...this.organList]
     this.init()
   },
   methods: {
@@ -340,7 +333,7 @@ export default {
         '/system/sys_organ/export',
         'POST',
         '合作单位',
-        'xls'
+        'xlsx'
       )
     },
     ensureHandler() {

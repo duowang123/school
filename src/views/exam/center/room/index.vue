@@ -179,8 +179,7 @@ export default {
   },
   async created() {
     try {
-      this.params.organId = this.organListAll[0].id
-      // this.initSelectOptions()
+      this.initSelectOptions()
       this.getTableData()
     } catch (err) {
       console.log(err)
@@ -195,17 +194,6 @@ export default {
   methods: {
     //从字典中获取下拉框数据
     initSelectOptions() {
-      api
-        .getOpenTestCenterList({ organId: this.params.organId })
-        .then((res) => {
-          this.openCenterList = res.data.map((t) => {
-            return {
-              label: t.address,
-              label: t.name,
-              value: t.id,
-            }
-          })
-        })
     },
     getOrganId(item) {
       this.initPage()

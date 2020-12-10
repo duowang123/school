@@ -192,12 +192,12 @@
             class="item-cont1"
           >{{studentRoll.jobStatus ? (studentRoll.jobStatus === '1' ? '从业' : '无业') : ''}}</div>
         </div>
-        <div class="item-4 common-container">
-          <div class="item-title4 item-title">是否教师</div>
-          <div
-            class="item-cont1"
-          >{{studentRoll.yesTeacher ? (studentRoll.yesIntelnet === '1' ? '是' : '否') : ''}}</div>
-        </div>
+<!--        <div class="item-4 common-container">-->
+<!--          <div class="item-title4 item-title">是否教师</div>-->
+<!--          <div-->
+<!--            class="item-cont1"-->
+<!--          >{{studentRoll.yesTeacher ? (studentRoll.yesIntelnet === '1' ? '是' : '否') : ''}}</div>-->
+<!--        </div>-->
         <div class="item-4 common-container">
           <div class="item-title4 item-title">是否可上网</div>
           <div

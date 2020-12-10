@@ -56,7 +56,7 @@ import * as api from '../../api'
 export default {
   name: 'Add',
   props: {
-    data: Object,
+    data: Object
   },
   mixins: [selectMixin],
   created() {
@@ -85,7 +85,7 @@ export default {
         testCerterId: '',
         roomCode: '',
         address: '',
-        organId: '',
+        organId: ''
       },
       openCenterLists: [],
       rules: {
@@ -94,24 +94,24 @@ export default {
           {
             pattern: '^[1-9]\\d*$',
             message: '只能是数字',
-            trigger: 'blur',
-          },
+            trigger: 'blur'
+          }
         ],
         organId: { required: true, message: '请选择', trigger: 'change' },
         address: [{ required: true, message: '请输入地址', trigger: 'blur' }],
         roomName: [
-          { required: true, message: '请输入考场名称', trigger: 'blur' },
+          { required: true, message: '请输入考场名称', trigger: 'blur' }
         ],
         roomCode: [
-          { required: true, message: '请输入考场编号', trigger: 'blur' },
+          { required: true, message: '请输入考场编号', trigger: 'blur' }
         ],
         testCerterId: [
-          { required: true, message: '请选择', trigger: 'change' },
+          { required: true, message: '请选择', trigger: 'change' }
         ],
         status: [
-          { required: true, message: '请选择启用状态', trigger: 'change' },
-        ],
-      },
+          { required: true, message: '请选择启用状态', trigger: 'change' }
+        ]
+      }
     }
   },
   // computed: {
@@ -126,14 +126,13 @@ export default {
     },
     //从字典中获取下拉框数据
     initSelectOptions() {
-      api
-        .getOpenTestCenterList({ organId: this.ruleForm.organId })
+      api.getOpenTestCenterList({ organId: this.ruleForm.organId })
         .then((res) => {
           this.openCenterLists = res.data.map((t) => {
             return {
               label: t.address,
               label: t.name,
-              value: t.id,
+              value: t.id
             }
           })
         })
@@ -143,18 +142,18 @@ export default {
         if (valid) {
           const params = {
             ...this.ruleForm,
-            organId: this.data.organId,
+            organId: this.data.organId
           }
           const responseCallback = (res) => {
             if (res.code === 200) {
               this.$message({
                 type: 'success',
-                message: (this.data.isAdd ? '添加' : '修改') + '成功!',
+                message: (this.data.isAdd ? '添加' : '修改') + '成功!'
               })
             } else {
               this.$message({
                 type: 'error',
-                message: (this.data.isAdd ? '添加' : '修改') + '失败!',
+                message: (this.data.isAdd ? '添加' : '修改') + '失败!'
               })
             }
             callBack(valid)
@@ -166,8 +165,8 @@ export default {
           }
         }
       })
-    },
-  },
+    }
+  }
 }
 </script>
 

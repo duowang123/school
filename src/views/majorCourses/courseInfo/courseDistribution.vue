@@ -4,9 +4,9 @@
       <el-select v-model="organId" @change="organChange" placeholder="请选择机构">
         <el-option
             v-for="item in data.allOrgan"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
         </el-option>
       </el-select>
     </div>
@@ -40,7 +40,7 @@
         'data': {
           handler() {
             // this.courseData = this.generateData(this.data.allCourse)
-            this.organId = this.data.allOrgan[0].value
+            this.organId = this.data.allOrgan[0].id
             this.organChange()
           },
           immediate: true

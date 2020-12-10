@@ -29,12 +29,17 @@ export default {
     }
   },
   created() {
-    const all = {
+    const allTeachSite = {
       id: '',
-      name: '全部',
-      oldName: '全部'
+      name: '全部教学点',
+      oldName: '全部教学点'
     }
-    this.organListAll = [all, ...this.teacherList] // 所有教学点
-    this.schoolOrgansListAll = [all, ...this.schoolOrgansList] // 学校
+    const allschool = {
+      id: '',
+      name: '全部学校',
+      oldName: '全部学校'
+    }
+    this.organListAll = [allTeachSite, ...(this.teacherList || [])] // 所有教学点
+    this.schoolOrgansListAll = [allschool, ...(this.schoolOrgansList || [])] // 学校
   }
 }

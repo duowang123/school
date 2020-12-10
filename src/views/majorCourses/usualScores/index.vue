@@ -44,9 +44,14 @@
             @change="organChange"
             placeholder="姓名/证件号码/学号"
           ></el-input>
-          <div class="search-btn" @click="superSearch()">
-            <svg-icon icon-class="search" />
-          </div>
+          <el-button
+            type="primary"
+            style="height: 40px;margin-left: 16px"
+            @click="superSearch()"
+          >高级搜索</el-button>
+<!--          <div class="search-btn" @click="superSearch()">-->
+<!--            <svg-icon icon-class="search" />-->
+<!--          </div>-->
         </div>
       </el-form>
     </div>

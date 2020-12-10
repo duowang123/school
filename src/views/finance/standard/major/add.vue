@@ -9,7 +9,7 @@
       label-position="top"
     >
       <el-form-item label="学校" prop="organId">
-        <el-select @change="initProfessional" placeholder="请选择" v-model="ruleForm.organId">
+        <el-select :disabled="!data.isAdd" @change="initProfessional(true)" placeholder="请选择" v-model="ruleForm.organId">
           <el-option
             v-for="item in schoolOrgansList"
             :key="item.id"
@@ -19,7 +19,17 @@
         </el-select>
       </el-form-item>
       <el-form-item label="学年" prop="schoolYear">
-        <el-select class="selectWidth" v-model="ruleForm.schoolYear" placeholder="请选择">
+        <el-select :disabled="!data.isAdd" class="selectWidth" placeholder="请选择" v-model="ruleForm.schoolYear">
+          <el-option
+            v-for="item in schoolYearOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          ></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="学生入学学年" prop="schoolYearIn">
+        <el-select :disabled="!data.isAdd" placeholder="请选择" v-model="ruleForm.schoolYearIn">
           <el-option
             v-for="item in schoolYearOptions"
             :key="item.value"
@@ -29,7 +39,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="层次" prop="enterLevel">
-        <el-select v-model="ruleForm.enterLevel" @change="levelChange" placeholder="请选择">
+        <el-select :disabled="!data.isAdd" @change="levelChange" placeholder="请选择" v-model="ruleForm.enterLevel">
           <el-option
             v-for="item in levelOption"
             :key="item.value"
@@ -39,7 +49,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="专业" prop="professional">
-        <el-select v-model="ruleForm.professional" placeholder="请选择">
+        <el-select :disabled="!data.isAdd" placeholder="请选择" v-model="ruleForm.professional">
           <el-option
             v-for="item in specialtyOptions"
             :key="item.value"
@@ -52,9 +62,9 @@
         <el-input v-model="ruleForm.chargeMoney"></el-input>
       </el-form-item>
       <el-form-item label="状态">
-        <el-radio-group v-model="ruleForm.enable">
-          <el-radio :label="true">启用</el-radio>
-          <el-radio :label="false">禁用</el-radio>
+        <el-radio-group v-model="ruleForm.openStatus">
+          <el-radio :label="1">启用</el-radio>
+          <el-radio :label="2">禁用</el-radio>
         </el-radio-group>
       </el-form-item>
     </el-form>
@@ -157,7 +167,8 @@ export default {
         chargeMoney: '',
         schoolYear: '',
         others: [],
-        enable: true,
+        schoolYearIn: '',
+        openStatus: 1,
       },
       rules: {
         organId: [{ required: true, message: '请选择', trigger: 'change' }],
@@ -168,6 +179,9 @@ export default {
           //   message: '请输入正确金额',
           //   trigger: 'blur'
           // }
+        ],
+        schoolYearIn: [
+          { required: true, message: '请选择', trigger: 'change' },
         ],
         professional: [
           { required: true, message: '请选择', trigger: 'change' },
@@ -304,7 +318,7 @@ export default {
       })
     },
     levelChange() {
-      this.initProfessional(false)
+      this.initProfessional(true)
     },
     confirm(callBack) {
       this.$refs.ruleForm.validate((valid) => {

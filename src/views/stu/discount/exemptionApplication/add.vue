@@ -3,6 +3,16 @@
     <el-form :rules="rules" :model="ruleForm" ref="addForm" label-width="0">
       <div class="form-item">
         <div class="container">
+          <el-form-item class="full-width" label="学校" prop="organId">
+            <el-select @change="organChange" placeholder="请选择" v-model="ruleForm.organId">
+              <el-option
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+                v-for="item in schoolOrgansList"
+              ></el-option>
+            </el-select>
+          </el-form-item>
           <el-form-item class="full-width" label="学号/证件号码" prop="studentId">
             <el-input
               v-model="ruleForm.studentId"
@@ -10,24 +20,7 @@
               @keyup.enter.native="onSearch(ruleForm.studentId)"
               placeholder="请输入"
             ></el-input>
-            <div class="stu-info-box" v-loading="loading">
-              <div>
-                <div class="title">学号</div>
-                <div class="cont">{{ rows.studentNo }}</div>
-              </div>
-              <div>
-                <div class="title">性别</div>
-                <div class="cont">{{ rows.sex ?(rows.sex === '1' ? '男' : '女') : '' }}</div>
-              </div>
-              <div>
-                <div class="title">姓名</div>
-                <div class="cont">{{ rows.realName }}</div>
-              </div>
-              <div>
-                <div class="title">证件号码</div>
-                <div class="cont">{{ rows.certNo }}</div>
-              </div>
-            </div>
+            <stu-card :detail="rows" v-loading="loading" />
           </el-form-item>
           <el-form-item label="申请课程" prop="courseId" class="full-width">
             <el-select v-model="ruleForm.courseId" placeholder="请选择">
@@ -74,7 +67,7 @@
 import Upload from '@/components/ImgUpload'
 import * as api from '../api'
 export default {
-  name: 'Attr',
+  name: 'Add',
   components: {
     Upload
   },
@@ -82,9 +75,37 @@ export default {
     data: {
       type: Object,
       default: () => ({})
-    },
-    organId: {
-      type: String
+    }
+  },
+  data() {
+    return {
+      loading: false,
+      ruleForm: {
+        organId: '',
+        studentId: '', // 学生id
+        courseId: '', // 课程id
+        noTestReason: '', // 原因
+        noTestType: '', // 类型
+        pictureUrl1: ''
+      },
+      courseList: [],
+      noTestTypeList: [],
+      noTestReasonList: [],
+      rows: {},
+      rules: {
+        organId: [
+          { required: true, message: '请选择', trigger: 'change' }
+        ],
+        courseId: [
+          { required: true, message: '请选择课程', trigger: 'change' }
+        ],
+        noTestType: [
+          { required: true, message: '请选择免修免考类型', trigger: 'change' }
+        ],
+        noTestReason: [
+          { required: true, message: '请选择免修免考原因', trigger: 'change' }
+        ]
+      }
     }
   },
   created() {
@@ -112,8 +133,10 @@ export default {
       const result2 = (await api.getSysDictList({ code: '0028' })) || {}
       this.noTestTypeList = result1.data || []
       this.noTestReasonList = result2.data || []
-      if (this.organId) {
-        const result3 = await api.getInfoList(this.organId)
+    },
+    async organChange() {
+      if (this.ruleForm.organId) {
+        const result3 = await api.getInfoList(this.ruleForm.organId)
         this.courseList = result3.data || []
       }
     },
@@ -134,33 +157,6 @@ export default {
           callBack(valid)
         }
       })
-    }
-  },
-  data() {
-    return {
-      loading: false,
-      ruleForm: {
-        studentId: '', // 学生id
-        courseId: '', // 课程id
-        noTestReason: '', // 原因
-        noTestType: '', // 类型
-        pictureUrl1: ''
-      },
-      courseList: [],
-      noTestTypeList: [],
-      noTestReasonList: [],
-      rows: {},
-      rules: {
-        courseId: [
-          { required: true, message: '请选择课程', trigger: 'change' }
-        ],
-        noTestType: [
-          { required: true, message: '请选择免修免考类型', trigger: 'change' }
-        ],
-        noTestReason: [
-          { required: true, message: '请选择免修免考原因', trigger: 'change' }
-        ]
-      }
     }
   }
 }

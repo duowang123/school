@@ -132,7 +132,7 @@ export default {
     pagination,
     Attr,
     Add,
-    Examine,
+    Examine
   },
   mixins: [selectMixin],
   computed: {
@@ -141,9 +141,9 @@ export default {
       return {
         total: this.page.totalCount,
         pageSize: this.page.pageSize,
-        pageSizes: [20, 50, 100, 200],
+        pageSizes: [20, 50, 100, 200]
       }
-    },
+    }
   },
   data(vm) {
     return {
@@ -152,20 +152,20 @@ export default {
       statusOptions: [],
       resultList: [
         { value: '1', label: '通过' },
-        { value: '2', label: '不通过' },
+        { value: '2', label: '不通过' }
       ],
       selValue: [],
       params: {
         organId: '',
         studentNoOrCertNo: '',
         graduationStatus: '',
-        schoolOrganId: '',
+        schoolOrganId: ''
       },
       page: {
         pageCurrent: 1,
         pageSize: 20,
         totalCount: 0,
-        totalPage: 0,
+        totalPage: 0
       },
       addData: {},
       currentData: {},
@@ -175,18 +175,23 @@ export default {
         headerCellStyle: { background: '#F3F4F7', color: '#333333' },
         selection: {
           type: 'selection',
-          width: '55',
+          width: '55'
         },
         serialNumber: {
           label: '序号',
           type: 'index',
-          width: '64',
+          width: '64'
         },
         columnConfig: [
           {
+            label: '学校',
+            prop: 'organName',
+            width: '170'
+          },
+          {
             label: '学号',
             prop: 'studentNo',
-            width: '120',
+            width: '120'
           },
           {
             label: '姓名',
@@ -207,33 +212,33 @@ export default {
           },
           {
             label: '层次',
-            prop: 'levelLabel',
+            prop: 'levelLabel'
           },
           {
             label: '年级',
-            prop: 'schoolYear',
+            prop: 'schoolYear'
           },
           {
             label: '专业',
             prop: 'professionName',
-            width: '180',
+            width: '180'
           },
           {
             label: '联系电话',
             width: '150',
-            prop: 'phone',
+            prop: 'phone'
           },
           {
             label: '学籍状态',
-            prop: 'studentStatusLabel',
+            prop: 'studentStatusLabel'
           },
           {
             label: '课程学分',
-            prop: 'allScore',
+            prop: 'allScore'
           },
           {
             label: '积累学分',
-            prop: 'getScore',
+            prop: 'getScore'
           },
           {
             label: '学分审核',
@@ -241,9 +246,9 @@ export default {
             type: 'customStyle',
             callback: (val) => {
               return {
-                color: val === '不通过' ? '#CF0000' : '#67C23A',
+                color: val === '不通过' ? '#CF0000' : '#67C23A'
               }
-            },
+            }
           },
           {
             label: '论文审核',
@@ -251,13 +256,13 @@ export default {
             type: 'customStyle',
             callback: (val) => {
               return {
-                color: val === '不通过' ? '#CF0000' : '#67C23A',
+                color: val === '不通过' ? '#CF0000' : '#67C23A'
               }
-            },
+            }
           },
           {
             label: '学费缴纳',
-            prop: 'oweMoney',
+            prop: 'oweMoney'
           },
           {
             label: '学费审核',
@@ -265,9 +270,9 @@ export default {
             type: 'customStyle',
             callback: (val) => {
               return {
-                color: val === '不通过' ? '#CF0000' : '#67C23A',
+                color: val === '不通过' ? '#CF0000' : '#67C23A'
               }
-            },
+            }
           },
           {
             label: '毕业审核结论',
@@ -276,9 +281,9 @@ export default {
             type: 'customStyle',
             callback: (val) => {
               return {
-                color: val === '不通过' ? '#CF0000' : '#67C23A',
+                color: val === '不通过' ? '#CF0000' : '#67C23A'
               }
-            },
+            }
           },
           {
             label: '毕业登记表',
@@ -286,21 +291,21 @@ export default {
             slot: {
               prop: 'formFile',
               type: 'btnTxt',
-              txt: '查看',
-            },
+              txt: '查看'
+            }
           },
           {
             label: '相片',
             slot: {
               prop: 'picture',
               type: 'btnTxt',
-              txt: '查看',
-            },
+              txt: '查看'
+            }
           },
           {
             label: '提交申请时间',
             width: '280',
-            prop: '',
+            prop: ''
           },
           {
             label: '审核时间',
@@ -312,18 +317,23 @@ export default {
                 '-' +
                 (value.approveEndDate || '--')
               )
-            },
+            }
           },
-        ],
+          {
+            label: '教学点',
+            prop: 'schoolOrganName',
+            width: '170'
+          }
+        ]
       },
       title: '',
       componentName: '',
       componentData: null,
-      width: '552px',
+      width: '800px',
       direction: 'rtl',
       isShowBtn: true,
       dialogVisible: false,
-      modelName: 'stu_graduate',
+      modelName: 'stu_graduate'
     }
   },
   async created() {
@@ -340,7 +350,7 @@ export default {
   watch: {
     dialogVisible(val) {
       val || (this.componentName = '')
-    },
+    }
   },
   methods: {
     getOrganId(item) {
@@ -355,7 +365,7 @@ export default {
       this.componentName = 'Add'
       this.isShowBtn = true
       this.componentData = {
-        organId: this.params.organId,
+        organId: this.params.organId
       }
       this.$nextTick(() => {
         this.$refs.Add.init()
@@ -364,14 +374,14 @@ export default {
     exportExcel() {
       const params = {
         ...this.params,
-        ...this.page,
+        ...this.page
       }
       this.download(
         params,
         '/course/stu_graduate/export',
         'POST',
         '毕业学生申请',
-        'xls'
+        'xlsx'
       )
     },
     btnTxt(row, prop) {},
@@ -393,8 +403,8 @@ export default {
           { label: '姓名', key: 'realName' },
           { label: '创建人', key: 'createUserName' },
           { label: '更新时间', key: 'updateDate' },
-          { label: '更新人', key: 'updateUserName' },
-        ],
+          { label: '更新人', key: 'updateUserName' }
+        ]
       }
     },
     batchApprove() {
@@ -410,7 +420,7 @@ export default {
       this.componentData = {
         batch: true,
         ids: this.selValue,
-        student: {},
+        student: {}
       }
       this.$nextTick(() => {
         this.$refs.Examine.init()
@@ -425,7 +435,7 @@ export default {
       this.isShowBtn = true
       this.componentData = {
         batch: false,
-        student: row,
+        student: row
       }
       this.$nextTick(() => {
         this.$refs.Examine.init()
@@ -437,7 +447,7 @@ export default {
     async getTableData() {
       const params = {
         ...this.params,
-        ...this.page,
+        ...this.page
       }
       const res = await api.commonPageRequest(
         params,
@@ -467,8 +477,8 @@ export default {
     },
     handleSelectionChange(val) {
       this.selValue = val.map((e) => e.id)
-    },
-  },
+    }
+  }
 }
 </script>
 

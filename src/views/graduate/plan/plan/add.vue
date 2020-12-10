@@ -3,6 +3,16 @@
     <el-form :rules="rules" :model="ruleForm" ref="ruleForm" label-width="0">
       <div class="form-item">
         <div class="container">
+          <el-form-item label="学校" prop="organId">
+            <el-select placeholder="请选择" v-model="ruleForm.organId">
+              <el-option
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+                v-for="item in schoolOrgansList"
+              ></el-option>
+            </el-select>
+          </el-form-item>
           <el-form-item label="毕业计划名称" prop="planName">
             <el-input v-model="ruleForm.planName" placeholder="请输入"></el-input>
           </el-form-item>
@@ -70,6 +80,7 @@
     created() {
       if (!this.data.isAdd) {
         this.ruleForm.id = this.data.id || ''
+        this.ruleForm.organId = this.data.organId || ''
         this.ruleForm.planName = this.data.planName || ''
         this.ruleForm.semester = this.data.semester || ''
         this.ruleForm.schoolYear = this.data.schoolYear || ''
@@ -98,6 +109,7 @@
       return {
         ruleForm: {
           id: '',
+          organId: '',
           planName: '',
           schoolYear: '',
           semester: '',
@@ -159,7 +171,6 @@
                 approveStartDate: this.ruleForm.start2,
                 approveEndDate: this.ruleForm.end2
               },
-              organId: this.data.organId
             }
             const responseCallback = res => {
               if (res.code === 200) {

@@ -196,8 +196,7 @@ export default {
   },
   async created() {
     try {
-      this.params.organId = this.schoolOrgansListAll[0].id
-      // this.initSelectOptions()
+      this.initSelectOptions()
       this.getTableData()
     } catch (err) {
       console.log(err)
@@ -211,14 +210,6 @@ export default {
   },
   methods: {
     change(val) {
-      // if (val) {
-      // this.initSelectOptions()
-      // } else {
-      // this.levelOption = []
-      // this.testTypeOptions = []
-      // this.examPlanInfoList = []
-      // this.examRoomOptions = []
-      // }
       this.init()
     },
     // 从字典中获取下拉框数据
@@ -251,16 +242,6 @@ export default {
           })
         })
       }
-      api
-        .examRoomListByOrganId({ organId: this.params.organId })
-        .then((res) => {
-          this.examRoomOptions = res.data.map((t) => {
-            return {
-              label: t.roomName,
-              value: t.id
-            }
-          })
-        })
       // api.examPaperListByOrganId(this.params.organId).then(res => {
       //   this.examPaperOptions = res.data.map(t => {
       //     return {

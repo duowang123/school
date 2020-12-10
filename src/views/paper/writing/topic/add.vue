@@ -8,7 +8,7 @@
     label-position="top"
   >
     <el-form-item label="学校" prop="organId">
-      <el-select v-model="ruleForm.organId" placeholder="请选择">
+      <el-select @change="organChange(true)" placeholder="请选择" v-model="ruleForm.organId">
         <el-option
           v-for="item in schoolOrgansList"
           :key="item.id"
@@ -47,10 +47,10 @@
         ></el-option>
       </el-select>
     </el-form-item>
-    <el-form-item label="选课题目" prop="selectName">
+    <el-form-item label="选课题目" >
       <el-input v-model="ruleForm.selectName"></el-input>
     </el-form-item>
-    <el-form-item label="描述" prop="remark">
+    <el-form-item label="描述" >
       <el-input
         type="textarea"
         :autosize="{ minRows: 2, maxRows: 4}"
@@ -68,30 +68,30 @@ import selectMixin from '@/views/mixins/select.js'
 export default {
   name: 'Add',
   props: {
-    data: Object,
+    data: Object
   },
   mixins: [selectMixin],
   created() {
     if (!this.data.isAdd) {
       this.ruleForm.id = this.data.id || ''
+      this.ruleForm.organId = this.data.organId || ''
       this.ruleForm.level = this.data.level || ''
       this.ruleForm.professionId = this.data.professionId || ''
       this.ruleForm.paperPlanId = this.data.paperPlanId || ''
       this.ruleForm.remark = this.data.remark || ''
       this.ruleForm.selectName = this.data.selectName || ''
       this.initProfessional()
+      this.getCommonPage()
     }
   },
   computed: {
-    paperPlanList() {
-      return this.data.paperPlanList
-    },
     levelOption() {
       return this.data.levelOption
-    },
+    }
   },
   data() {
     return {
+      paperPlanList: [],
       ruleForm: {
         id: '',
         level: '',
@@ -99,29 +99,52 @@ export default {
         professionId: '',
         remark: '',
         selectName: '',
-        organId: '',
+        organId: ''
       },
       rules: {
         organId: [{ required: true, message: '请选择', trigger: 'change' }],
         professionId: [
-          { required: true, message: '请选择', trigger: 'change' },
+          { required: true, message: '请选择', trigger: 'change' }
         ],
         level: [{ required: true, message: '请选择', trigger: 'change' }],
         paperPlanId: [{ required: true, message: '请选择', trigger: 'change' }],
         remark: [{ required: true, message: '请输入', trigger: 'blur' }],
-        selectName: [{ required: true, message: '请输入', trigger: 'blur' }],
+        selectName: [{ required: true, message: '请输入', trigger: 'blur' }]
       },
-      specialtyOptions: [],
+      specialtyOptions: []
     }
   },
   methods: {
-    initProfessional(init = true) {
-      const params = {
-        organId: this.data.organId,
-        level: this.ruleForm.level,
+    organChange() {
+      this.getPaperPlan()
+      this.initProfessional(true)
+    },
+    getPaperPlan() {
+      if (!this.ruleForm.organId) {
+        return false
       }
-      if (!this.ruleForm.level)
-        return this.$message.warning('请先选择招生层次!')
+      api.commonPageRequest(
+        { organId: this.ruleForm.organId },
+        'paper_plan',
+        'listByOrganId'
+      )
+        .then((res) => {
+          this.paperPlanList = res.data.map((e) => {
+            return {
+              label: e.paperName,
+              value: e.id
+            }
+          })
+        })
+    },
+    initProfessional(init = true) {
+      if (!this.ruleForm.organId || !this.ruleForm.level) {
+        return false
+      }
+      const params = {
+        organId: this.ruleForm.organId,
+        level: this.ruleForm.level
+      }
       api.listByOrganIdAndLevel(params).then((res) => {
         if (!res.data) {
           this.specialtyOptions = []
@@ -131,7 +154,7 @@ export default {
         this.specialtyOptions = res.data.map((e) => {
           return {
             label: e.name,
-            value: e.id,
+            value: e.id
           }
         })
         if (init) {
@@ -142,25 +165,24 @@ export default {
       })
     },
     levelChange() {
-      this.initProfessional(false)
+      this.initProfessional(true)
     },
     confirm(callBack) {
       this.$refs.ruleForm.validate((valid) => {
         if (valid) {
           const params = {
             ...this.ruleForm,
-            organId: this.data.organId,
           }
           const responseCallback = (res) => {
             if (res.code === 200) {
               this.$message({
                 type: 'success',
-                message: (this.data.isAdd ? '添加' : '修改') + '成功!',
+                message: (this.data.isAdd ? '添加' : '修改') + '成功!'
               })
             } else {
               this.$message({
                 type: 'error',
-                message: (this.data.isAdd ? '添加' : '修改') + '失败!',
+                message: (this.data.isAdd ? '添加' : '修改') + '失败!'
               })
             }
             callBack(valid)
@@ -176,8 +198,8 @@ export default {
           }
         }
       })
-    },
-  },
+    }
+  }
 }
 </script>
 

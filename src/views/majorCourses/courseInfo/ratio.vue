@@ -10,9 +10,9 @@
     <el-form-item label="课程学习时长占比" prop="learnTimeProp">
       <el-input type="number" v-model.number="ruleForm.learnTimeProp" min="0" :max="100"/>
     </el-form-item>
-    <el-form-item label="作业占比" prop="homeworkProp">
-      <el-input type="number" v-model.number="ruleForm.homeworkProp" min="0" :max="100"/>
-    </el-form-item>
+<!--    <el-form-item label="作业占比">-->
+<!--      <el-input type="number" v-model.number="ruleForm.homeworkProp" min="0" :max="100"/>-->
+<!--    </el-form-item>-->
     <el-form-item label="考试成绩占比" prop="scoreProp">
       <el-input type="number" v-model.number="ruleForm.scoreProp" min="0" max="100"/>
     </el-form-item>

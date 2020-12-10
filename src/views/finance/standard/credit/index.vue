@@ -136,7 +136,8 @@ export default {
         columnConfig: [
           {
             label: '学校',
-            prop: 'organName'
+            prop: 'organName',
+            width: '170'
           },
           {
             label: '学年',

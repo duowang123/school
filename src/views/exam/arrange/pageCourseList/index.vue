@@ -317,7 +317,7 @@ export default {
         '/course/exam/studentCourseExport',
         'POST',
         '学生考试安排',
-        'xls'
+        'xlsx'
       )
     },
     initPage() {

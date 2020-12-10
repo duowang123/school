@@ -8,7 +8,7 @@
     label-position="top"
   >
     <el-form-item label="学校" prop="organId">
-      <el-select @change="initProfessional" placeholder="请选择" v-model="ruleForm.organId">
+      <el-select @change="initProfessional(true)" placeholder="请选择" v-model="ruleForm.organId">
         <el-option
           v-for="item in schoolOrgansList"
           :key="item.id"
@@ -67,7 +67,7 @@
 import {
   addCreditStandard,
   updateCreditStandard,
-  listByOrganIdAndLevel,
+  listByOrganIdAndLevel
 } from '../api'
 import { mapGetters } from 'vuex'
 import selectMixin from '@/views/mixins/select.js'
@@ -75,7 +75,7 @@ import selectMixin from '@/views/mixins/select.js'
 export default {
   name: 'Add',
   props: {
-    data: Object,
+    data: Object
   },
   mixins: [selectMixin],
   created() {
@@ -103,12 +103,12 @@ export default {
         eachMoney: '',
         schoolYear: '',
         semester: '',
-        organId: '',
+        organId: ''
       },
       rules: {
         organId: [{ required: true, message: '请选择', trigger: 'change' }],
         eachMoney: [
-          { required: true, message: '请输入学分费用', trigger: 'blur' },
+          { required: true, message: '请输入学分费用', trigger: 'blur' }
           // {
           //   pattern: /^[0-9]+([.]{1}[0-9]+){0,1}/,
           //   message: '请输入正确金额',
@@ -116,13 +116,13 @@ export default {
           // }
         ],
         professional: [
-          { required: true, message: '请选择', trigger: 'change' },
+          { required: true, message: '请选择', trigger: 'change' }
         ],
         enterLevel: [{ required: true, message: '请选择', trigger: 'change' }],
         schoolYear: [{ required: true, message: '请选择', trigger: 'change' }],
-        semester: [{ required: true, message: '请选择', trigger: 'change' }],
+        semester: [{ required: true, message: '请选择', trigger: 'change' }]
       },
-      specialtyOptions: [],
+      specialtyOptions: []
     }
   },
   computed: {
@@ -135,18 +135,16 @@ export default {
     },
     levelOption() {
       return this.data.levelOption
-    },
+    }
   },
   methods: {
     initProfessional(init = true) {
       const params = {
         organId: this.ruleForm.organId,
-        level: this.ruleForm.enterLevel,
+        level: this.ruleForm.enterLevel
       }
-      if (!this.ruleForm.organId)
-        return void ''
-      if (!this.ruleForm.enterLevel)
-        return this.$message.warning('请先选择招生层次!')
+      if (!this.ruleForm.organId || !this.ruleForm.enterLevel) { return void '' }
+      // if () { return this.$message.warning('请先选择招生层次!') }
       listByOrganIdAndLevel(params).then((res) => {
         if (!res.data) {
           this.specialtyOptions = []
@@ -156,7 +154,7 @@ export default {
         this.specialtyOptions = res.data.map((e) => {
           return {
             label: e.name,
-            value: e.id,
+            value: e.id
           }
         })
         if (init) {
@@ -167,14 +165,13 @@ export default {
       })
     },
     levelChange() {
-      this.initProfessional(false)
+      this.initProfessional(true)
     },
     confirm(callBack) {
       this.$refs.ruleForm.validate((valid) => {
         if (valid) {
           const params = {
-            ...this.ruleForm,
-            organId: this.ruleForm.organId,
+            ...this.ruleForm
           }
           const responseCallback = (res) => {
             if (res.code === 200) {
@@ -191,8 +188,8 @@ export default {
           }
         }
       })
-    },
-  },
+    }
+  }
 }
 </script>
 

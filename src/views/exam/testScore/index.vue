@@ -309,7 +309,7 @@ export default {
         '/course/stu_test_score/export',
         'POST',
         '学生考试成绩',
-        'xls'
+        'xlsx'
       )
     },
     handlerAdd() {

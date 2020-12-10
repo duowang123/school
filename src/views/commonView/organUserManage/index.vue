@@ -279,7 +279,7 @@ export default {
         const all = {
           id: '',
           name: '全部',
-          oldName: '全部',
+          oldName: '全部'
         }
         this.organList = [all, ...(res.data.list || [])]
         this.organId = ''
@@ -332,7 +332,7 @@ export default {
         '/system/pc/sys/user/export',
         'POST',
         '用户管理',
-        'xls'
+        'xlsx'
       )
     },
     submit() {

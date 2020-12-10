@@ -3,12 +3,15 @@
     <el-form :rules="rules" :model="ruleForm" ref="addForm" label-width="0">
       <div class="form-item">
         <div class="container">
-          <el-form-item label="学号">
-            <div>{{ data.studentNo || '--' }}</div>
-          </el-form-item>
-          <el-form-item label="姓名">
-            <div>{{ data.realName || '--' }}</div>
-          </el-form-item>
+          <div>
+            <stu-card :detail="data"></stu-card>
+          </div>
+<!--          <el-form-item label="学号">-->
+<!--            <div>{{ data.studentNo || '&#45;&#45;' }}</div>-->
+<!--          </el-form-item>-->
+<!--          <el-form-item label="姓名">-->
+<!--            <div>{{ data.realName || '&#45;&#45;' }}</div>-->
+<!--          </el-form-item>-->
           <el-form-item label="初稿评语" prop="firstRemark">
             <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 10}" placeholder="请输入初稿评语" v-model="ruleForm.firstRemark">
             </el-input>

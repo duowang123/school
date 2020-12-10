@@ -8,6 +8,7 @@
       @ratio="ratioOpen"
       @authorization="handleAuthorization"
       :clearable="true"
+      searchPlaceholder="课程名称"
       :select-options="schoolOrgansListAll"
     />
     <div class="main-content-container">
@@ -254,7 +255,7 @@ export default {
     },
     async getOrganList() {
       this.organId = this.schoolOrgansListAll[0].id
-      this.allOrgan = [...this.organList]
+      this.allOrgan = [...this.schoolOrgansList]
     },
     getTableData() {
       this.isAdd = false

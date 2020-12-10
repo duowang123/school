@@ -84,7 +84,7 @@ export default {
     coursesTable,
     pagination,
     Attr,
-    Add,
+    Add
   },
   mixins: [selectMixin],
   computed: {
@@ -93,9 +93,9 @@ export default {
       return {
         total: this.page.totalCount,
         pageSize: this.page.pageSize,
-        pageSizes: [20, 50, 100, 200],
+        pageSizes: [20, 50, 100, 200]
       }
-    },
+    }
   },
   data(vm) {
     return {
@@ -103,13 +103,13 @@ export default {
       params: {
         organId: '',
         name: '',
-        queryContent: '',
+        queryContent: ''
       },
       page: {
         pageCurrent: 1,
         pageSize: 20,
         totalCount: 0,
-        totalPage: 0,
+        totalPage: 0
       },
       addData: {},
       currentData: {},
@@ -120,16 +120,21 @@ export default {
         serialNumber: {
           label: '序号',
           type: 'index',
-          width: '64',
+          width: '64'
         },
         columnConfig: [
           {
+            label: '学校',
+            prop: 'organName',
+            width: '170'
+          },
+          {
             label: '计划名称',
-            prop: 'planName',
+            prop: 'planName'
           },
           {
             label: '学期',
-            prop: 'schoolYear',
+            prop: 'schoolYear'
           },
           {
             label: '状态',
@@ -137,11 +142,11 @@ export default {
             type: 'enums',
             enums: (value) => {
               return value === '1' ? '开放' : '关闭'
-            },
+            }
           },
           {
             label: '毕业申请起止日期',
-            prop: 'startDate',
+            prop: 'startDate'
             // type: 'timeslot',
             // value: value => {
             //   return (value.start1 || '--') + '-' + (value.end1 || '--')
@@ -149,9 +154,9 @@ export default {
           },
           {
             label: '毕业审核起止日期',
-            prop: 'endDate',
-          },
-        ],
+            prop: 'endDate'
+          }
+        ]
       },
       title: '',
       componentName: '',
@@ -160,7 +165,7 @@ export default {
       direction: 'rtl',
       isShowBtn: true,
       dialogVisible: false,
-      modelName: 'stu_graduate_plan',
+      modelName: 'stu_graduate_plan'
     }
   },
   async created() {
@@ -176,7 +181,7 @@ export default {
   watch: {
     dialogVisible(val) {
       val || (this.componentName = '')
-    },
+    }
   },
   methods: {
     // 从字典中获取下拉框数据
@@ -187,7 +192,7 @@ export default {
             return {
               id: e.id,
               label: e.dictName,
-              value: e.dictValue,
+              value: e.dictValue
             }
           })
         })
@@ -208,7 +213,7 @@ export default {
         isAdd: true,
         modelName: this.modelName,
         organId: this.params.organId,
-        statusOptions: this.statusOptions,
+        statusOptions: this.statusOptions
       }
     },
     // 编辑
@@ -224,7 +229,7 @@ export default {
         modelName: this.modelName,
         schoolYearOptions: this.schoolYearOptions,
         semesterOptions: this.semesterOptions,
-        statusOptions: this.statusOptions,
+        statusOptions: this.statusOptions
       }
     },
     async init() {
@@ -245,8 +250,8 @@ export default {
           { label: '创建时间', key: 'createDate' },
           { label: '创建人', key: 'createUserName' },
           { label: '更新时间', key: 'updateDate' },
-          { label: '更新人', key: 'updateUserName' },
-        ],
+          { label: '更新人', key: 'updateUserName' }
+        ]
       }
     },
     initPage() {
@@ -255,7 +260,7 @@ export default {
     async getTableData(query) {
       const params = {
         ...this.params,
-        ...this.page,
+        ...this.page
       }
       const res = await api.commonPageRequest(
         params,
@@ -284,7 +289,7 @@ export default {
       this.$confirm('是否继续删除?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning',
+        type: 'warning'
       }).then(() => {
         api
           .commonPageRequest({ id: row.id }, this.modelName, 'delete')
@@ -292,7 +297,7 @@ export default {
             if (res.code === 200) {
               this.$message({
                 type: 'success',
-                message: '删除成功!',
+                message: '删除成功!'
               })
               this.initPage()
               this.getTableData()
@@ -303,8 +308,8 @@ export default {
     handleCurrentChange(val) {
       this.page.currentPage = val
       this.getTableData()
-    },
-  },
+    }
+  }
 }
 </script>
 

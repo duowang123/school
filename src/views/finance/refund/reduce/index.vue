@@ -102,7 +102,7 @@ export default {
     coursesTable,
     pagination,
     Add,
-    Attr,
+    Attr
   },
   data() {
     const vm = this
@@ -110,13 +110,13 @@ export default {
       params: {
         organId: '',
         realNameOrcertNo: '',
-        schoolOrganId: '',
+        schoolOrganId: ''
       },
       page: {
         pageCurrent: 1,
         pageSize: 20,
         totalCount: 0,
-        totalPage: 0,
+        totalPage: 0
       },
       tableData: [],
       tableConfig: {
@@ -125,24 +125,29 @@ export default {
         serialNumber: {
           label: '序号',
           type: 'index',
-          width: '50',
+          width: '50'
         },
         columnConfig: [
           {
+            label: '学校',
+            prop: 'organName',
+            width: '170'
+          },
+          {
             label: '学号',
-            prop: 'studentNo',
+            prop: 'studentNo'
           },
           {
             label: '姓名',
-            prop: 'realName',
+            prop: 'realName'
           },
           {
             label: '学生类型',
-            prop: 'studentType',
+            prop: 'studentType'
           },
           {
             label: '专业',
-            prop: 'professionalName',
+            prop: 'professionalName'
           },
           {
             label: '层次',
@@ -152,11 +157,11 @@ export default {
               return vm.levelOption.filter(
                 (item) => item.dictValue === value
               )[0].dictName
-            },
+            }
           },
           {
             label: '学年',
-            prop: 'schoolYear',
+            prop: 'schoolYear'
           },
           {
             label: '减免原因',
@@ -166,23 +171,23 @@ export default {
               return vm.saleReasonOption.filter(
                 (item) => item.dictValue === value
               )[0].dictName
-            },
+            }
           },
           {
             label: '减免金额',
-            prop: 'money',
+            prop: 'money'
           },
           {
             label: '申请时间',
-            prop: 'applicationDate',
+            prop: 'applicationDate'
           },
           {
             label: '确认人',
-            prop: 'cfApproveUserName',
+            prop: 'cfApproveUserName'
           },
           {
             label: '确认时间',
-            prop: 'cfApproveDate',
+            prop: 'cfApproveDate'
           },
           {
             label: '财务确认状态',
@@ -201,9 +206,14 @@ export default {
               } else {
                 return '不通过'
               }
-            },
+            }
           },
-        ],
+          {
+            label: '教学点',
+            prop: 'schoolOrganName',
+            width: '170'
+          }
+        ]
       },
       levelOption: [],
       returnTypeList: [],
@@ -214,13 +224,13 @@ export default {
       componentName: '',
       componentData: {},
       direction: 'rtl',
-      isShowBtn: true,
+      isShowBtn: true
     }
   },
   watch: {
     dialogVisible(val) {
       val || (this.componentName = '')
-    },
+    }
   },
   created() {
     this.initSelectOptions()
@@ -231,9 +241,9 @@ export default {
       return {
         total: this.page.totalCount,
         pageSize: this.page.pageSize,
-        pageSizes: [20, 50, 100, 200],
+        pageSizes: [20, 50, 100, 200]
       }
-    },
+    }
   },
   methods: {
     searchChange() {
@@ -253,7 +263,7 @@ export default {
       const params = {
         ...this.params,
         pageCurrent: this.page.pageCurrent,
-        pageSize: this.page.pageSize,
+        pageSize: this.page.pageSize
       }
       api.getCreaditSaleApproveList(params).then((res) => {
         this.tableData = this.formatData(res.data.rows)
@@ -294,8 +304,7 @@ export default {
     },
     // 优惠申请
     handleApply({ row }) {
-      if (row.cfApproveStatus !== undefined && row.cfApproveStatus !== '1')
-        return this.$message.warning('只能操作待审批!')
+      if (row.cfApproveStatus !== undefined && row.cfApproveStatus !== '1') { return this.$message.warning('只能操作待审批!') }
       this.title = '优惠申请'
       this.componentData = row
       this.componentName = 'add'
@@ -315,8 +324,8 @@ export default {
           { label: '学号', key: 'studentNo' },
           { label: '姓名', key: 'realName' },
           { label: '更新时间', key: 'approveDate' },
-          { label: '更新人', key: 'approveUserName' },
-        ],
+          { label: '更新人', key: 'approveUserName' }
+        ]
       }
     },
     // 查看
@@ -330,33 +339,33 @@ export default {
         data: row,
         keys: [
           { label: '学号', key: 'studentNo' },
-          { label: '姓名', key: 'realName' },
-        ],
+          { label: '姓名', key: 'realName' }
+        ]
       }
     },
     handleDelete({ row }) {
       this.$confirm('是否继续删除?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning',
+        type: 'warning'
       }).then(() => {
         api.deleteStudentPayback({ id: row.id }).then((res) => {
           if (res.code === 200) {
             this.$message({
               message: '删除成功',
-              type: 'success',
+              type: 'success'
             })
             this.init()
           } else {
             this.$message({
               message: '删除失败',
-              type: 'error',
+              type: 'error'
             })
           }
         })
       })
-    },
-  },
+    }
+  }
 }
 </script>
 

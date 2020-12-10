@@ -3,7 +3,7 @@
     <div>
       <el-form class="user-form" :inline="true">
         <el-form-item>
-          <el-button plain type="primary" @click="exportExcel">导出Excel</el-button>
+          <el-button type="primary" @click="exportExcel">导出Excel</el-button>
         </el-form-item>
         <div class="organ-box">
           <el-select
@@ -47,7 +47,7 @@
           ></el-input>
           <el-button
             type="primary"
-            style="height: 40px;margin-left: 10px"
+            style="height: 40px;margin-left: 16px"
             @click="handlerSearch"
           >高级搜索</el-button>
         </div>
@@ -294,8 +294,6 @@ export default {
       approveStatusList: [],
       registerTypeList: [],
       serachVisable: false,
-      organListAll: [],
-      schoolOrgansListAll: [],
     }
   },
   computed: {
@@ -320,13 +318,6 @@ export default {
     },
   },
   async created() {
-    const all = {
-      id: '',
-      name: '全部',
-      oldName: '全部',
-    }
-    this.organListAll = [all, ...this.teacherList]
-    this.schoolOrgansListAll = [all, ...this.schoolOrgansList]
     api.listByCode({ code: '0006' }).then((res) => {
       this.levelOption = res.data.map((e) => {
         return {
@@ -439,7 +430,7 @@ export default {
         '/course/studentSign/online/export',
         'POST',
         '自助报名清单',
-        'xls'
+        'xlsx'
       )
     },
     handleAttr(data) {

@@ -169,9 +169,9 @@ export default {
       default: () => ({})
     },
     organId: {
-      type: String,
+      type: String
     },
-    isAdd: Boolean,
+    isAdd: Boolean
   },
   components: {
     Upload
@@ -186,7 +186,7 @@ export default {
         }
       },
       immediate: true
-    },
+    }
   },
   data() {
     const testCourseNo = (rule, val, callback) => {
@@ -253,8 +253,8 @@ export default {
           { required: true, message: '请选择是否停开课', trigger: 'blur' }
         ],
         percentCompleted: [
-          { required: true, message: '请输入课程学习时间', trigger: 'blur' },
-        ],
+          { required: true, message: '请输入课程学习时间', trigger: 'blur' }
+        ]
       }
     }
   },
@@ -294,7 +294,7 @@ export default {
       }
     },
     submitForm(formName) {
-      this.$refs[formName].validate(async (valid) => {
+      this.$refs[formName].validate(async(valid) => {
         const uploadRes = await this.$refs.upload.upload()
         if (uploadRes.code !== 200) {
           this.$message('图片上传失败！')

@@ -10,24 +10,7 @@
               @keyup.enter.native="onSearch"
               placeholder="学号/证件号码"
             ></el-input>
-            <el-row v-show="rows.realName" :gutter="24" v-loading="loading">
-              <el-col :span="10">
-                <div>姓名：{{ rows.realName}}</div>
-                <div>层次：{{ rows.levelName}}</div>
-              </el-col>
-              <el-col :span="14">
-                <div>
-                  <div>学生类型：{{ rows.studentType}}</div>
-                  <div>专业：{{ rows.professionalName}}</div>
-                </div>
-              </el-col>
-              <el-col>
-                <div>学校：{{ rows.organName}}</div>
-              </el-col>
-              <el-col>
-                <div>教学点：{{ rows.schoolOrganName}}</div>
-              </el-col>
-            </el-row>
+            <stu-card :detail="rows" v-loading="loading"></stu-card>
           </el-form-item>
           <el-form-item label="缴费方式" prop="payType">
             <el-select class="selectWidth" v-model="ruleForm.payType" placeholder="请选择">

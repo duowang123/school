@@ -253,8 +253,6 @@ export default {
       isShowBtn: true,
       dialogVisible: false,
       searchdialogVisible: false,
-      organListAll: [],
-      schoolOrgansListAll: []
     }
   },
   computed: {
@@ -281,13 +279,6 @@ export default {
     }
   },
   created() {
-    const all = {
-      id: '',
-      name: '全部',
-      oldName: '全部'
-    }
-    this.organListAll = [all, ...this.teacherList]
-    this.schoolOrgansListAll = [all, ...this.schoolOrgansList]
     this.params.organId = this.organListAll[0].id
     api.getSysDictList({ code: '0021' }).then((res) => {
       this.changeTypeList = res.data || []
@@ -328,7 +319,7 @@ export default {
         '/course/student_change_approve/export',
         'POST',
         '学籍异动审批',
-        'xls'
+        'xlsx'
       )
     },
     getTableData(query) {

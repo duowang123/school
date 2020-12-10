@@ -277,7 +277,7 @@ export default {
         '/course/exam/export',
         'POST',
         '学生考试安排',
-        'xls'
+        'xlsx'
       )
     },
     // 编辑

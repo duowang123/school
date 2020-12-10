@@ -252,8 +252,6 @@ export default {
       direction: 'rtl',
       isShowBtn: true,
       dialogVisible: false,
-      organListAll: [],
-      schoolOrgansListAll: [],
     }
   },
   computed: {
@@ -285,15 +283,6 @@ export default {
     },
   },
   created() {
-    const all = {
-      id: '',
-      name: '全部',
-      oldName: '全部',
-    }
-    this.organListAll = [all, ...this.teacherList]
-    this.schoolOrgansListAll = [all, ...this.schoolOrgansList]
-    this.params.organId = this.organListAll[0].id
-    this.params.schoolOrganId = this.schoolOrgansListAll[0].id
   },
   mounted() {
     setTimeout(async () => {
@@ -319,7 +308,7 @@ export default {
         '/course//student_roll/enter/export',
         'POST',
         '批量导出',
-        'xls'
+        'xlsx'
       )
     },
     async init() {

@@ -23,7 +23,7 @@
         <div class="organ-box">
           <el-select
             class="organ-select"
-            v-model="organId"
+            v-model="params.organId"
             filterable
             v-if="showSchool"
             @change="getTableData"
@@ -125,10 +125,10 @@ export default {
     return {
       STATIC_BASE,
       params: {
+        organId: '',
         realNameOrcertNo: '',
         schoolOrganId: ''
       },
-      organId: '',
       page: {
         pageCurrent: 1,
         pageSize: 20,
@@ -145,6 +145,11 @@ export default {
           width: '50'
         },
         columnConfig: [
+          {
+            label: '学校',
+            prop: 'organName',
+            width: '170'
+          },
           {
             label: '学号',
             prop: 'studentNo',
@@ -231,8 +236,6 @@ export default {
     }
   },
   created() {
-    this.organId = this.organListAll[0].id
-    this.params.schoolOrganId = this.schoolOrgansListAll[0].id
     this.initSelectOptions()
   },
   computed: {
@@ -258,7 +261,7 @@ export default {
       this.isShowBtn = true
       this.componentData = {
         isAdd: true,
-        organId: this.organId,
+        organId: this.params.organId,
         payTypeOptions: this.payTypeOptions
       }
     },
@@ -275,7 +278,6 @@ export default {
     getTableData() {
       const params = {
         ...this.params,
-        organId: this.organId,
         pageCurrent: this.page.pageCurrent,
         pageSize: this.page.pageSize
       }
@@ -344,7 +346,6 @@ export default {
       const params = {
         pageCurrent: this.page.pageCurrent,
         pageSize: this.page.pageSize,
-        organId: this.organId,
         ...this.params
       }
       this.download(
@@ -352,7 +353,7 @@ export default {
         '/course/student_pay_log/studentPayExport',
         'POST',
         '学生缴费信息',
-        'xls'
+        'xlsx'
       )
     },
     //阻止upload的自己上传，进行再操作

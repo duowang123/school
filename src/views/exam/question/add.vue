@@ -193,7 +193,9 @@ export default {
     }
   },
   async created() {
-    this.form.organId = this.organId ? this.organId : this.schoolOrgansList[0].id
+    this.form.organId = this.organId
+      ? this.organId
+      : this.schoolOrgansList[0].id
     this.init = true
     this.typeList = ((await api.listByCode({ code: '0032' })) || {}).data || []
     if (this.id) await this.handlerForm(this.id)
@@ -522,5 +524,9 @@ export default {
       }
     }
   }
+}
+.add-question-type .el-dialog__body {
+  height: 700px;
+  overflow-y: auto;
 }
 </style>

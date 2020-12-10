@@ -46,6 +46,9 @@
           <el-form-item prop="returnMoney" label="退费金额">
             <el-input v-model="ruleForm.returnMoney" placeholder="费用"></el-input>
           </el-form-item>
+          <el-form-item label="扫描件" >
+            <upload :url="ruleForm.pictureUrl" class="upload-icon" ref="upload" />
+          </el-form-item>
         </div>
       </div>
     </el-form>
@@ -97,13 +100,20 @@
       },
       async getCodeList() {
       },
-      confirm(callBack) {
+      async  confirm(callBack) {
+        const uploadRes = await this.$refs.upload.upload()
+        console.log('uploadRes', uploadRes)
+        if (uploadRes.code !== 200) {
+          this.$message('图片上传失败！')
+          return false
+        }
         this.$refs.addForm.validate(async valid => {
           if (valid) {
             if(!this.rows.id) return this.$message.warning('请先搜索学号/证件号码!')
             const params = {
               ...this.ruleForm,
-              organId: this.data.organId
+              organId: this.data.organId,
+              pictureUrl: uploadRes.data
             }
             Object.assign(params, {
               studentId: this.rows.id
@@ -129,7 +139,8 @@
           studentId: '', // 学生id
           payYear: '', // 缴费年度：dict0014
           returnType: '',
-          returnMoney: ''
+          returnMoney: '',
+          pictureUrl: ''
         },
         rows: {},
         rules: {
@@ -143,6 +154,9 @@
           ],
           payYear: [
             { required: true, message: '请选择缴费年度', trigger: 'change' }
+          ],
+          pictureUrl: [
+            { required: true, message: '请选上传扫描附件', trigger: 'change' }
           ],
           returnType: [
             { required: true, message: '请选择退费项目', trigger: 'change' }

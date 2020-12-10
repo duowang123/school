@@ -99,7 +99,7 @@ export default {
     coursesTable,
     pagination,
     Attr,
-    Add,
+    Add
   },
   mixins: [selectMixin],
   computed: {
@@ -108,9 +108,9 @@ export default {
       return {
         total: this.page.totalCount,
         pageSize: this.page.pageSize,
-        pageSizes: [20, 50, 100, 200],
+        pageSizes: [20, 50, 100, 200]
       }
-    },
+    }
   },
   data(vm) {
     return {
@@ -119,13 +119,13 @@ export default {
       params: {
         organId: '',
         paperPlanId: '',
-        name: '',
+        name: ''
       },
       page: {
         pageCurrent: 1,
         pageSize: 20,
         totalCount: 0,
-        totalPage: 0,
+        totalPage: 0
       },
       addData: {},
       currentData: {},
@@ -136,30 +136,35 @@ export default {
         serialNumber: {
           label: '序号',
           type: 'index',
-          width: '64',
+          width: '64'
         },
         columnConfig: [
           {
+            label: '学校',
+            prop: 'organName',
+            width: '170'
+          },
+          {
             label: '选课题目',
-            prop: 'selectName',
+            prop: 'selectName'
           },
           {
             label: '描述',
-            prop: 'remark',
+            prop: 'remark'
           },
           {
             label: '层次',
-            prop: 'levelName',
+            prop: 'levelName'
           },
           {
             label: '专业',
-            prop: 'professionName',
+            prop: 'professionName'
           },
           {
             label: '论文计划',
-            prop: 'paperPlanName',
-          },
-        ],
+            prop: 'paperPlanName'
+          }
+        ]
       },
       title: '',
       componentName: '',
@@ -168,31 +173,26 @@ export default {
       direction: 'rtl',
       isShowBtn: true,
       dialogVisible: false,
-      modelName: 'paper_select',
+      modelName: 'paper_select'
     }
   },
   async created() {
     try {
-      this.params.organId = this.schoolOrgansListAll[0].id
-      // this.initSelectOptions()
+      this.initSelectOptions()
+      this.getPaperPlan()
       this.getTableData()
     } catch (err) {
-      console.log(err)
       this.tableData = []
     }
   },
   watch: {
     dialogVisible(val) {
       val || (this.componentName = '')
-    },
+    }
   },
   methods: {
     change(val) {
-      if (val) {
-        this.initSelectOptions()
-      } else {
-        this.levelOption = []
-      }
+      this.getPaperPlan()
       this.init()
     },
     // 从字典中获取下拉框数据
@@ -203,22 +203,27 @@ export default {
             return {
               id: e.id,
               label: e.dictName,
-              value: e.dictValue,
+              value: e.dictValue
             }
           })
         })
       }
-      api
-        .commonPageRequest(
-          { organId: this.params.organId },
-          'paper_plan',
-          'listByOrganId'
-        )
+      this.getPaperPlan()
+    },
+    getPaperPlan() {
+      if (!this.params.organId) {
+        return false
+      }
+      api.commonPageRequest(
+        { organId: this.params.organId },
+        'paper_plan',
+        'listByOrganId'
+      )
         .then((res) => {
           this.paperPlanList = res.data.map((e) => {
             return {
               label: e.paperName,
-              value: e.id,
+              value: e.id
             }
           })
         })
@@ -240,7 +245,7 @@ export default {
         modelName: this.modelName,
         organId: this.params.organId,
         paperPlanList: this.paperPlanList,
-        levelOption: this.levelOption,
+        levelOption: this.levelOption
       }
     },
     // 编辑
@@ -255,7 +260,7 @@ export default {
         isAdd: false,
         modelName: this.modelName,
         paperPlanList: this.paperPlanList,
-        levelOption: this.levelOption,
+        levelOption: this.levelOption
       }
     },
     async init() {
@@ -276,8 +281,8 @@ export default {
           { label: '创建时间', key: 'createDate' },
           { label: '创建人', key: 'createUserName' },
           { label: '更新时间', key: 'updateDate' },
-          { label: '更新人', key: 'updateUserName' },
-        ],
+          { label: '更新人', key: 'updateUserName' }
+        ]
       }
     },
     initPage() {
@@ -286,7 +291,7 @@ export default {
     async getTableData(query) {
       const params = {
         ...this.params,
-        ...this.page,
+        ...this.page
       }
       const res = await api.commonPageRequest(
         params,
@@ -315,7 +320,7 @@ export default {
       this.$confirm('是否继续删除?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning',
+        type: 'warning'
       }).then(() => {
         api
           .commonPageRequest({ id: row.id }, this.modelName, 'delete')
@@ -323,7 +328,7 @@ export default {
             if (res.code === 200) {
               this.$message({
                 type: 'success',
-                message: '删除成功!',
+                message: '删除成功!'
               })
               this.initPage()
               this.getTableData()
@@ -334,8 +339,8 @@ export default {
     handleCurrentChange(val) {
       this.page.currentPage = val
       this.getTableData()
-    },
-  },
+    }
+  }
 }
 </script>
 

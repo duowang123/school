@@ -10,24 +10,7 @@
               @keyup.enter.native="onSearch"
               placeholder="请输入"
             ></el-input>
-            <div class="stu-info-box">
-              <div>
-                <div class="title">学号</div>
-                <div class="cont">{{ rows.studentNo || '' }}</div>
-              </div>
-              <div>
-                <div class="title">性别</div>
-                <div class="cont">{{ rows.sex ? (rows.sex === '1' ? '男' : '女') : '' }}</div>
-              </div>
-              <div>
-                <div class="title">姓名</div>
-                <div class="cont">{{ rows.realName || '' }}</div>
-              </div>
-              <div>
-                <div class="title">证件号码</div>
-                <div class="cont">{{ rows.certNo || '' }}</div>
-              </div>
-            </div>
+            <stu-card :detail="rows"></stu-card>
           </el-form-item>
           <div class="select-box">
             <el-form-item prop="credit" label="学分" class="select-width-240">
@@ -201,7 +184,6 @@ export default {
 }
 .stu-info-title{
   font-size: 14px;
-  font-family: PingFangSC, PingFangSC-Medium;
   font-weight: 500;
   color: #333333;
   margin-bottom: 16px;
@@ -219,7 +201,6 @@ export default {
   margin-top: 24px;
   .title {
     font-size: 14px;
-    font-family: PingFangSC, PingFangSC-Regular;
     font-weight: 400;
     color: #666666;
     margin-bottom: 8px;

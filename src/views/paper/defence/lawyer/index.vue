@@ -119,7 +119,7 @@ export default {
     coursesTable,
     pagination,
     Attr,
-    Add,
+    Add
   },
   mixins: [download, selectMixin],
   computed: {
@@ -128,9 +128,9 @@ export default {
       return {
         total: this.page.totalCount,
         pageSize: this.page.pageSize,
-        pageSizes: [20, 50, 100, 200],
+        pageSizes: [20, 50, 100, 200]
       }
-    },
+    }
   },
   data(vm) {
     return {
@@ -144,13 +144,13 @@ export default {
         organId: '',
         defencePlanId: '',
         realNameOrcertNo: '',
-        schoolOrganId: '',
+        schoolOrganId: ''
       },
       page: {
         pageCurrent: 1,
         pageSize: 20,
         totalCount: 0,
-        totalPage: 0,
+        totalPage: 0
       },
       addData: {},
       currentData: {},
@@ -161,16 +161,21 @@ export default {
         serialNumber: {
           label: '序号',
           type: 'index',
-          width: '64',
+          width: '64'
         },
         columnConfig: [
           {
+            label: '学校',
+            prop: 'organName',
+            width: '170'
+          },
+          {
             label: '学号',
-            prop: 'studentNo',
+            prop: 'studentNo'
           },
           {
             label: '入学年级',
-            prop: 'schoolYear',
+            prop: 'schoolYear'
           },
           {
             label: '入学学期',
@@ -181,11 +186,11 @@ export default {
                 (item) => item.value === value
               )
               return arr.length > 0 ? arr[0].label : '--'
-            },
+            }
           },
           {
             label: '姓名',
-            prop: 'realName',
+            prop: 'realName'
           },
           {
             label: '层次',
@@ -194,16 +199,16 @@ export default {
             enums: (value) => {
               const arr = vm.levelOption.filter((item) => item.value === value)
               return arr.length > 0 ? arr[0].label : '--'
-            },
+            }
           },
           {
             label: '专业',
-            prop: 'professional',
+            prop: 'professional'
           },
           {
             label: '论文选题',
             prop: 'selectName',
-            width: '280',
+            width: '280'
           },
           {
             label: '是否答辩',
@@ -214,7 +219,7 @@ export default {
                 (item) => item.value === value
               )
               return arr.length > 0 ? arr[0].label : '--'
-            },
+            }
           },
           {
             label: '答辩方式',
@@ -225,16 +230,16 @@ export default {
                 (item) => item.value === value
               )
               return arr.length > 0 ? arr[0].label : '--'
-            },
+            }
           },
           {
             label: '答辩时间',
             width: '150',
-            prop: 'defenceDate',
+            prop: 'defenceDate'
           },
           {
             label: '答辩评语',
-            prop: 'defenceRemark',
+            prop: 'defenceRemark'
           },
           {
             label: '答辩成绩',
@@ -245,18 +250,23 @@ export default {
                 (item) => item.value === value
               )
               return arr.length > 0 ? arr[0].label : '--'
-            },
+            }
           },
           {
             label: '答辩老师',
-            prop: 'defenceTeacher',
+            prop: 'defenceTeacher'
           },
           {
             label: '批改时间',
             width: '150',
-            prop: 'correctDate',
+            prop: 'correctDate'
           },
-        ],
+          {
+            label: '教学点',
+            prop: 'schoolOrganName',
+            width: '170'
+          }
+        ]
       },
       title: '',
       componentName: '',
@@ -265,7 +275,7 @@ export default {
       direction: 'rtl',
       isShowBtn: true,
       dialogVisible: false,
-      modelName: 'paper_defence_student',
+      modelName: 'paper_defence_student'
     }
   },
   async created() {
@@ -282,7 +292,7 @@ export default {
   watch: {
     dialogVisible(val) {
       val || (this.componentName = '')
-    },
+    }
   },
   methods: {
     // 从字典中获取下拉框数据
@@ -293,7 +303,7 @@ export default {
             return {
               id: e.id,
               label: e.dictName,
-              value: e.dictValue,
+              value: e.dictValue
             }
           })
         })
@@ -302,7 +312,7 @@ export default {
             return {
               id: e.id,
               label: e.dictName,
-              value: e.dictValue,
+              value: e.dictValue
             }
           })
         })
@@ -311,7 +321,7 @@ export default {
             return {
               id: e.id,
               label: e.dictName,
-              value: e.dictValue,
+              value: e.dictValue
             }
           })
         })
@@ -320,7 +330,7 @@ export default {
             return {
               id: e.id,
               label: e.dictName,
-              value: e.dictValue,
+              value: e.dictValue
             }
           })
         })
@@ -329,7 +339,7 @@ export default {
             return {
               id: e.id,
               label: e.dictName,
-              value: e.dictValue,
+              value: e.dictValue
             }
           })
         })
@@ -344,7 +354,7 @@ export default {
           this.defencePlanList = res.data.rows.map((e) => {
             return {
               label: e.planName,
-              value: e.id,
+              value: e.id
             }
           })
         })
@@ -353,14 +363,14 @@ export default {
       const params = {
         pageCurrent: this.page.pageCurrent,
         pageSize: this.page.pageSize,
-        ...this.params,
+        ...this.params
       }
       this.download(
         params,
         '/course/paper_defence_student/defenceStudentExport',
         'POST',
         '学生答辩信息',
-        'xls'
+        'xlsx'
       )
     },
     getOrganId(item) {
@@ -381,7 +391,7 @@ export default {
         organId: this.params.organId,
         defenceStatusList: this.defenceStatusList,
         defenceTypeList: this.defenceTypeList,
-        resultStatusList: this.resultStatusList,
+        resultStatusList: this.resultStatusList
       }
     },
     async init() {
@@ -403,8 +413,8 @@ export default {
           { label: '创建时间', key: 'createDate' },
           { label: '创建人', key: 'createUserName' },
           { label: '更新时间', key: 'updateDate' },
-          { label: '更新人', key: 'updateUserName' },
-        ],
+          { label: '更新人', key: 'updateUserName' }
+        ]
       }
     },
     initPage() {
@@ -413,7 +423,7 @@ export default {
     async getTableData(query) {
       const params = {
         ...this.params,
-        ...this.page,
+        ...this.page
       }
       const res = await api.commonPageRequest(
         params,
@@ -440,8 +450,8 @@ export default {
     handleCurrentChange(val) {
       this.page.currentPage = val
       this.getTableData()
-    },
-  },
+    }
+  }
 }
 </script>
 

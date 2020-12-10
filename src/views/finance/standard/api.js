@@ -115,3 +115,12 @@ export function professionalStandardImport(data) {
     data
   })
 }
+
+
+export function professionalStandardCopy(data) {
+  return request({
+    url: `/course/professional_standard/copy`,
+    method: 'POST',
+    data
+  })
+}

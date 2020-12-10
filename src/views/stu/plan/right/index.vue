@@ -32,7 +32,7 @@
           stripe
           style="width: 100%"
         >
-          <el-table-column width="24" align="center"></el-table-column>
+          <el-table-column width="14" align="center"></el-table-column>
           <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
           <el-table-column prop="organName" label="学校"></el-table-column>
           <el-table-column label="机构性质">

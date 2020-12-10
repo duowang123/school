@@ -8,7 +8,7 @@
         <div class="organ-box">
           <el-select
             class="organ-select"
-            v-model="organId"
+            v-model="params.organId"
             filterable
             v-if="showSchool"
             clearable
@@ -107,10 +107,10 @@ export default {
     const vm = this
     return {
       params: {
+        organId: '',
         realNameOrcertNo: '',
         schoolOrganId: ''
       },
-      organId: '',
       page: {
         pageCurrent: 1,
         pageSize: 20,
@@ -129,7 +129,8 @@ export default {
         columnConfig: [
           {
             label: '学校',
-            prop: 'organName'
+            prop: 'organName',
+            width: '170'
           },
           {
             label: '学籍状态',
@@ -186,6 +187,11 @@ export default {
           {
             label: '总费用',
             prop: 'allMoney'
+          },
+          {
+            label: '教学点',
+            prop: 'schoolOrganName',
+            width: '170'
           }
         ]
       },
@@ -208,8 +214,6 @@ export default {
     }
   },
   created() {
-    this.organId = this.organListAll[0].id
-    this.params.schoolOrganId = this.schoolOrgansListAll[0].id
     this.initSelectOptions()
   },
   computed: {
@@ -235,7 +239,7 @@ export default {
       this.isShowBtn = true
       this.componentData = {
         isAdd: true,
-        organId: this.organId,
+        organId: this.params.organId,
         specialtyOptions: this.specialtyOptions,
         levelOption: this.levelOption
       }
@@ -253,7 +257,6 @@ export default {
     getTableData() {
       const params = {
         ...this.params,
-        organId: this.organId,
         pageCurrent: this.page.pageCurrent,
         pageSize: this.page.pageSize
       }

@@ -5,6 +5,10 @@
   }
 }
 
+.el-table {
+  max-height: none!important;
+}
+
 .el-upload__input {
   display: none;
 }

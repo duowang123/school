@@ -142,7 +142,7 @@ export default {
         { label: '原专业', key: 'major' },
         { label: '职业', key: 'occupation' },
         { label: '职务', key: 'job' },
-        { label: '是否教师', key: 'yesTeacher' },
+        // { label: '是否教师', key: 'yesTeacher' },
         { label: '是否具备上网条件', key: 'yesIntelnet' }
       ],
       infoRight3: [

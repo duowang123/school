@@ -4,7 +4,7 @@
       <div class="form-item">
         <div class="container">
           <el-form-item label="学校" prop="organId">
-            <el-select @change="change" placeholder="请选择" v-model="ruleForm.organId">
+            <el-select @change="organChange" placeholder="请选择" v-model="ruleForm.organId">
               <el-option
                 :key="item.id"
                 :label="item.name"
@@ -159,6 +159,7 @@
             data: []
           }
         ],
+        examRoomOptions: [],
         ruleForm: {
           organId: '',
           level: '', // 层次
@@ -178,6 +179,7 @@
           organId: [{ required: true, message: '请选择', trigger: 'blur' }],
           projectName: [{ required: true, message: '请输入计划项目', trigger: 'blur' }],
           startDate: [{ required: true, message: '请输入考试开始时间', trigger: 'blur' }],
+          professionalId: [{ required: true, message: '请输入考试开始时间', trigger: 'blur' }],
           endDate: [{ required: true, message: '请输入考试结束时间', trigger: 'blur' }],
           testType: [{ required: true, message: '请选择考试方式', trigger: 'change' }],
           semester: [{ required: true, message: '请选择', trigger: 'change' }],
@@ -214,9 +216,6 @@
       testTypeOptions() {
         return this.data.testTypeOptions
       },
-      examRoomOptions() {
-        return this.data.examRoomOptions
-      },
       examPlanInfoList() {
         return this.data.examPlanInfoList
       }
@@ -245,6 +244,13 @@
       }
     },
     methods: {
+      resetData() {
+        this.ruleForm.planId = ''
+        this.ruleForm.roomIds = ''
+        this.ruleForm.level = ''
+        this.ruleForm.professionalId =''
+        this.ruleForm.courseId =''
+      },
       getExamPaperList(val, callback) {
         api.examPaperListByCourseId(val).then(res => {
           this.examPaperOptions = res.data.map(t => {
@@ -260,8 +266,7 @@
         this.$refs.ruleForm.validate(valid => {
           if (valid) {
             const params = {
-              ...this.ruleForm,
-              organId: this.data.organId
+              ...this.ruleForm
             }
             const responseCallback = res => {
               if (res.code === 200) {
@@ -284,6 +289,10 @@
         if (item.model === 'level') this.ruleForm.professionalId = ''
         if (item.model !== 'courseId') this.ruleForm.courseId = ''
       },
+      organChange() {
+        this.resetData()
+        this.getProfessional()
+      },
       async visibleChange(value, item) {
         if (
           !item.data.length ||
@@ -300,25 +309,11 @@
             item.data = res
           },
           professionalId: async () => {
-            const params = {
-              organId: this.data.organId,
-              level: this.ruleForm.level
-            }
-            if (!this.ruleForm.level) return this.$message.warning('请先选择层次!')
-            const data =
-              ((await api.listByOrganIdAndLevel(params)) || {}).data || []
-            if (data.length) {
-              item.data = data.map((item) => {
-                return {
-                  dictName: item.name,
-                  dictValue: item.id
-                }
-              })
-            }
+            this.getProfessional()
           },
           courseId: async () => {
             if (!this.ruleForm.professionalId)
-              return this.$message.warning('请先选择专业!')
+              return false
             const data =
               ((await api.specialtySubject(this.ruleForm.professionalId)) || {}).data ||
               []
@@ -333,6 +328,34 @@
           }
         }
         handler[value]()
+      },
+      getExamRoomList() {
+        api.examRoomListByOrganId({ organId: this.ruleForm.organId })
+          .then((res) => {
+            this.examRoomOptions = res.data.map((t) => {
+              return {
+                label: t.roomName,
+                value: t.id
+              }
+            })
+          })
+      },
+      async getProfessional() {
+        const params = {
+          organId: this.ruleForm.organId,
+          level: this.ruleForm.level
+        }
+        if (!this.ruleForm.level || !this.ruleForm.organId) return false
+        const data =
+          ((await api.listByOrganIdAndLevel(params)) || {}).data || []
+        if (data.length) {
+          this.selectList['1'].data = data.map((item) => {
+            return {
+              dictName: item.name,
+              dictValue: item.id
+            }
+          })
+        }
       }
     }
   }

@@ -79,6 +79,7 @@
         <template slot-scope="{ scope }">
           <div class="item">
             <el-button type="text" v-all @click="handleEdit(scope)">编辑</el-button>
+            <el-button type="text" v-all @click="handleCopy(scope)">复制</el-button>
             <el-button type="text" @click="handleAttr(scope)">属性</el-button>
             <el-button type="text" v-all @click="handleDelete(scope)">删除</el-button>
           </div>
@@ -116,6 +117,7 @@ import * as api from '../api'
 import Add from './add'
 import download from '@/views/mixins/download'
 import selectMixin from '@/views/mixins/select.js'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'StandardMajor',
@@ -153,7 +155,8 @@ export default {
         columnConfig: [
           {
             label: '学校',
-            prop: 'organName'
+            prop: 'organName',
+            width: '170'
           },
           {
             label: '学年',
@@ -162,11 +165,11 @@ export default {
           },
           {
             label: '学生入学学年',
-            prop: 'stuSchoolYear'
+            prop: 'schoolYearIn'
           },
           {
             label: '层次',
-            prop: 'levelName'
+            prop: 'enterLevelLabel'
           },
           {
             label: '专业名称',
@@ -179,6 +182,14 @@ export default {
           {
             label: '学费标准',
             prop: 'chargeMoney'
+          },
+          {
+            label: '是否启用',
+            prop: 'openStatus',
+            type: 'enums',
+            enums: (value) => {
+              return value ? (value === '1' ? '启用' : '禁用') : '--'
+            }
           },
           {
             label: '其他费用',
@@ -325,6 +336,12 @@ export default {
       this.page.pageCurrent = val
       this.init()
     },
+    handleCopy({ row }) {
+      api.professionalStandardCopy({ id: row.id }).then((res) => {
+        this.$message.success('复制成功!')
+        this.init()
+      })
+    },
     // 属性
     handleEdit({ row }) {
       this.title = '编辑专业收费标准'
@@ -368,7 +385,7 @@ export default {
         '/course/professional_standard/export',
         'POST',
         '专业收费标准',
-        'xls'
+        'xlsx'
       )
     },
     //阻止upload的自己上传，进行再操作

@@ -14,20 +14,21 @@
       课程目录
       <i class="el-icon-plus" @click="addMenu()"></i>
     </p>
-    <el-scrollbar class="course-menu-tree">
+    <el-scrollbar class="chapter-tree">
       <el-tree
-          class="tree"
+          class="directory-tree"
           :data="treeData"
           node-key="id"
           default-expand-all
           :highlight-current="true"
           :props="defaultProps"
           :expand-on-click-node="false">
-        <div class="custom-tree-node" slot-scope="{ node, data }" @dblclick="editMenu(data)">
+        <div :class="{'root-node': data.parentId === -1, 'custom-tree-node': true}" @dblclick="editMenu(data)" slot-scope="{ node, data }">
           <span class="chapterName" @click="selChapterCont(data)">{{ node.label }}</span>
-          <span>
-              <i class="tree-item el-icon-plus treeAdd" @click="addMenu(data)"></i>
-              <i class="tree-item iconfont icon-delete" @click="() => remove(node, data)"></i>
+          <span class="operator">
+              <i @click="addMenu(data)" class="tree-item oper-icon iconfont icon-new-line treeAdd"></i>
+              <i @click="() => remove(node, data)" class="tree-item oper-icon iconfont icon-delete"></i>
+              <i @click="() => editMenu(node, data)" class="tree-item oper-icon iconfont icon-edit"></i>
           </span>
         </div>
       </el-tree>
@@ -189,49 +190,49 @@ export default {
 </script>
 
 <style scoped lang="scss">
-  .course-menu-tree {
-    height: 600px;
-  }
-  .custom-tree-node {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
-    padding-right: 8px;
-    height: 48px;
-    line-height: 48px;
-    .chapterName {
-      flex: 1;
+  .directory {
+    background-color: #F8F9FB;
+    padding: 0 0 24px;
+    .title {
+      display: flex;
+      padding: 0 24px;
+      justify-content: space-between;
+      align-items: center;
+      font-weight:500;
+      height: 64px;
+      line-height: 64px;
+      border-bottom: 2px solid #F8F9FB;
+      margin: 0;
     }
-    &.active {
-      background-color: #3F93DB;
-      color: #333333;
-      /*.chapterName {*/
-      /*  color: #3F93DB;*/
-      /*}*/
+    .chapter-tree {
+      height: 500px;
     }
-  }
-  .title {
-    font-weight:500;
-    padding: 20px 0;
-    margin: 0;
-    border-bottom: 2px solid #F8F9FB;
-  }
-  .el-icon-plus {
-    color: #AAB6C3;
-    background-color: #E8EBEF;
-    padding: 2px;
-    border-radius: 2px;
-    float: right;
-    cursor: pointer;
-  }
-  .tree {
-    /deep/ .treeAdd {
-      float: none;
-    }
-    /deep/ .tree-item{
-      margin-left: 10px;
+    .custom-tree-node {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      .operator {
+        .oper-icon {
+          font-size: 16px;
+        }
+      }
     }
   }
+  /deep/ .el-tree {
+    .el-tree-node__content {
+      background-color: #F8F9FB;
+      height: 56px;
+      font-size: 14px;
+      color: #666666;
+      letter-spacing: 0;
+      line-height: 24px;
+      padding: 0 16px 0 24px!important;
+    }
+    .el-tree-node__children {
+      .el-tree-node__content {
+        height: 48px;
+      }
+    }
+  }
+
 </style>

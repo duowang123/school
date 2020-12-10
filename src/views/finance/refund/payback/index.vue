@@ -131,6 +131,11 @@ export default {
         },
         columnConfig: [
           {
+            label: '学校',
+            prop: 'organName',
+            width: '170'
+          },
+          {
             label: '学号',
             prop: 'studentNo'
           },
@@ -181,6 +186,11 @@ export default {
           {
             label: '说明',
             prop: 'remark'
+          },
+          {
+            label: '教学点',
+            prop: 'schoolOrganName',
+            width: '170'
           }
         ]
       },
@@ -285,7 +295,7 @@ export default {
         '/course/student_return_money/export',
         'POST',
         '退费信息',
-        'xls'
+        'xlsx'
       )
     },
     handleSizeChange(val) {

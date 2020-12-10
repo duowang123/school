@@ -7,7 +7,7 @@
             <div class="container">
               <p class="label">学校</p>
               <el-select
-                v-model="params.organId"
+                v-model="form.organId"
                 filterable
                 style="width:200px"
                 v-if="showSchool"
@@ -35,7 +35,7 @@
                 style="width:200px"
                 v-if="showTeacher"
                 clearable
-                v-model="params.schoolOrganId "
+                v-model="form.schoolOrganId "
               >
                 <el-option
                   :key="item.id"
@@ -49,7 +49,7 @@
           <div class="OEP-form-item margin_r_48">
             <div class="container">
               <p class="label">学年</p>
-              <div>
+              <div style="display: flex">
                 <el-select class="selectWidth" v-model="form.startYear" clearable placeholder="请选择">
                   <el-option
                     v-for="item in schoolYearOptions"
@@ -58,6 +58,7 @@
                     :value="item.value"
                   ></el-option>
                 </el-select>
+                <div style="display: inline-block;height: 40px;line-height: 40px;margin: 0 5px">到</div>
                 <el-select class="selectWidth" v-model="form.endYear" clearable placeholder="请选择">
                   <el-option
                     v-for="item in schoolYearOptions"
@@ -147,7 +148,8 @@
       </div>
     </el-form>
     <el-table :data="tableData" style="width: 100%" :row-style="rowstyles">
-      <el-table-column prop="organName" label="合作单位"></el-table-column>
+      <el-table-column prop="organName" label="学校"></el-table-column>
+      <el-table-column prop="schoolOrganName" label="教学点"></el-table-column>
       <el-table-column prop="schoolYear" label="学年" width="100"></el-table-column>
       <el-table-column label="收费分缴费方式统计（学费）">
         <el-table-column label="现金" width="80">
@@ -223,8 +225,6 @@ export default {
     }
   },
   created() {
-    this.params.organId = this.organListAll[0].id
-    this.params.schoolOrganId = this.schoolOrgansListAll[0].id
     this.initSelectOptions()
     this.getTableData()
   },
@@ -274,10 +274,6 @@ export default {
     },
     // 从字典中获取下拉框数据
     initSelectOptions() {
-      api.getOrgan({ name: '' }).then((res) => {
-        this.organList = res.data.list
-        this.form.organId = this.$_getValue(res.data, 'list.0.id', '')
-      })
       api.listByCode({ code: '0006' }).then((res) => {
         this.levelOptions = res.data.map((e) => {
           return {

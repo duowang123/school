@@ -63,7 +63,7 @@
           ></el-input>
           <el-button
             type="primary"
-            style="height: 40px;margin-left: 10px"
+            style="height: 40px;margin-left: 16px"
             @click="handlerSearch"
           >高级搜索</el-button>
         </div>
@@ -118,14 +118,14 @@
     <el-dialog title="新增" :close-on-click-modal="false" :visible.sync="dialogVisible" width="950px">
       <div style="height: 550px">
         <!-- <add-user-from ref="addUserFrom" :is-add="isAdd" :user="addUser" organ-id="1"/> -->
-        <add ref="addFrom" :data="currentData" :organId="organId" :is-add="isAdd" />
+        <add ref="addFrom" :data="currentData" :organId="params.organId" :is-add="isAdd" />
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="submit('addFrom')">确 定</el-button>
       </div>
     </el-dialog>
-    <search :dialogVisible.sync="serachVisable" :organId="organId" @closeDia="closeDia" />
+    <search :dialogVisible.sync="serachVisable" :organId="params.organId" @closeDia="closeDia" />
   </div>
 </template>
 <script>
@@ -348,7 +348,7 @@ export default {
       }
     },
     showEnterLevel(value = '') {
-      if (!value) return value
+      if (!value || !Array.isArray(this.levelOption)) return value
       return this.levelOption.filter((item) => item.value === value)[0].label
     },
     resetUser() {
@@ -409,7 +409,7 @@ export default {
         '/course/studentSign/enter/export',
         'POST',
         '批量导出',
-        'xls'
+        'xlsx'
       )
     },
     handleAttr(data) {

@@ -43,24 +43,19 @@ const app = {
     TOGGLE_DEVICE: (state, device) => {
       state.device = device
     },
-    SET_ORGAN_LIST: (state, organList) => {
-      sessionStorage.setItem('organList', JSON.stringify(organList))
+    SET_ORGAN_LIST: (state, organList = []) => {
       state.organList = organList
     },
-    SET_SCHOOL_LIST: (state, schoolList) => {
-      sessionStorage.setItem('schoolList', JSON.stringify(schoolList))
+    SET_SCHOOL_LIST: (state, schoolList = []) => {
       state.schoolList = schoolList
     },
-    SET_TEACHER_LIST: (state, teacherList) => {
-      sessionStorage.setItem('teacherList', JSON.stringify(teacherList))
+    SET_TEACHER_LIST: (state, teacherList = []) => {
       state.teacherList = teacherList
     },
-    SET_SCHOOL_ORANGS: (state, schoolOrgansList) => {
-      sessionStorage.setItem('schoolOrgansList', JSON.stringify(schoolOrgansList))
+    SET_SCHOOL_ORANGS: (state, schoolOrgansList = []) => {
       state.schoolOrgansList = schoolOrgansList
     },
     SET_IDENTIFICATION_LIST: (state, identificationList) => {
-      sessionStorage.setItem('identificationList', JSON.stringify(identificationList))
       state.identificationList = identificationList
     },
 

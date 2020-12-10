@@ -115,7 +115,7 @@ export default {
   components: {
     coursesTable,
     pagination,
-    Attr,
+    Attr
   },
   mixins: [download, selectMixin],
   computed: {
@@ -124,9 +124,9 @@ export default {
       return {
         total: this.page.totalCount,
         pageSize: this.page.pageSize,
-        pageSizes: [20, 50, 100, 200],
+        pageSizes: [20, 50, 100, 200]
       }
-    },
+    }
   },
   data(vm) {
     return {
@@ -137,13 +137,13 @@ export default {
         organId: '',
         paperPlanId: '',
         realNameOrcertNo: '',
-        schoolOrganId: '',
+        schoolOrganId: ''
       },
       page: {
         pageCurrent: 1,
         pageSize: 20,
         totalCount: 0,
-        totalPage: 0,
+        totalPage: 0
       },
       addData: {},
       currentData: {},
@@ -154,16 +154,21 @@ export default {
         serialNumber: {
           label: '序号',
           type: 'index',
-          width: '64',
+          width: '64'
         },
         columnConfig: [
           {
+            label: '学校',
+            prop: 'organName',
+            width: '170'
+          },
+          {
             label: '学号',
-            prop: 'studentNo',
+            prop: 'studentNo'
           },
           {
             label: '入学年级',
-            prop: 'schoolYear',
+            prop: 'schoolYear'
           },
           {
             label: '入学学期',
@@ -174,11 +179,11 @@ export default {
                 (item) => item.value === value
               )
               return arr.length > 0 ? arr[0].label : '--'
-            },
+            }
           },
           {
             label: '姓名',
-            prop: 'realName',
+            prop: 'realName'
           },
           {
             label: '层次',
@@ -187,21 +192,26 @@ export default {
             enums: (value) => {
               return vm.levelOption.filter((item) => item.value === value)[0]
                 .label
-            },
+            }
           },
           {
             label: '专业',
-            prop: 'professionName',
+            prop: 'professionName'
           },
           {
             label: '选课学分',
-            prop: 'selectScore',
+            prop: 'selectScore'
           },
           {
             label: '获得学分',
-            prop: 'getScore',
+            prop: 'getScore'
           },
-        ],
+          {
+            label: '教学点',
+            prop: 'schoolOrganName',
+            width: '170'
+          }
+        ]
       },
       title: '',
       componentName: '',
@@ -210,14 +220,13 @@ export default {
       direction: 'rtl',
       isShowBtn: true,
       dialogVisible: false,
-      modelName: 'paper_write',
+      modelName: 'paper_write'
     }
   },
   async created() {
     try {
-      this.params.organId = this.organListAll[0].id
-      this.params.schoolOrganId = this.schoolOrgansListAll[0].id
-      // this.initSelectOptions()
+      this.initSelectOptions()
+      this.getPaperPlan()
       this.getTableData()
     } catch (err) {
       console.log(err)
@@ -227,15 +236,11 @@ export default {
   watch: {
     dialogVisible(val) {
       val || (this.componentName = '')
-    },
+    }
   },
   methods: {
-    change(val) {
-      if (val) {
-        this.initSelectOptions()
-      } else {
-        this.semesterOptions = []
-      }
+    change() {
+      this.getPaperPlan()
       this.init()
     },
     // 从字典中获取下拉框数据
@@ -246,7 +251,7 @@ export default {
             return {
               id: e.id,
               label: e.dictName,
-              value: e.dictValue,
+              value: e.dictValue
             }
           })
         })
@@ -255,22 +260,26 @@ export default {
             return {
               id: e.id,
               label: e.dictName,
-              value: e.dictValue,
+              value: e.dictValue
             }
           })
         })
       }
-      api
-        .commonPageRequest(
-          { organId: this.params.organId },
-          'paper_plan',
-          'listByOrganId'
-        )
+    },
+    getPaperPlan() {
+      if (!this.params.organId) {
+        return false
+      }
+      api.commonPageRequest(
+        { organId: this.params.organId },
+        'paper_plan',
+        'listByOrganId'
+      )
         .then((res) => {
           this.paperPlanList = res.data.map((e) => {
             return {
               label: e.paperName,
-              value: e.id,
+              value: e.id
             }
           })
         })
@@ -289,14 +298,14 @@ export default {
       const params = {
         pageCurrent: this.page.pageCurrent,
         pageSize: this.page.pageSize,
-        ...this.params,
+        ...this.params
       }
       this.download(
         params,
         '/course/paper_write/studentWriteExport',
         'POST',
         '论文写作学生',
-        'xls'
+        'xlsx'
       )
     },
     // 属性
@@ -314,8 +323,8 @@ export default {
           { label: '创建时间', key: 'createDate' },
           { label: '创建人', key: 'createUserName' },
           { label: '更新时间', key: 'updateDate' },
-          { label: '更新人', key: 'updateUserName' },
-        ],
+          { label: '更新人', key: 'updateUserName' }
+        ]
       }
     },
     initPage() {
@@ -324,7 +333,7 @@ export default {
     async getTableData(query) {
       const params = {
         ...this.params,
-        ...this.page,
+        ...this.page
       }
       const res = await api.commonPageRequest(
         params,
@@ -370,8 +379,8 @@ export default {
     handleCurrentChange(val) {
       this.page.currentPage = val
       this.getTableData()
-    },
-  },
+    }
+  }
 }
 </script>
 

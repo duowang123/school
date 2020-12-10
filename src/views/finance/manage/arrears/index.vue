@@ -8,7 +8,7 @@
               <p class="label">学校</p>
 
               <el-select
-                v-model="params.organId"
+                v-model="form.organId"
                 filterable
                 style="width:200px"
                 v-if="showSchool"
@@ -29,7 +29,7 @@
             <div class="container">
               <p class="label">教学点</p>
               <el-select
-                v-model="params.schoolOrganId "
+                v-model="form.schoolOrganId "
                 filterable
                 clearable
                 v-if="showTeacher"
@@ -92,11 +92,12 @@
           </div>
         </div>
         <div class="row">
-          <div class="OEP-form-item select-width-200 margin_r_48">
+          <div class="OEP-form-item margin_r_48">
             <div class="container">
               <p class="label">专业</p>
               <el-select
                 class="page-select"
+                style="width:308px"
                 v-model="form.professional"
                 clearable
                 placeholder="请选择"
@@ -129,10 +130,10 @@
               </div>
             </div>
           </div>
-          <div class="OEP-form-item select-width-200 margin_r_48">
+          <div class="OEP-form-item margin_r_48">
             <div class="container">
               <p class="label">学籍状态</p>
-              <el-select class="page-select" v-model="form.studentStatuss" placeholder="请选择">
+              <el-select class="page-select" style="width:200px" v-model="form.studentStatuss" placeholder="请选择">
                 <el-option
                   v-for="item in studentStatusOptions"
                   :key="item.value"
@@ -152,7 +153,8 @@
       </div>
     </el-form>
     <el-table :data="tableData" style="width: 100%" :row-style="rowstyles">
-      <el-table-column prop="organName" label="合作单位"></el-table-column>
+      <el-table-column prop="organName" label="学校"></el-table-column>
+      <el-table-column prop="schoolOrganName" label="教学点"></el-table-column>
       <el-table-column prop="schoolYear" label="学年" width="100"></el-table-column>
       <el-table-column prop="allPerson" label="总人数"></el-table-column>
       <el-table-column label="应缴费（学费）">
@@ -194,9 +196,6 @@ export default {
   data() {
     return {
       tableData: [],
-      params: {
-        queryContent: null,
-      },
       form: {
         organId: null,
         startYear: null,
@@ -206,17 +205,15 @@ export default {
         startTime: null,
         endTime: null,
         studentStatuss: null,
-        schoolOrganId: '',
+        schoolOrganId: ''
       },
       organList: [],
       levelOptions: [],
       specialtyOptions: [],
-      studentStatusOptions: [],
+      studentStatusOptions: []
     }
   },
   created() {
-    this.params.organId = this.organListAll[0].id
-    this.params.schoolOrganId = this.schoolOrgansListAll[0].id
     this.initSelectOptions()
     this.getTableData()
   },
@@ -224,15 +221,15 @@ export default {
     ...mapGetters(['schoolYearOptions']),
     rowstyles() {
       return {
-        height: '48px',
+        height: '48px'
       }
-    },
+    }
   },
   methods: {
     levelChange() {
       const params = {
         organId: this.form.organId,
-        level: this.form.level,
+        level: this.form.level
       }
       if (!this.form.level) return this.$message.warning('请先选择层次!')
       api.listByOrganIdAndLevel(params).then((res) => {
@@ -244,7 +241,7 @@ export default {
         this.specialtyOptions = res.data.map((e) => {
           return {
             label: e.name,
-            value: e.id,
+            value: e.id
           }
         })
         this.form.professional = this.$_getValue(res.data, '0.id', '')
@@ -266,14 +263,14 @@ export default {
     },
     handlerExport() {
       const params = {
-        ...this.form,
+        ...this.form
       }
       this.download(
         params,
         '/course/student_pay_log/oweExport',
         'POST',
         '欠费统计',
-        'xls'
+        'xlsx'
       )
     },
     // 从字典中获取下拉框数据
@@ -287,7 +284,7 @@ export default {
           return {
             id: e.id,
             label: e.dictName,
-            value: e.dictValue,
+            value: e.dictValue
           }
         })
       })
@@ -296,12 +293,12 @@ export default {
           return {
             id: e.id,
             label: e.dictName,
-            value: e.dictValue,
+            value: e.dictValue
           }
         })
       })
-    },
-  },
+    }
+  }
 }
 </script>
 
@@ -314,16 +311,16 @@ export default {
     /deep/ .el-form .el-input,
     .el-form .el-select,
     .el-form .el-textarea {
-      width: 240px !important;
+      width: 240px;
     }
     /deep/ .el-select {
-      width: 256px !important;
+      width: 256px;
     }
     /deep/ .el-select-dropdown {
-      width: 256px !important;
+      width: 256px;
     }
     /deep/ .el-input {
-      width: 240px !important;
+      width: 240px;
     }
     .organ-select {
       /deep/ .el-select {
@@ -364,9 +361,9 @@ export default {
     margin-bottom: 0 !important;
   }
   .page-select {
-    width: 200px !important;
+    width: 300px;
     /deep/ .el-input {
-      width: 200px !important;
+      width: 300px;
       overflow: hidden;
     }
   }

@@ -6,7 +6,7 @@
           <el-button type="primary" @click="handleAdd">新增</el-button>
           <el-upload
             class="upload-demo"
-            style="margin-left: 24px"
+            style="margin-left: 16px"
             :on-change="onFileChange"
             :auto-upload="false"
             :show-file-list="false"
@@ -77,22 +77,24 @@
           ></el-input>
           <el-button
             type="primary"
-            style="height: 40px;margin-left: 10px"
+            style="height: 40px;margin-left: 16px"
             @click="handlerSearch"
           >高级搜索</el-button>
         </div>
       </el-form>
     </div>
     <div class="main-content-container">
-      <el-scrollbar :noresize="true" :style="{ height:tableHeight }">
+      <div :style="{ height: tableHeight }" >
         <el-table
           :data="list"
           :header-cell-style="getRowClass"
           :row-style="{height: '48px'}"
           class="table"
+          :style="{ height:tableHeight }"
           v-loading="ctrl.loading"
+          :max-height="tableHeight"
         >
-          <el-table-column align="center" width="24"></el-table-column>
+          <el-table-column align="center" width="14"></el-table-column>
           <el-table-column align="center" label="序号" type="index" width="50"></el-table-column>
           <el-table-column label="考生号" prop="testNo" width="200"></el-table-column>
           <el-table-column label="学号" prop="studentNo" width="200"></el-table-column>
@@ -149,7 +151,7 @@
           </el-table-column>
           <el-table-column align="center" width="24"></el-table-column>
         </el-table>
-      </el-scrollbar>
+      </div>
       <el-pagination
         class="pagination"
         @size-change="handleSizeChange"
@@ -322,15 +324,14 @@ export default {
         '/course/student/enter/export',
         'POST',
         '批量导出',
-        'xls'
+        'xlsx'
       )
     },
     showEnterLevel(value, key) {
       if (key === ' registerType') {
         if (!value) return value
-        return this.registerTypeList.filter(
-          (item) => item.dictValue === value
-        )[0].dictName
+        const resArr = this.registerTypeList.filter(item => item.dictValue === value)[0]
+        return resArr ? resArr.dictName : ''
         // if (value === '1') {
         //   return '注册'
         // } else if (value === '2') {
@@ -360,9 +361,9 @@ export default {
     handlerSearch() {
       this.serachVisable = true
     },
-    closeDia() {
+    closeDia(superParams) {
       this.initPage()
-      this.getTableData()
+      this.getTableData(superParams)
     },
     initPage() {
       this.page.pageCurrent = 1
@@ -370,13 +371,16 @@ export default {
     organChange() {
       this.init()
     },
-    getTableData() {
-      const params = {
+    getTableData(superParams = {}) {
+      console.log(superParams)
+      let params = {
+        ...superParams,
         ...this.params,
         realNameOrcertNo: this.params.realNameOrcertNo,
         pageCurrent: this.page.pageCurrent,
         pageSize: this.page.pageSize
       }
+      params = JSON.parse(JSON.stringify(params))
       api.getStudentList(params).then((res) => {
         this.list = res.data.rows
         this.page.totalCount = res.data.totalCount

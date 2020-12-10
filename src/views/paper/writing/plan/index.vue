@@ -84,7 +84,7 @@ export default {
     coursesTable,
     pagination,
     Attr,
-    Add,
+    Add
   },
   mixins: [selectMixin],
   computed: {
@@ -93,9 +93,9 @@ export default {
       return {
         total: this.page.totalCount,
         pageSize: this.page.pageSize,
-        pageSizes: [20, 50, 100, 200],
+        pageSizes: [20, 50, 100, 200]
       }
-    },
+    }
   },
   data(vm) {
     return {
@@ -103,13 +103,13 @@ export default {
       statusOptions: [],
       params: {
         organId: '',
-        name: '',
+        name: ''
       },
       page: {
         pageCurrent: 1,
         pageSize: 20,
         totalCount: 0,
-        totalPage: 0,
+        totalPage: 0
       },
       addData: {},
       currentData: {},
@@ -120,16 +120,21 @@ export default {
         serialNumber: {
           label: '序号',
           type: 'index',
-          width: '64',
+          width: '64'
         },
         columnConfig: [
           {
+            label: '学校',
+            prop: 'organName',
+            width: '170'
+          },
+          {
             label: '名称',
-            prop: 'paperName',
+            prop: 'paperName'
           },
           {
             label: '学年',
-            prop: 'schoolYear',
+            prop: 'schoolYear'
           },
           {
             label: '学期',
@@ -140,7 +145,7 @@ export default {
                 (item) => item.value === value
               )
               return arr.length > 0 ? arr[0].label : '--'
-            },
+            }
           },
           {
             label: '状态',
@@ -151,7 +156,7 @@ export default {
                 (item) => item.value === value
               )
               return arr.length > 0 ? arr[0].label : '--'
-            },
+            }
           },
           {
             label: '提交选题起止时间',
@@ -159,7 +164,7 @@ export default {
             type: 'timeslot',
             value: (value) => {
               return (value.start1 || '--') + '-' + (value.end1 || '--')
-            },
+            }
           },
           {
             label: '提交提纲起止时间',
@@ -167,7 +172,7 @@ export default {
             type: 'timeslot',
             value: (value) => {
               return (value.start2 || '--') + '-' + (value.end2 || '--')
-            },
+            }
           },
           {
             label: '提交初稿起止时间',
@@ -175,7 +180,7 @@ export default {
             type: 'timeslot',
             value: (value) => {
               return (value.start3 || '--') + '-' + (value.end3 || '--')
-            },
+            }
           },
           {
             label: '提交终稿起止时间',
@@ -183,7 +188,7 @@ export default {
             type: 'timeslot',
             value: (value) => {
               return (value.start4 || '--') + '-' + (value.end4 || '--')
-            },
+            }
           },
           {
             label: '批改提纲起止时间',
@@ -191,7 +196,7 @@ export default {
             type: 'timeslot',
             value: (value) => {
               return (value.start5 || '--') + '-' + (value.end5 || '--')
-            },
+            }
           },
           {
             label: '批改初稿起止时间',
@@ -199,7 +204,7 @@ export default {
             type: 'timeslot',
             value: (value) => {
               return (value.start6 || '--') + '-' + (value.end6 || '--')
-            },
+            }
           },
           {
             label: '批改终稿起止时间',
@@ -207,7 +212,7 @@ export default {
             type: 'timeslot',
             value: (value) => {
               return (value.start7 || '--') + '-' + (value.end7 || '--')
-            },
+            }
           },
           {
             label: '答辩终稿修改起止时间',
@@ -215,7 +220,7 @@ export default {
             type: 'timeslot',
             value: (value) => {
               return (value.start8 || '--') + '-' + (value.end8 || '--')
-            },
+            }
           },
           {
             label: '论文重写申请起止时间',
@@ -223,21 +228,21 @@ export default {
             type: 'timeslot',
             value: (value) => {
               return (value.start9 || '--') + '-' + (value.end9 || '--')
-            },
+            }
           },
           {
             label: '备注',
-            prop: 'remark',
+            prop: 'remark'
           },
           {
             label: '选课学分',
-            prop: 'courseScore',
+            prop: 'courseScore'
           },
           {
             label: '获得学分',
-            prop: 'getScore',
-          },
-        ],
+            prop: 'getScore'
+          }
+        ]
       },
       title: '',
       componentName: '',
@@ -246,12 +251,11 @@ export default {
       direction: 'rtl',
       isShowBtn: true,
       dialogVisible: false,
-      modelName: 'paper_plan',
+      modelName: 'paper_plan'
     }
   },
   async created() {
     try {
-      this.params.organId = this.schoolOrgansListAll[0].id
       this.initSelectOptions()
       this.getTableData()
     } catch (err) {
@@ -262,7 +266,7 @@ export default {
   watch: {
     dialogVisible(val) {
       val || (this.componentName = '')
-    },
+    }
   },
   methods: {
     // 从字典中获取下拉框数据
@@ -273,7 +277,7 @@ export default {
             return {
               id: e.id,
               label: e.dictName,
-              value: e.dictValue,
+              value: e.dictValue
             }
           })
         })
@@ -282,7 +286,7 @@ export default {
             return {
               id: e.id,
               label: e.dictName,
-              value: e.dictValue,
+              value: e.dictValue
             }
           })
         })
@@ -303,7 +307,7 @@ export default {
         isAdd: true,
         organId: this.params.organId,
         modelName: this.modelName,
-        statusOptions: this.statusOptions,
+        statusOptions: this.statusOptions
       }
     },
     // 编辑
@@ -317,7 +321,7 @@ export default {
         ...row,
         isAdd: false,
         modelName: this.modelName,
-        statusOptions: this.statusOptions,
+        statusOptions: this.statusOptions
       }
     },
     async init() {
@@ -338,8 +342,8 @@ export default {
           { label: '创建时间', key: 'createDate' },
           { label: '创建人', key: 'createUserName' },
           { label: '更新时间', key: 'updateDate' },
-          { label: '更新人', key: 'updateUserName' },
-        ],
+          { label: '更新人', key: 'updateUserName' }
+        ]
       }
     },
     initPage() {
@@ -348,7 +352,7 @@ export default {
     async getTableData(query) {
       const params = {
         ...this.params,
-        ...this.page,
+        ...this.page
       }
       const res = await api.commonPageRequest(
         params,
@@ -377,7 +381,7 @@ export default {
       this.$confirm('是否继续删除?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning',
+        type: 'warning'
       }).then(() => {
         api
           .commonPageRequest({ id: row.id }, this.modelName, 'delete')
@@ -385,7 +389,7 @@ export default {
             if (res.code === 200) {
               this.$message({
                 type: 'success',
-                message: '删除成功!',
+                message: '删除成功!'
               })
               this.initPage()
               this.getTableData()
@@ -396,8 +400,8 @@ export default {
     handleCurrentChange(val) {
       this.page.currentPage = val
       this.getTableData()
-    },
-  },
+    }
+  }
 }
 </script>
 

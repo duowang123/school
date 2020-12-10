@@ -6,7 +6,8 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 // import 'element-ui/lib/theme-chalk/index.css'
 import './styles/theme/index.css'
-import './assets/font/iconfont.css'
+// 通过在线链接引入css
+// import './assets/font/iconfont.css'
 
 import App from './App'
 import store from './store'

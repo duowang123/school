@@ -274,8 +274,6 @@ export default {
       isShowBtn: true,
       dialogVisible: false,
       tableData: [],
-      organListAll: [],
-      schoolOrgansListAll: [],
       changeReasonList: [],
       changeTypeList: []
     }
@@ -293,15 +291,6 @@ export default {
     api.getSysDictList({ code: '0022' }).then((res) => {
       this.changeReasonList = res.data || []
     })
-    const all = {
-      id: '',
-      name: '全部',
-      oldName: '全部'
-    }
-    this.organListAll = [all, ...this.teacherList]
-    this.schoolOrgansListAll = [all, ...this.schoolOrgansList]
-    this.params.organId = this.organListAll[0].id
-    this.params.schoolOrganId = this.schoolOrgansListAll[0].id
     this.init()
   },
   methods: {
@@ -316,7 +305,7 @@ export default {
         '/course/register_change/export',
         'POST',
         '注册前异动审核',
-        'xls'
+        'xlsx'
       )
     },
     // 查看

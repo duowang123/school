@@ -1,17 +1,20 @@
 <template>
-  <el-scrollbar :style="{height:tableHeight}" :noresize="true">
+  <div class="table" :style="{height:tableHeight+'px'}" >
     <el-table
       ref="table"
+      style="max-height: none"
       v-loading="tableConfig.loading"
       :data="tableData"
       class="table"
       :border="tableConfig.border"
+      :max-height="tableHeight - 3"
       :row-style="rowstyles"
       :show-summary="!!tableConfig.showSummary"
       v-bind="tableBind"
       @selection-change="(val) => $emit('handle-selection-change', val)"
       :header-cell-style="{background:'rgba(170,182,195,0.36)', color: '#333333'}"
     >
+      <el-table-column width="14" align="center"></el-table-column>
       <el-table-column v-if="!!tableConfig.selection" v-bind="tableConfig.selection"></el-table-column>
       <el-table-column v-if="!!tableConfig.serialNumber" v-bind="tableConfig.serialNumber"></el-table-column>
       <template v-for="({slot, ...item}, index) of tableConfig.columnConfig">
@@ -94,7 +97,7 @@
         </template>
       </el-table-column>
     </el-table>
-  </el-scrollbar>
+  </div>
 </template>
 
 <script>
@@ -129,7 +132,7 @@ export default {
   },
   data() {
     return {
-      tableHeight: '',
+      tableHeight: '200',
     }
   },
   methods: {
@@ -168,11 +171,11 @@ export default {
   },
   mounted() {
     if (this.height) {
-      this.tableHeight = parseInt(this.height) + 'px'
+      this.tableHeight = parseInt(this.height)
     } else {
       // const { height } = this.$parent.$el.getBoundingClientRect()
       const height = window.innerHeight
-      this.tableHeight = height - 180 - 50 - 24 - 2 + 'px'
+      this.tableHeight = height - 180 - 50 - 24 - 2
       // this.tableHeight = height - 90 - 24 + 'px'
     }
   },
@@ -182,6 +185,7 @@ export default {
 <style scoped lang="scss">
 .table {
   width: 100%;
+  background-color: #ffffff;
 }
 </style>
 // <style lang="scss">

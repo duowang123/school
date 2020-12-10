@@ -161,12 +161,10 @@ export default {
         return false
       }
       this.ruleForm.pictureUrl = uploadRes.data
+      this.ruleForm.studentId = this.rows.id
       this.$refs.addForm.validate(async (valid) => {
         if (valid) {
-          Object.assign(this.ruleForm, {
-            pictureUrl: uploadRes.data,
-            testNo: this.rows.id,
-          })
+          this.ruleForm.pictureUrl = uploadRes.data
           const resCallBack = (res) => {
             if (res.code === 200) {
               this.$message.success(
@@ -179,6 +177,7 @@ export default {
               )
             }
           }
+          debugger
           this.isEdit
             ? api
                 .registerChangeUpdate({ ...this.ruleForm, id: this.data.id })

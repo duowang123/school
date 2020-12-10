@@ -79,7 +79,7 @@ export default {
       organId: '',
       isAdd: true,
       params: {
-        queryContent: '',
+        queryContent: ''
       },
       page: {
         pageCurrent: 1,
@@ -95,21 +95,21 @@ export default {
         serialNumber: {
           label: '序号',
           type: 'index',
-          width: '64',
+          width: '64'
         },
         columnConfig: [
           {
             label: '编号',
             prop: 'specialtyNo',
-            width: '160',
+            width: '160'
           },
           {
             label: '专业名称',
-            prop: 'name',
+            prop: 'name'
           },
           {
             label: '所属学院',
-            prop: 'collegeName',
+            prop: 'collegeName'
           },
           {
             label: '学校',
@@ -117,21 +117,21 @@ export default {
           },
           {
             label: '层次',
-            prop: 'levelLabel',
+            prop: 'levelLabel'
           },
           {
             label: '学制',
-            prop: 'schoolSystem',
+            prop: 'schoolSystem'
           },
           {
             label: '更新人',
-            prop: 'updateUserId',
+            prop: 'updateUserId'
           },
           {
             label: '更新时间',
-            prop: 'updateDate',
-          },
-        ],
+            prop: 'updateDate'
+          }
+        ]
       },
       dialogVisible: false,
       moreVisible: false,
@@ -140,7 +140,7 @@ export default {
       componentData: null,
       width: '500px',
       direction: 'rtl',
-      isShowBtn: true,
+      isShowBtn: true
     }
   },
   created() {
@@ -153,14 +153,14 @@ export default {
       return {
         total: this.page.totalCount,
         pageSize: this.page.pageSize,
-        pageSizes: [20, 50, 100, 200],
+        pageSizes: [20, 50, 100, 200]
       }
-    },
+    }
   },
   watch: {
     dialogVisible(val) {
       val || (this.componentName = '')
-    },
+    }
   },
   methods: {
     async init() {
@@ -174,7 +174,7 @@ export default {
         ...this.params,
         organId: this.organId,
         pageCurrent: this.page.pageCurrent,
-        pageSize: this.page.pageSize,
+        pageSize: this.page.pageSize
       }
       api.specialtyList(params).then((res) => {
         this.tableData = res.data.rows
@@ -214,7 +214,7 @@ export default {
       this.isAdd = true
       this.componentData = {
         organId: this.organId,
-        levelOption: this.levelOption,
+        levelOption: this.levelOption
       }
     },
     // 学院信息
@@ -225,7 +225,7 @@ export default {
       this.width = '800px'
       this.isShowBtn = true
       this.componentData = {
-        organId: this.organId,
+        organId: this.organId
       }
     },
     confirm() {
@@ -265,8 +265,8 @@ export default {
           { label: '专业名称', key: 'name' },
           { label: '所属学院', key: 'collegeName' },
           { label: '更新人', key: 'createUserId' },
-          { label: '更新时间', key: 'updateDate' },
-        ],
+          { label: '更新时间', key: 'updateDate' }
+        ]
       }
     },
     // 删除
@@ -274,13 +274,13 @@ export default {
       this.$confirm('是否继续删除?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning',
+        type: 'warning'
       }).then(() => {
         api.deleteSpecialty({ id: row.id }).then((res) => {
           if (res.code === 200) {
             this.$message({
               type: 'success',
-              message: '删除成功!',
+              message: '删除成功!'
             })
             this.initPage()
             this.getTableData()
@@ -295,8 +295,8 @@ export default {
     handleCurrentChange(val) {
       this.page.currentPage = val
       this.getTableData()
-    },
-  },
+    }
+  }
 }
 </script>
 

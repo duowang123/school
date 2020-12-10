@@ -1,13 +1,49 @@
 <template>
   <div class="graduate-query-plan-add attrStyle">
     <div class="search-box">
-      <div class="item" style="width: 120px">
-        <el-select v-model="params.schoolYear" clearable placeholder="请选择学年">
+      <div class="item" style="width: 250px">
+        <el-select
+          @initProfessional="initProfessional"
+          class="organ-select"
+          clearable
+          filterable
+          placeholder="请选择学校"
+          v-if="showSchool"
+          v-model="params.organId"
+        >
           <el-option
-            v-for="item in schoolYearOptions"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+            v-for="item in schoolOrgansListAll"
+          ></el-option>
+        </el-select>
+      </div>
+      <div class="item" style="width: 250px">
+        <el-select
+          class="organ-select"
+          clearable
+          filterable
+          lsSchool
+          placeholder="请选择教学点"
+          v-if="showTeacher"
+          v-model="params.schoolOrganId"
+        >
+          <el-option
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+            v-for="item in organListAll"
+          ></el-option>
+        </el-select>
+      </div>
+      <div class="item" style="width: 120px">
+        <el-select clearable placeholder="请选择学年" v-model="params.schoolYear">
+          <el-option
             :key="item.value"
             :label="item.label"
             :value="item.value"
+            v-for="item in schoolYearOptions"
           ></el-option>
         </el-select>
       </div>
@@ -131,6 +167,8 @@
         enterLevelOptions: [],
         professionOptions: [], //专业
         params: {
+          organId: '',
+          schoolOrganId: '',
           schoolYear: '',
           enterLevel: '',
           enterMajor: '',
@@ -172,10 +210,7 @@
       async getTableData() {
         const params = {
           ...this.params,
-          ...this.page,
-          ...{
-            organId: this.data.organId
-          }
+          ...this.page
         }
         api.graduatePageList(params).then(res => {
           this.tableData = res.data.rows || []
@@ -220,8 +255,11 @@
         this.initProfessional(false)
       },
       initProfessional(init = true) {
+        if (!this.params.organId || !this.params.enterLevel) {
+          return false
+        }
         const params = {
-          organId: this.data.organId,
+          organId: this.params.organId,
           level: this.params.enterLevel
         }
         if (!this.params.enterLevel)
@@ -247,7 +285,7 @@
       },
       confirm(callBack) {
         const params = {
-          organId: this.data.organId,
+          organId: this.params.organId,
           studentIds: this.selValue
         }
         api.graduateSave(params).then(res => {

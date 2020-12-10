@@ -356,8 +356,8 @@
                       </el-radio-group>
                     </div>
                     <div>
-                      <div class="flex-1">是否教师</div>
-                      <el-radio-group class="flex-2" v-model="basicForm.yesTeacher">
+                      <div class="flex-1">是否可以上网</div>
+                      <el-radio-group class="flex-2" v-model="basicForm.yesIntelnet">
                         <el-radio label="1">是</el-radio>
                         <el-radio label="2">否</el-radio>
                       </el-radio-group>
@@ -369,14 +369,7 @@
                   </div>
 
                   <div class="main-content" style="justify-content: flex-start;">
-                    <div>
-                      <div class="flex-1">是否可以上网</div>
-                      <el-radio-group class="flex-2" v-model="basicForm.yesIntelnet">
-                        <el-radio label="1">是</el-radio>
-                        <el-radio label="2">否</el-radio>
-                      </el-radio-group>
-                    </div>
-                    <div class="homePlace" style="margin-left: 35px">
+                    <div class="homePlace">
                       <div class="flex-1">备注</div>
                       <el-input
                         class="flex-2 lagerWidth"
@@ -878,6 +871,9 @@ export default {
       const params = {
         organId: this.signUpForm.organId,
         level: this.signUpForm.enterLevel
+      }
+      if (!this.signUpForm.organId || !this.signUpForm.enterLevel) {
+        return
       }
       this.enterMajorList =
         ((await api.listByOrganIdAndLevel(params)) || {}).data || []

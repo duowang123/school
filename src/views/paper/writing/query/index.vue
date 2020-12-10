@@ -122,7 +122,7 @@ export default {
     pagination,
     Attr,
     Add,
-    ScanImage,
+    ScanImage
   },
   mixins: [selectMixin],
   computed: {
@@ -131,9 +131,9 @@ export default {
       return {
         total: this.page.totalCount,
         pageSize: this.page.pageSize,
-        pageSizes: [20, 50, 100, 200],
+        pageSizes: [20, 50, 100, 200]
       }
-    },
+    }
   },
   data(vm) {
     return {
@@ -145,13 +145,13 @@ export default {
         organId: '',
         paperPlanId: '',
         realNameOrcertNo: '',
-        schoolOrganId: '',
+        schoolOrganId: ''
       },
       page: {
         pageCurrent: 1,
         pageSize: 20,
         totalCount: 0,
-        totalPage: 0,
+        totalPage: 0
       },
       addData: {},
       currentData: {},
@@ -162,16 +162,21 @@ export default {
         serialNumber: {
           label: '序号',
           type: 'index',
-          width: '64',
+          width: '64'
         },
         columnConfig: [
           {
+            label: '学校',
+            prop: 'organName',
+            width: '170'
+          },
+          {
             label: '学号',
-            prop: 'studentNo',
+            prop: 'studentNo'
           },
           {
             label: '入学年级',
-            prop: 'schoolYear',
+            prop: 'schoolYear'
           },
           {
             label: '入学学期',
@@ -179,80 +184,80 @@ export default {
             type: 'enums',
             enums: (value) => {
               return value ? (value === '1' ? '上学期' : '下学期') : '--'
-            },
+            }
           },
           {
             label: '姓名',
-            prop: 'realName',
+            prop: 'realName'
           },
           {
             label: '层次',
-            prop: 'levelName',
+            prop: 'levelName'
           },
           {
             label: '专业',
-            prop: 'professionName',
+            prop: 'professionName'
           },
           {
             label: '选题',
             prop: 'selectName',
-            width: '220',
+            width: '220'
           },
           {
             label: '指导老师',
-            prop: 'guideTeacher',
+            prop: 'guideTeacher'
           },
           {
             label: '提纲提交时间',
             width: '160',
-            prop: 'outlineDate',
+            prop: 'outlineDate'
           },
           {
             label: '提纲',
             slot: {
               type: 'btnTxt',
               txt: '查看',
-              prop: 'outlineUrl',
-            },
+              prop: 'outlineUrl'
+            }
           },
           {
             label: '初稿提交时间',
             width: '160',
-            prop: 'firstDate',
+            prop: 'firstDate'
           },
           {
             label: '初稿',
             slot: {
               type: 'btnTxt',
               txt: '查看',
-              prop: 'firstUrl',
-            },
+              prop: 'firstUrl'
+            }
           },
           {
             label: '初稿重复率',
             width: '100',
-            prop: 'firstRemark',
+            prop: 'firstRemark'
           },
           {
             label: '初稿评语',
-            prop: 'firstRemark',
+            prop: 'firstRemark'
           },
           {
             label: '初稿成绩',
-            prop: 'firstResult',
+            prop: 'firstResult'
           },
           {
             label: '终稿提交时间',
             width: '160',
-            prop: 'lastDate',
+            prop: 'lastDate'
           },
           {
             label: '终稿',
             slot: {
               type: 'btnTxt',
               txt: '查看',
-              prop: 'lastUrl',
-            },
+              prop: 'lastUrl'
+            }
           },
           {
             label: '终稿重复率',
@@ -260,18 +265,23 @@ export default {
             prop: 'lastCheckResult',
             slot: {
               type: 'btnAndLabel',
-              txt: '查看',
-            },
+              txt: '查看'
+            }
           },
           {
             label: '终稿评语',
-            prop: 'lastRemark',
+            prop: 'lastRemark'
           },
           {
             label: '终稿成绩',
-            prop: 'lastResult',
+            prop: 'lastResult'
           },
-        ],
+          {
+            label: '教学点',
+            prop: 'schoolOrganName',
+            width: '170'
+          }
+        ]
       },
       title: '',
       componentName: '',
@@ -280,14 +290,13 @@ export default {
       direction: 'rtl',
       isShowBtn: true,
       dialogVisible: false,
-      modelName: 'paper_write',
+      modelName: 'paper_write'
     }
   },
   created() {
     try {
-      this.params.organId = this.organListAll[0].id
-      this.params.schoolOrganId = this.schoolOrgansListAll[0].id
-      // this.initSelectOptions()
+      this.initSelectOptions()
+      this.getPaperPlan()
       this.getTableData()
     } catch (err) {
       console.log(err)
@@ -297,11 +306,11 @@ export default {
   watch: {
     dialogVisible(val) {
       val || (this.componentName = '')
-    },
+    }
   },
   methods: {
-    change(val) {
-      if (val) this.initSelectOptions()
+    change() {
+      this.getPaperPlan()
       this.init()
     },
     // 从字典中获取下拉框数据
@@ -312,7 +321,7 @@ export default {
             return {
               id: e.id,
               label: e.dictName,
-              value: e.dictValue,
+              value: e.dictValue
             }
           })
         })
@@ -321,7 +330,7 @@ export default {
             return {
               id: e.id,
               label: e.dictName,
-              value: e.dictValue,
+              value: e.dictValue
             }
           })
         })
@@ -330,22 +339,26 @@ export default {
             return {
               id: e.id,
               label: e.dictName,
-              value: e.dictValue,
+              value: e.dictValue
             }
           })
         })
       }
-      api
-        .commonPageRequest(
-          { organId: this.params.organId },
-          'paper_plan',
-          'listByOrganId'
-        )
+    },
+    getPaperPlan() {
+      if (!this.params.organId) {
+        return false
+      }
+      api.commonPageRequest(
+        { organId: this.params.organId },
+        'paper_plan',
+        'listByOrganId'
+      )
         .then((res) => {
           this.paperPlanList = res.data.map((e) => {
             return {
               label: e.paperName,
-              value: e.id,
+              value: e.id
             }
           })
         })
@@ -374,7 +387,7 @@ export default {
         ...row,
         isAdd: false,
         modelName: this.modelName,
-        resultStatusList: this.resultStatusList,
+        resultStatusList: this.resultStatusList
       }
     },
     btnAndLabel(row) {
@@ -400,8 +413,8 @@ export default {
           { label: '创建时间', key: 'createDate' },
           { label: '创建人', key: 'createUserName' },
           { label: '更新时间', key: 'updateDate' },
-          { label: '更新人', key: 'updateUserName' },
-        ],
+          { label: '更新人', key: 'updateUserName' }
+        ]
       }
     },
     initPage() {
@@ -410,7 +423,7 @@ export default {
     async getTableData(query) {
       const params = {
         ...this.params,
-        ...this.page,
+        ...this.page
       }
       const res = await api.commonPageRequest(
         params,
@@ -439,7 +452,7 @@ export default {
       this.$confirm('是否继续删除?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning',
+        type: 'warning'
       }).then(() => {
         api
           .commonPageRequest({ id: row.id }, this.modelName, 'delete')
@@ -447,7 +460,7 @@ export default {
             if (res.code === 200) {
               this.$message({
                 type: 'success',
-                message: '删除成功!',
+                message: '删除成功!'
               })
               this.initPage()
               this.getTableData()
@@ -458,8 +471,8 @@ export default {
     handleCurrentChange(val) {
       this.page.currentPage = val
       this.getTableData()
-    },
-  },
+    }
+  }
 }
 </script>
 

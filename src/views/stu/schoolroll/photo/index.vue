@@ -253,6 +253,7 @@ export default {
   display: flex;
   justify-content: flex-start;
   flex-wrap: wrap;
+  margin-bottom: 30px;
   .img-box {
     width: 275px;
     height: 250px;
